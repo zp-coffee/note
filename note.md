@@ -1,3 +1,109 @@
+# 涉及到的链接
+
+*   [Markdown常用操作：数学符号、空格、字体](https://www.jianshu.com/p/5a27d195678f)
+
+*   [【自制FOC驱动器】深入浅出讲解FOC算法与SVPWM技术](https://zhuanlan.zhihu.com/p/147659820)
+
+*   [三相坐标变换的实质与原则](https://zhuanlan.zhihu.com/p/489644101)
+
+*   [彻底吃透SVPWM如此简单](https://zhuanlan.zhihu.com/p/414721065)
+
+*   [Google](https://www.google.com.mm/)
+
+*   [‎Apple Music 上周杰伦的歌曲《青花瓷》](https://music.apple.com/cn/album/青花瓷/536030690?i=536030695)
+
+    
+
+
+
+#     青花瓷
+
+　　     作词 方文山 
+
+​             作曲 周杰伦
+
+  素胚勾勒出青花笔锋浓转淡
+
+  瓶身描绘的牡丹一如你初妆
+
+  冉冉檀香透过窗心事我了然
+
+​     宣纸上走笔至此搁一半
+
+  釉色渲染仕女图韵味被私藏
+
+  而你嫣然的一笑如含苞待放
+
+​          你的美一缕飘散
+
+​       去到我去不了的地方
+
+  天青色等烟雨 而我在等你
+
+  炊烟袅袅升起 隔江千万里
+
+  在瓶底书汉隶仿前朝的飘逸
+
+​        就当我为遇见你伏笔
+
+  天青色等烟雨 而我在等你
+
+  月色被打捞起 晕开了结局
+
+  如传世的青花瓷自顾自美丽
+
+　　       你眼带笑意
+
+  色白花青的锦鲤跃然于碗底
+
+  临摹宋体落款时却惦记着你
+
+  你隐藏在窑烧里千年的秘密
+
+  极细腻犹如绣花针落地
+
+  帘外芭蕉惹骤雨门环惹铜绿
+
+  而我路过那江南小镇惹了你
+
+​          在泼墨山水画里
+
+​       你从墨色深处被隐去
+
+  天青色等烟雨 而我在等你
+
+  炊烟袅袅升起 隔江千万里
+
+  在瓶底书汉隶仿前朝的飘逸
+
+​      就当我为遇见你伏笔
+
+  天青色等烟雨 而我在等你
+
+  月色被打捞起 晕开了结局
+
+  如传世的青花瓷自顾自美丽
+
+​             你眼带笑意
+
+  天青色等烟雨 而我在等你
+
+  炊烟袅袅升起 隔江千万里
+
+  在瓶底书汉隶仿前朝的飘逸
+
+​       就当我为遇见你伏笔
+
+  天青色等烟雨 而我在等你
+
+  月色被打捞起 晕开了结局
+
+  如传世的青花瓷自顾自美丽
+
+​              你眼带笑意
+
+
+
 # 从2023.2.8号开始记录每天所学内容
 
 ## 2023.2.8
@@ -336,10 +442,10 @@ int main() {
 #### 6.1 容器
 ##### 6.1.1 string容器
 * string有四个构造函数
-* `string();`          				    //创建一个空的字符串 例如: string str;
-* `string(const char* s);`	         //使用字符串s初始化
-* `string(const string& str);`     //使用一个string对象初始化另一个string对象
-* `string(int n, char c);`              //使用n个字符c初始化 
+* `string();`          				                  //创建一个空的字符串 例如: string str;
+* `string(const char* s);`	             //使用字符串s初始化
+* `string(const string& str);`         //使用一个string对象初始化另一个string对象
+* `string(int n, char c);`                 //使用n个字符c初始化 
 
 * `string.assign()` `string.append()` `string.find()` `string.rfind()`
 * `string.replace()` `string.compare()` `string.size()`  `string.insert()`
@@ -348,10 +454,10 @@ int main() {
 ##### 6.1.2 vector容器
 **功能：**vector数据结构和**数组非常相似**，也称为**单端数组**
 * vector有四个构造函数
-* `vector<T> v; `               		      //采用模板实现类实现，默认构造函数
-* `vector(v.begin(), v.end());`       //将v[begin(), end())区间中的元素拷贝给本身。
+* `vector<T> v; `               		                 //采用模板实现类实现，默认构造函数
+* `vector(v.begin(), v.end());`         //将v[begin(), end())区间中的元素拷贝给本身。
 * `vector(n, elem);`                                //构造函数将n个elem拷贝给本身。
-* `vector(const vector &vec);`         //拷贝构造函数。
+* `vector(const vector &vec);`           //拷贝构造函数。
 * `vector.assign()` `vector.empty()` `vector.capacity()` `vector.size()`
 * `vector.resize()` `vector.push_back()` `vector.pop_back()` 
 * `vector.insert()` `vector.erase()` `vector.clear()`  `vector.front()` 
@@ -401,7 +507,7 @@ deque内部有个**中控器**，维护每段缓冲区中的内容，缓冲区�
 栈中弹出数据称为  --- **出栈**  `pop`
 * stack有两个构造函数：
 * `stack<T> stk;`                                      //stack采用模板类实现， stack对象的默认构造形式
-* `stack(const stack &stk);`            //拷贝构造函数
+* `stack(const stack &stk);`               //拷贝构造函数
 * `stack.push()` `stack.pop()` `stack.top()` `stack.empty()` `stack.size()`
 * 头文件：stack.h
 
@@ -419,7 +525,7 @@ deque内部有个**中控器**，维护每段缓冲区中的内容，缓冲区�
 队列中出数据称为 --- **出队**    `pop`
 * 队列有两个构造函数：
 - `queue<T> que;`                                     //queue采用模板类实现，queue对象的默认构造形式
-- `queue(const queue &que);`            //拷贝构造函数
+- `queue(const queue &que);`              //拷贝构造函数
 - `queue.push()` `queue.pop()` `queue.back()` `queue.front()` `queue.size()`
 - `queue.empty()` 包括头文件queue.h
 
@@ -449,8 +555,9 @@ STL中的链表是一个双向循环链表
 *  `list.remove()` `list.front()` `list.back()` `list.reverse()` `list.sort`
 
 ##### 6.1.7 set容器
-** 概念：** 所有元素插入时都会自动排序，本质和multiset一样属于关联式容器用二叉树实现
+**概念：** 所有元素插入时都会自动排序，本质和multiset一样属于关联式容器用二叉树实现
 **set和multiset区别**：
+
 * set不允许容器中有重复的元素
 * multiset允许容器中有重复的元素
 * set有两个构造函数：
@@ -474,7 +581,7 @@ s2.insert();.....
 
 ```
 
-** set存放自定义数据类型**
+**set存放自定义数据类型**
 
 ```c++
 class Person
@@ -852,7 +959,8 @@ graph LR
 	B[正弦波] --clack变换和park变换--> C[电压合成矢量]
 	C[电压合成矢量] --> D[计算每个扇区的周期]
 	D[计算每个扇区的周期] --> E[调整每个周期出现的顺序]
-	E[调整每个周期出现的顺序] --> F[得到SVPWM波]
+	E[调整每个周期出现的顺序] --> k[确定切换时间点]
+	k[确定切换时间点] --> F[得到SVPWM波]
 ```
 
 
@@ -989,21 +1097,63 @@ $V_{ref3} > 0, C = 1$
 
 
 
+*   **决定各个基向量之间切换的顺序**
+
+我们知道参考电压所在的扇区后，我们就需要决定各个基向量之间切换的顺序来是MOS管的开关次数达到最小从而最大限度的减少开关损耗。
+
+我们通过在合理的位置插入两个零矢量，并且对零矢量在时间上进行了平均分配，以使产生的PWM对称，从而有效地降低了PWM的谐波分量。
+
+<img src="C:\Users\zp\Desktop\Note\image\扇区基向量顺序.webp" style="zoom: 50%;" />
+
+
+
 * **计算扇区内相邻两个非零向量和零向量的作用时间**
 
 我们定义：
 
 <img src="C:\Users\zp\Desktop\Note\image\SharedScreenshot4.jpg" style="zoom:50%;" />
 
- $T_{first}$代表任意扇区内逆时针数第一个非零电压向量持续的时间，$T_{second}$代表同一扇区第二个非零电压向量持续的时间。在第一个扇区，显然 $T_{first}$和$T_{second}$分别是 $T_4$ 和 $T_6$ ，对应的非零电压向量分别为 $T_4$ 和 $T_6$ 。在六个扇区每个扇区内合成参考电压向量用到的相邻两个非零向量以及两个零向量它们分别持续的时间列在下表内。
+ $T_{first}$代表任意扇区内逆时针数第一个非零电压向量持续的时间，$T_{second}$代表同一扇区第二个非零电压向量持续的时间。在第一个扇区，显然 $T_{first}$和$T_{second}$分别是 $T_4$ 和 $T_6$ ，对应的非零电压向量分别为 $V_4$ 和 $V_6$ 。在六个扇区每个扇区内合成参考电压向量用到的相邻两个非零向量以及两个零向量它们分别持续的时间列在下表内。
 
 <img src="C:\Users\zp\Desktop\Note\image\扇区周期表.webp" style="zoom:50%;" />
 
 <img src="C:\Users\zp\Desktop\Note\image\SharedScreenshot5.jpg" style="zoom:50%;" />
 
+**注意：**表中的N是前面的表中计算扇区区间的 `N = A+B+C`
+
+
+
 * **计算时间切换点：**
 
+我们现在知道了某个电压向量比如 $V_4$ 在一个开关周期内持续的时间，但这依然不够。我们还需要知道在什么时刻逆变器开关状态切换到了这个电压向量（ $V_4$）对应的状态。
 
+对参考电压在任意扇区可以由下图表示：
+
+<img src="C:\Users\zp\Desktop\Note\image\基向量切换时间点.webp" style="zoom: 50%;" />
+
+$a$表示$a$相电压的导通和关闭，设 $T_{cm1},T_{cm2},T_{cm3}$是 $a，b，c$相上关闭到导通的时间，对任意一个参考电压：
+
+<img src="C:\Users\zp\Desktop\Note\image\基向量电压三相切换时间点.webp" style="zoom:50%;" />
+
+**其中N表示判断扇区区间的N=A+B+C**
+
+
+
+
+
+**至此，SVPWM的工作完成了，我们得到了每一时刻所需要的空间电压矢量以及它们持续的时间，在处理器中赋值给对应通道的捕获比较寄存器产生相应的三个PWM波形，控制MOS管的开关，进而产生我们期望的电压、电流、力矩。**
+
+
+
+#### 1.5总结
+
+至此FOC的原理和整个控制链路都讲完了，回想一下整个过程，再尝试解答最开始提到的问题：**为什么在FOC控制中要做这么多变换和反变换？**
+
+因为所谓的“矢量控制”其实就是在做**解耦**，把相互耦合的三相磁链解耦为容易控制的交轴 $I_q$ 和直轴 $I_d$ 。整个过程就好比我们在做信号处理的时候，通过FFT把信号变换到频域进行处理之后再IFFT反变换回时域是一个道理。
+
+另外值得一提的是，本文介绍的是**有感**的FOC控制方法，其实FOC可以做到**无感控制**（也就是不需要编码器等额外的传感器），当然控制算法也会更加复杂，需要引入前馈控制、观测器等概念，无感的好处就是结构安装更简单，可以避免位置传感器失效的风险等等，当然这又是另外一个话题了。
+
+FOC是个强大的控制方法，通过对电机的“像素级”控制，可以实现很多应用，因为可以做“力控”，FOC是很多机器人驱动单元的基础部件，比如：机械狗。
 
 
 
@@ -1020,9 +1170,64 @@ $V_{ref3} > 0, C = 1$
 * `git reset -- hard [commit id]`：回到指定版本
 * `git reflog`：查看命令记录
 * `git checkout --[file]`：把文件file的修改撤销回到最近一次`commit`或者`add`的版本，也就是用版本库里的版本替换掉工作区中的版本
-* `git remote add origin SSH链接或者HTTPS链接（在github上仓库里可以查看）`：将当前文件连接到远程仓库Github
-* `git push origin master`：将当前文件上传到Github上
+* `git remote add origin SSH链接或者HTTPS链接（在github上仓库里可以查看）`：将当前文件连接到远程仓库**Github**
+* `git push origin master`：将当前文件上传到**Github**上
 * `git clone https链接`：将GitHub上的文件复制到当前目录
 * `git switch -c ‘分支名’`：创建并切换到另外一个分支
 * `git branch`：查看当前分支
 * `git switch ‘分支名’`：切换分支
+
+
+
+***
+
+
+
+### 2.复习tmux
+
+* 终端输入`tmux`进入`tmux`窗口
+* `Ctrl+d `或在 `tmux` 下输入`exit`退出
+* `Ctrl+b+?`：显示帮助
+* `tmux new -s <name>`：新建一个自定义名字的会话，在终端中实行
+* `tmux detach`：退回到终端但会话不结束
+* `tmux attach -t <name>`：接入到`name`会话
+* `tmux kill-session -t <name>`：杀死`name`会话
+* `tmux switch -t <name>`：切换到`name`会话
+* `tmux spilt-window-h`：左右划分为2个窗格，快捷键为：`Ctrl+b+%`
+* `tmux new-window (-n <name>)`：新建一个窗口，可以选择加不加名字
+* `Ctrl+b+方向键`：移动光标
+* `Ctrl+b+x`：关闭当前窗口
+* `Ctrl+b+c`：创建新窗口
+* `Ctrl+b+n`：切换到下一个窗口
+* `Ctrl+b+p`：切换到上一个窗口
+* `Ctrl+b+w`：从列表中选择窗口
+
+
+
+***
+
+
+
+### 3.复习vim
+
+*   三种模式：
+
+    *   初始模式：使用 `vim [file]`进入初始模式或者在其他模式下用 `Esc` 来进入
+    *   可视模式/视图模式：在编辑模式下按 `Esc` 否则按 `v `进入
+    *   输入模式/编辑模式：在初始模式下按 `i` 或者 `a` 进入
+
+    **`Esc`用来切换模式**
+
+*   `：w` 保存不退出 | `：q` 不保存退出 | `：wq` 保存退出 |  `y` 复制 | `p` 粘贴 | `d` 删除
+
+*   **vim配置在 `.vimrc` 中**
+
+*   安装插件：去 `Github` 里找 `vim-plug`
+
+*   使用 `/字符串` 来查到文本
+
+*   在 `.vimrc` 中用 `map` 来映射实现快捷键
+
+<img src="C:\Users\zp\AppData\Roaming\Typora\typora-user-images\image-20230223210839153.png" alt="image-20230223210839153" style="zoom:80%;" />
+
+<img src="C:\Users\zp\AppData\Roaming\Typora\typora-user-images\image-20230223210927487.png" alt="image-20230223210927487" style="zoom:80%;" />
