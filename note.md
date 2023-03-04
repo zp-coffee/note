@@ -14,6 +14,8 @@
 
 *   [自动控制原理课件](http://mooc1.xtu.edu.cn/nodedetailcontroller/visitnodedetail?courseId=217407879&knowledgeId=418213775)
 
+*   [note-github](https://github.com/zp-coffee/note.git)
+
     
 
 
@@ -159,11 +161,37 @@
 
         ​                                                 <img src="C:\Users\zp\Desktop\Note\image\自动控制原理\拉氏变换性质2.jpg" style="zoom:50%;" />
 
-    *   对于电容：$i = C\frac{du}{dt}, u = u(0)+\frac{1}{C}\int_0^ti(s)ds$,复数阻抗为 $\frac{1}{cs}$
-    *   对于电感：$u = L\frac{di}{dt}, I = i(t_0) + \frac{1}{L}\int_{t_0}^tuds$,复数阻抗为 $$
-    *   
+### 第二节：控制系统的复数域数学模型
 
+*   对于电容：$i = C\frac{du}{dt}, u = u(0)+\frac{1}{C}\int_0^ti(s)ds$,复数阻抗为 $\frac{1}{cs}$
+*   对于电感：$u = L\frac{di}{dt}, I = i(t_0) + \frac{1}{L}\int_{t_0}^tuds$,复数阻抗为  $ls$
+*   传递函数**适用于线性定常系统**
+*   传递函数**不能反映系统或元件的学科属性和物理性质**
+*   传递函数**仅与系统结构和参数有关，与系统输入无关**
+*   传递函数的概念**主要适用于单输入单输出系统，如果是多输入则使用叠加定理**
+*   传递函数**忽略初始条件的影响，将初始条件都设为0**
+*   传递函数是s的有理分式
+*   典型环节及其传递函数
+    *   **比例环节：**时域方程：$y(t) = kx(t)$, 传递函数： $G(s) = \frac{Y(s)}{X(s)} = k$
+    *   **积分环节：**时域方程：$y(t) = k\int_0^tx(t)dt$, 传递函数：$G(s) = \frac{Y(s)}{X(s)} = \frac{k}{s} = \frac{1}{Ts}$
+    *   **惯性环节：**时域方程：$Ty'(t) + y(t) = kx(t)$,传递函数：$G(s) = \frac{Y(s)}{X(s)} = \frac{k}{Ts+1}$
+    *   **振荡环节：**时域方程：$a_2y''(t)+a_1y'(t)+a_0y(t) = b_0x(t)$,
+                           传递函数：$G(s)=\frac{b_0}{a_2s^2+a_1s+a_0}=k\frac{a_0}{a_2s^2+a_1s+a_0}=k\frac{1}{T^2s^2+2\zeta Ts+1}$
+    *   **微分环节：**
+        *   时域方程有三种：
+            *   $y(t) = kx'(t)$，对应传递函数为：$G(s) = ks$
+            *   $y(t)=k(\tau x'(t)+x(t))$，对应传递函数为：$G(s)=k(\tau s + 1)$
+            *   $y(t) = k[\tau^2x''(t)+2\zeta\tau x'(t)+x(t)]$，对应传递函数为：$G(s)=k(\tau^2s^2+2\zeta\tau s +1)$
+    *   **延迟环节：**时域方程：$y(t)=x(t-\tau)$，传递函数：$G(s)=e^{-\tau s}$
+    *   电动机的传递函数为：$G(s)=\frac{W_m(s)}{U_a(s)}=\frac{K_m}{T_ms+1}$，其中 $K_m$为电动机的传递系数，$T_m$为时间常数
 
+### 第三节：结构图及其等效变换
+
+*   环节的串联：将各放大倍数相乘，$G(s)=\frac{Y(s)}{X(s)}=\prod\limits^n_{i=1}G_i(s)$
+*   环节的并联：将各放大倍数相加，$G(s)=\frac{Y(s)}{X(s)}=\sum\limits_{i=1}^nG_i(s)$
+*   反馈联接：<img src="C:\Users\zp\Desktop\Note\image\自动控制原理\反馈联接.jpg" style="zoom:50%;" /> $Y(s)=E(s)G(s)$  ，$E(s)=X(s)+- H(s)Y(s)$
+*   所以反馈联接的传递函数为：$\frac{Y(s)}{X(s)}=\frac{G(s)}{1-+G(s)H(s)}$,特殊的 $H(s)短路，为1$，$\frac{Y(s)}{X(s)}=\frac{G(s)}{1-+G(s)}$
+*   
 
 
 # the beginning of it all
@@ -774,6 +802,7 @@ m.insert(pair<int, int>(1, 10));
 * $\alpha$:alpha   $\beta$:beta   $\gamma$:gamma   $\theta$:theta   $\pi$:pi   
 * 也可用2个$包住公式
 * 在2个$中：_表示下标，^表示上标
+* `^`用{\wedge}表示
 
 
 
@@ -1035,7 +1064,9 @@ graph LR
 
 **问题：给定一个电压合成矢量，怎么使用SVPWM技术来将它在逆变器上实现？**
 
-**SVPWM用来产生正弦波信号**
+**SVPWM是利用stm32的定时器功能来控制6个MOS管的导通从而来产生正弦波信号控制电机**
+
+**我们需要控制的参数是经过变换的 $I_d，I_q$，就能经过SVPWM来生成正弦波控制电机**
 
 * 逆变器的虚拟模型:
 
@@ -1317,3 +1348,130 @@ FOC是个强大的控制方法，通过对电机的“像素级”控制，可�
 ## 2023.2.29
 
 *   学习Matlab，simlink并实现了Svpwm模块，成功进行转换产生马鞍波
+
+
+
+***
+
+## 2023.3.4
+
+*   stm32f1的外设有默认引脚，当使用默认引脚时就不需要使用AFIO的重映射功能，如果需要重映射就使用。
+
+*   stm32f4的所有外设没有默认引脚，当使用外设时必须要使用GPIO_PinAFConfig函数选择引脚进行端口复用。也可以理解为stm32f4没有重映射，就是选择对应的端口进行端口复用。
+
+*   `TIM1和TIM8高级定时器`：互补输出是高级定时器特有的功能 
+
+*   `TIM_BDTRInitTypeDef`**（配置断路和死区结构体）**：
+
+    *   ```c
+        typedef struct
+        {
+          uint16_t TIM_OSSRState;/*运行模式下关闭状态选择。Value：
+          #define TIM_OSSRState_Enable               ((uint16_t)0x0800)
+          #define TIM_OSSRState_Disable              ((uint16_t)0x0000)*/       
+         
+          uint16_t TIM_OSSIState;/*空闲模式下关闭状态选择。Value：
+          #define TIM_OSSIState_Enable               ((uint16_t)0x0400)
+          #define TIM_OSSIState_Disable              ((uint16_t)0x0000)*/       
+         
+          uint16_t TIM_LOCKLevel;/*锁定配置。Value：
+          #define TIM_LOCKLevel_OFF                  ((uint16_t)0x0000)
+          #define TIM_LOCKLevel_1                    ((uint16_t)0x0100)
+          #define TIM_LOCKLevel_2                    ((uint16_t)0x0200)
+          #define TIM_LOCKLevel_3                    ((uint16_t)0x0300)*/       
+         
+          uint16_t TIM_DeadTime;/*死区时间。Vlaue：0x0~0xFF*/
+         
+          uint16_t TIM_Break;/*短路输入使能控制。Value：
+          #define TIM_Break_Enable                   ((uint16_t)0x1000)
+          #define TIM_Break_Disable                  ((uint16_t)0x0000)*/          
+         
+          uint16_t TIM_BreakPolarity;/*断路输出极性。Value：
+          #define TIM_BreakPolarity_Low              ((uint16_t)0x0000)
+          #define TIM_BreakPolarity_High             ((uint16_t)0x2000)*/    
+         
+          uint16_t TIM_AutomaticOutput;/*自动输出使能。Value：
+          #define TIM_AutomaticOutput_Enable         ((uint16_t)0x4000)
+          #define TIM_AutomaticOutput_Disable        ((uint16_t)0x0000)*/
+         
+        } TIM_BDTRInitTypeDef;
+        ```
+
+    *   <img src="C:\Users\zp\Desktop\Note\image\高级定时器框图.jpg" style="zoom:67%;" />
+
+    *   1.时钟源：
+
+        *   CK_INT：内部时钟
+        *   TIx，x=1,2,3,4：外部输入引脚
+        *   ETR：外部触发输入
+        *   ITRx，x=0,1,2,3：内部触发输入
+
+    *   2.控制器：
+
+        *   从模式控制器：控制计数器复位，启动，递增/递减，计数
+        *   编码器接口：针对编码器计数
+        *   触发控制器（TRGO）：用来提供触发信号给别的外设，比如为其他定时器提供时钟或者为DAC/ADC的触发转换提供信号
+
+    *   3.时基单元：
+
+        *   计数器寄存器(TIMx_CNT)
+
+        *   预分频器寄存器(TIMx_PSC)
+
+        *   自动重载寄存器(TIMx_ARR)
+
+        *   重复计数器寄存器(TIMx_RCR)
+    
+
+> ​			这是高级定时器所特有的，在学习基本定时器和通用定时器的时候，我们知道定时器发生上溢或者下溢时， 会直接生成更新事件。但是有重复计数器的定时器并不完全是这样的，定时器每次发生上溢 或下溢时，重复计数器的值会减一，当重复计数器的值为 0 时，再发生一次上溢或者下溢才 会生成定时器更新事件。如果我们设置重复计数器寄存器 RCR 的值为 N，那么更新事件将在 定时器发生 N+1 次上溢或下溢时发生。
+>
+> ​			这里需要注意的是重复计数器寄存器是具有影子寄存器的，所以 RCR 寄存器只是起缓冲的作用。RCR 寄存器的值会在更新事件发生时，被转移至其影子寄存器中，从而真正生效。
+>
+> ​			重复计数器的特性，在控制生成 PWM 信号时很有用。
+
+*   *   4.输入捕获：
+        *   4个输入捕获通道
+        *   输入滤波
+        *   边沿检测
+        *   预分频器
+    *   5.输入捕获和输出比较公用部分
+    *   6.输出比较：
+        *   4个输出比较通道
+        *   3个互补通道
+        *   死区发生器
+        *   输出控制器
+
+>​	高级定时器输出比较部分和通用定时器相比，多了带死区控制的互补输出功能。图中第⑥部分的 TIMx_CH1N、TIMx_CH2N 和 TIMx_CH3N 分别是定时器通道 1、通道 2 和通道 3 的互补输出通道，通道 4 是没有互补输出通道的。DTG 是死区发生器，死区时间由 DTG[7:0] 位来配置。如果不使用互补通道和死区时间控制，那么高级定时器 TIM1 和 TIM8 和通用定时器的输出比较部分使用方法基本一样，只是要注意 MOE 位得置 1 定时器才能输出。
+
+*   *   7.断路功能：
+        *   断路功能也称刹车功能，一般用于电机控制的刹车。F4 系列有一个断路通道，断路源可以是刹车输入引脚（TIMx_BKIN），也可以是一个时钟失败事件。时钟失败事件由复位时钟控 制器中的时钟安全系统产生。系统复位后，断路功能默认被禁止，MOE 位为低。
+
+*   死区时间计算：
+
+    <img src="C:\Users\zp\Desktop\Note\image\死区时间计算.jpg" style="zoom:50%;" />
+
+*   死区时间是由 TIMx_CR1 寄存器 的 CKD[1:0]位和 TIMx_BDTR 寄存器的 DTG[7:0]位来设置
+    *   第一步：通过CKD[1:0]位确定 tDTS。根据 CKD[1:0]位的描述，可以得到下面的式子：
+
+​																	$tDTS=\frac{2^\wedge CKD[1:0]}{Tclk}$
+
+>   CKD[1:0]:CKD[1:0]位设置的值，Tclk:定时器的时钟源频率（单位为MHz）
+>
+>   假设定时器时钟源频率是 168MHz，我们设置 CKD[1:0]位的值为 2，代入上面的式子可得：
+>
+>   $tDTS=\frac{2\wedge CKD[1:0]}{Tclk}=\frac{2^\wedge 2}{168000000}=23.81ns$
+
+*   *   第二步：根据 `DTG[7:5]`选择计算公式
+    *   第三步：代入选择的公式计算
+
+>   假设定时器时钟源频率是 168MHz，我们设置 CKD[1:0]位的值为 2，DTG[7:0]位的值为 250。
+>
+>   从上面的例子知道 CKD[1:0]位的值为 2，得到的 tDTS=23.81ns。 
+>
+>   下面来看一下 DTG[7:0]位的值为 250，应该选择 DTG[7:0]位描述中哪条公式？250 的二进制数为 11111010，即 DTG[7:5]为 111
+>
+>   所以选择第四条公式：DT=(32+ DTG[4:0]) * t dtg，其中 t dtg = 16 * tDTS。
+>   由手册的公式可以得到 :
+>
+>   DT = (32+ DTG[4:0]) * 16 * tDTS = (32+ 26) * 16 * 23.81ns = 22095.68ns = 22.01us， 即死区时间为 22.01us。
+
