@@ -16,6 +16,8 @@
 
 *   [note-github](https://github.com/zp-coffee/note.git)
 
+*   [GPIO输入输出模式原理(八种工作方式附电路图详解)](https://blog.csdn.net/zhuguanlin121/article/details/118489092)
+
     
 
 
@@ -108,7 +110,25 @@
 
 ***
 
+# 英语词汇
 
+| 1    | algorithm            | 算法         | mention                    | 提到       |
+| ---- | :------------------- | ------------ | -------------------------- | ---------- |
+| 2    | as the following     | 如下         | plugin                     | 插件       |
+| 3    | toolkit              | 工具包       | course                     | 课程       |
+| 4    | executable           | 可执行的     | cumbersome                 | 麻烦的     |
+| 5    | Oscillator           | 振荡器       | parallel                   | 并行       |
+| 6    | interface            | 接口         | indicate                   | 表示       |
+| 7    | format               | 格式         | extension                  | 扩大       |
+| 8    | resistance           | 电阻         | column                     | 列         |
+| 9    | general description  | 简述         | feature                    | 特征       |
+| 10   | ordering information | 订购信息     | block diagram              | 框图       |
+| 11   | die pad floor plan   | 摸具垫平面图 | pin arrangement            | 引脚排列   |
+| 12   | pin description      | 引脚描述     | function block description | 功能块描述 |
+| 13   | command table        | 命令表       | command descriptions       | 命令描述   |
+| 14   | maximum ratings      | 最大额定值   | DC characteristics         | 直流特性   |
+| 15   | AC characteristics   | 交流特性     | application example        | 应用举例   |
+| 16   | package information  | 组件信息     |                            |            |
 
 # 自动控制原理
 
@@ -191,12 +211,339 @@
 *   环节的并联：将各放大倍数相加，$G(s)=\frac{Y(s)}{X(s)}=\sum\limits_{i=1}^nG_i(s)$
 *   反馈联接：<img src="C:\Users\zp\Desktop\Note\image\自动控制原理\反馈联接.jpg" style="zoom:50%;" /> $Y(s)=E(s)G(s)$  ，$E(s)=X(s)+- H(s)Y(s)$
 *   所以反馈联接的传递函数为：$\frac{Y(s)}{X(s)}=\frac{G(s)}{1-+G(s)H(s)}$,特殊的 $H(s)短路，为1$，$\frac{Y(s)}{X(s)}=\frac{G(s)}{1-+G(s)}$
+
+
+
+# STM32复习及深入
+
+## 1.工程架构
+
+![](C:\Users\zp\Desktop\Note\image\工程架构.jpg)
+
+## 2.时钟
+
+![](C:\Users\zp\Desktop\Note\image\stm32f103时钟总体框图.jpg)
+
+在 STM32 中，有五个时钟源，为 **HSI、HSE、LSI、LSE、PLL** 。
+
+从时钟频率来分可以分为**高速时钟源**和**低速时钟源**，在这 5 个中 HIS，HSE 以及 PLL 是高速时钟，LSI 和 LSE 是低速时钟。
+
+从来源可分为外部时钟源和内部时钟源，外部时钟源就是从外部通过接晶振的方式获取时钟源，其中 HSE 和 LSE 是外部时钟源，其他的是内部时钟源。下面介绍5个时钟源：
+
+*   **1，**HSI 是高速内部时钟，RC 振荡器，频率为 8MHz。
+*   **2，**HSE 是高速外部时钟，可接石英/陶瓷谐振器，或者接外部时钟源，频率范围为 4MHz~16MHz。 一般接的是 8M 的晶振。
+*   **3，**LSI 是低速内部时钟，RC 振荡器，频率为 40kHz。独立看门狗的时钟源只能是 LSI，同时 LSI 还可以作为 RTC 的时钟源。
+*   **4，**LSE 是低速外部时钟，接频率为 32.768kHz 的石英晶体。这个主要是 RTC 的时钟源。
+*   **5，**PLL 为锁相环倍频输出，其时钟输入源可选择为 HSI/2、HSE 或者 HSE/2。倍频可选择为2~16 倍，但是其输出频率最大不得超过 72MHz。
+
+
+
+下面介绍这 5 个时钟源是怎么给各个外设以及系统提供时钟的：
+
+*   **A，**MCO 是 STM32 的一个时钟输出 IO(PA8)，它可以选择一个时钟信号输出，可以选择为 PLL 输出的 2 分频、HSI、HSE、或者系统时钟。这个时钟可以用来给外部其他系统提供时钟源。
+
+*   **B，**这里是 RTC 时钟源，从图上可以看出，RTC 的时钟源可以选择 LSI，LSE，以及 HSE 的 128 分频。
+
+*   **C，**从图中可以看出 C 处 USB 的时钟是来自 PLL 时钟源。STM32 中有一个全速功能 的 USB 模块，其串   行接口引擎需要一个频率为 48MHz 的时钟源。该时钟源只能从 PLL 输出端获取，可以选择为 1.5 分频或者 1 分频，也就是，当需要使用 USB 模块时，PLL 必须使能，并且时钟频率配置为 48MHz 或 72MHz。
+
+*   **D，**D 处是 STM32 的系统时钟 SYSCLK，它是供 STM32 中绝大部分部件工作的时钟源。系统时钟可选择为 PLL 输出、HSI 或者 HSE。系统时钟最大频率为 72MHz， 当然也可以超频，不过一般情况为了系统稳定性是没有必要冒风险去超频的。
+
+*   **E，**这里的 E 处是指其他所有外设了。从时钟图上可以看出，其他所有外设的时钟最终来源都是 SYSCLK。SYSCLK 通过 AHB 分频器分频后送给各模块使用。这些模块包括：
+
+    *   AHB 总线、内核、内存和 DMA 使用的 HCLK 时钟。
+    *   通过 8 分频后送给 Cortex 的系统定时器时钟，也就是 systick 了。
+    *   直接送给 Cortex 的空闲运行时钟 FCLK。
+    *   送给 APB1 分频器。APB1 分频器输出一路供 APB1 外设使用(PCLK1，最大频率 36MHz)，另一路送给定时器(Timer)2、3、4 倍频器使用。
+    *   送给 APB2 分频器。APB2 分频器分频输出一路供 APB2 外设使用(PCLK2， 最大频率 72MHz)，另一路送给定时器(Timer)1 倍频器使用。
+
+    >   ​            其中 APB1 上面连接的是低速外设，包括电源接口、 备份接口、CAN、USB、I2C1、I2C2、UART2、UART3 等等，APB2 上面连接的是高速外设包括 UART1、SPI1、Timer1、ADC1、ADC2、所有普通 IO 口(PA~PE)、第二功能 IO 口等。根据 2>1，APB2 下面所挂的外设的时钟要比 APB1 的高。
+
+    STM32会有一个启动文件**startup_stm32f10x_md.s**，里面对时钟进行了配置，启动文件的作用如下：
+
+    1.   初始化堆栈指针 SP;
+    2.   初始化程序计数器指针 PC;
+    3.   设置堆、栈的大小;
+    4.   设置异常向量表的入口地址;
+    5.   配置外部 SRAM 作为数据存储器（这个由用户配置，一般的开发板可没有外部 SRAM）;
+    6.   设置 C 库的分支入口__main（最终用来调用 main 函数）;
+    7.   在 3.5 版的启动文件还调用了在 system_stm32f10x.c 文件中的SystemInit() 函数配置系统时钟，在旧版本的工程中要用户进入 main 函数自己调用 SystemInit() 函数。
+
+    其中对时钟配置的函数为：
+
+    ```c
+    static void SetSysClockTo72(void)
+    {
+      __IO uint32_t StartUpCounter = 0, HSEStatus = 0;
+      
+      /* SYSCLK, HCLK, PCLK2 and PCLK1 configuration ---------------------------*/    
+      /* 使能 HSE */    
+      RCC->CR |= ((uint32_t)RCC_CR_HSEON);
+     
+      /* 等待HSE就绪并做超时处理 */
+      do
+      {
+        HSEStatus = RCC->CR & RCC_CR_HSERDY;
+        StartUpCounter++;  
+      } while((HSEStatus == 0) && (StartUpCounter != HSE_STARTUP_TIMEOUT));
+    
+      if ((RCC->CR & RCC_CR_HSERDY) != RESET)
+      {
+        HSEStatus = (uint32_t)0x01;
+      }
+      else
+      {
+        HSEStatus = (uint32_t)0x00;
+      }  
+    
+      // 如果HSE启动成功，程序则继续往下执行
+      if (HSEStatus == (uint32_t)0x01)
+      {
+        /* 使能预取指 */
+        FLASH->ACR |= FLASH_ACR_PRFTBE;
+    
+        /* Flash 2 wait state */
+        FLASH->ACR &= (uint32_t)((uint32_t)~FLASH_ACR_LATENCY);
+        FLASH->ACR |= (uint32_t)FLASH_ACR_LATENCY_2;    
+    
+     
+        /* HCLK = SYSCLK = 72M */
+        RCC->CFGR |= (uint32_t)RCC_CFGR_HPRE_DIV1;
+          
+        /* PCLK2 = HCLK = 72M */
+        RCC->CFGR |= (uint32_t)RCC_CFGR_PPRE2_DIV1;
+        
+        /* PCLK1 = HCLK = 36M*/
+        RCC->CFGR |= (uint32_t)RCC_CFGR_PPRE1_DIV2;
+        
+        /*  锁相环配置: PLLCLK = HSE * 9 = 72 MHz */
+        RCC->CFGR &= (uint32_t)((uint32_t)~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE |
+                                            RCC_CFGR_PLLMULL));
+        RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSE | RCC_CFGR_PLLMULL9);
+    
+        /* 使能 PLL */
+        RCC->CR |= RCC_CR_PLLON;
+    
+        /* 等待PLL稳定 */
+        while((RCC->CR & RCC_CR_PLLRDY) == 0)
+        {
+        }    
+        /* 选择PLLCLK作为系统时钟*/
+        RCC->CFGR &= (uint32_t)((uint32_t)~(RCC_CFGR_SW));
+        RCC->CFGR |= (uint32_t)RCC_CFGR_SW_PLL;    
+    
+        /* 等待PLLCLK切换为系统时钟 */
+        while ((RCC->CFGR & (uint32_t)RCC_CFGR_SWS) != (uint32_t)0x08)
+        {
+        }
+      }
+      else
+      { /* 如果HSE 启动失败，用户可以在这里添加处理错误的代码 */
+      }
+    }
+    
+    
+    ```
+
+
+
+## 3.GPIO
+
+*   GPIO（General Purpose Input Output）通用输入输出口
+*   可配置为8种输入输出模式
+*   引脚电平：0V~3.3V，部分引脚可容忍5V
+*   输出模式下可控制端口输出高低电平，用以驱动LED、控制蜂鸣器、模拟通信协议输出时序等
+*   输入模式下可读取端口的高低电平或电压，用于读取按键输入、外接模块电平信号输入、ADC电压采集、模拟通信协议接收数据等
+
+**GPIO基本结构：**
+
+<img src="C:\Users\zp\Desktop\Note\image\GPIO基本结构.jpg" style="zoom:50%;" />
+
+**GPIO端口位的基本结构：**
+
+<img src="C:\Users\zp\Desktop\Note\image\GPIO位基本结构.jpg" style="zoom:50%;" />
+
+**GPIO八种模式详解：**[GPIO输入输出模式原理(八种工作方式附电路图详解)](https://blog.csdn.net/zhuguanlin121/article/details/118489092)
+
+**GPIO八种模式总结：**<img src="C:\Users\zp\Desktop\Note\image\GPIO模式总结.jpg" style="zoom:50%;" />
+
+*   使用GPIO驱动按键：
+
+## 4.中断
+
+**中断：**在主程序运行过程中，出现了特定的中断触发条件（中断源），使得CPU暂停当前正在运行的程序，转而去处理中断程序，处理完成后又返回原来被暂停的位置继续运行。
+
+**中断优先级：**当有多个中断源同时申请中断时，CPU会根据中断源的轻重缓急进行裁决，优先响应更加紧急的中断源。
+
+**中断嵌套：**当一个中断程序正在运行时，又有新的更高优先级的中断源申请中断，CPU再次暂停当前中断程序，转而去处理新的中断程序，处理完成后依次进行返回。
+
+*   CM3 内核支持 256 个中断，其中包含了 16 个内核中断和 240 个外部中断，并且具有 256 级的可编程中断设置。但 STM32 并没有使用 CM3 内核的全部东西，而是只用了它的一部分。 STM32 有 84 个中断，包括 16 个内核中断和 68 个可屏蔽中断，具有 16 级可编程的中断优先级。 而我们常用的就是这 68 个可屏蔽中断，但是 STM32 的 68 个可屏蔽中断，在 STM32F103 系列 上面，又只有 60 个（在 107 系列才有 68 个）。
+
+*   STM32的中断优先级用NVIC统一管理，STM32将中断分为5个组，组0—4。
+*   由函数 `void NVIC_PriorityGroupConfig(uint32_t NVIC_PriorityGroup);` 来进行设置。中断优先级由优先级寄存器的4位（0~15）决定，这4位可以进行切分，分为高n位的抢占优先级和低4-n位的响应优先级。
+*   抢占优先级高的可以中断嵌套，响应优先级高的可以优先排队，抢占优先级和响应优先级均相同的按中断号排队
+
+<img src="C:\Users\zp\Desktop\Note\image\优先级分组.jpg" style="zoom:50%;" />
+
+*   ```c
+    uint16_t Exti_Count;
+    
+    void Exti_Init(void)
+    {
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); //打开使用到的IO口时钟
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); //外部中断都需要打开AFIO
+    	
+    	GPIO_InitTypeDef GPIO_InitStructure;
+    	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+    	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    	GPIO_Init(GPIOB, &GPIO_InitStructure);
+    	
+    	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource14); //中断源
+    	
+    	EXTI_InitTypeDef EXTI_InitStructure;
+    	EXTI_InitStructure.EXTI_Line = EXTI_Line14; //中断线
+    	EXTI_InitStructure.EXTI_LineCmd = ENABLE;   //使能
+    	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt; //中断模式或者事件模式
+    	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; //下降沿触发
+    	EXTI_Init(&EXTI_InitStructure);
+    	
+    	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);  //NVIC分组配置
+    	
+    	NVIC_InitTypeDef NVIC_InitStructure;
+    	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;  //中断源
+    	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;       //使能
+    	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
+    	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1; //响应优先级
+    	NVIC_Init(&NVIC_InitStructure);
+    }
+    
+    uint16_t CountSensor_Get(void)
+    {
+    	return CountSensor_Count;
+    }
+    
+    void EXTI15_10_IRQHandler(void)
+    {
+    	if (EXTI_GetITStatus(EXTI_Line14) == SET)
+    	{
+    		/*如果出现数据乱跳的现象，可再次判断引脚电平，以避免抖动*/
+    		if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 0)
+    		{
+    			CountSensor_Count ++;
+    		}
+    		EXTI_ClearITPendingBit(EXTI_Line14);
+    	}
+    }
+    ```
+
 *   
+
+## 5.ADC
+
+*   **ADC：**Analog-to-Digital Converter的缩写。指模/数转换器或者模拟/数字转换器，是指将**连续变量的模拟信号转换为离散的数字信号的器件。**典型的模拟数字转换器将模拟信号转换为表示一定比例电压值的数字信号。
+
+*   **结构框图：**<img src="C:\Users\zp\Desktop\Note\image\adc框图.jpg" style="zoom:67%;" />
+
+*   ADC转换的原理：逐次逼近型，将所测电压与参考电压通过二分法一直进行比较得到所测电压。
+
+*   **ADC的主要特征：**
+
+    *   **12位逐次逼近型的模拟数字转换器；**
+    *   最多带3个ADC控制器，可以单独使用，也**可以使用双重模式提高采样率**；
+    *   最多支持23个通道，可最多测量21个外部和2个内部信号源；
+    *   **支持单次和连续转换模式；**
+    *   **转换结束，注入转换结束，和发生模拟看门狗事件时产生中断；**
+    *   通道0到通道n的自动扫描模式；
+    *   **自动校准；**
+    *   **采样间隔可以按通道编程；**
+    *   **规则通道和注入通道均有外部触发选项；**
+    *   转换结果支持左对齐或右对齐方式存储在16位数据寄存器；
+    *   **ADC转换时间：最大转换速率 1us（最大转换速度为1MHz，在ADCCLK=14M，采样周期为1.5个ADC时钟下得到）；**
+    *   **ADC供电要求：2.4V-3.6V；**
+    *   **ADC输入范围：VREF- ≤ VIN ≤ VREF+。**
+
+*   ADC时钟来源于PCLK2，ADC专门有一个寄存器来对时钟频率进行分频，可在ADC结构体中进行设置**不要让ADC的时钟超过14MHz，否则可能不准。**
+
+*   ADC转换中可以分为2个通道：规则通道组和注入通道组：
+
+    *   **规则通道组：最多可以安排16个通道。**规则通道和它的转换顺序在ADC_SQRx寄存器中选择，规则组转换的总数应写入ADC_SQR1寄存器的L[3:0]中。规则组中每个通道转换完成后会将数据放到寄存器中，所以会造成覆盖数据的情况，这时需要配合DMA来将已经转换完成的数据移到SRAM中。
+    *   **注入通道组：最多可以安排4个通道。**注入组和它的转换顺序在ADC_JSQR寄存器中选择。注入组里转化的总数应写入ADC_JSQR寄存器的L[1:0]中。注入组有4个存放数据的寄存器所以不会发生数据覆盖的情况。
+    *   **注入通道的转换可以打断规则通道的转换，在注入通道被转换完成之后，规则通道才可以继续转换。注入通道就相当于是中断**
+
+*   ADC转换有3种模式：单次转换，连续转换，扫描转换模式
+
+    *   单次转换：ADC只执行一次转换
+    *   连续转换：当前面ADC转换一结束就马上启动另一次转换
+    *   扫描模式：ADC扫描所有**规则通道**和**注入通道**的任务，**在每个组的每个通道上执行单次转换。在每个转换结束时，同一组的下一个通道被自动转换。如果设置了CONT位，转换不会在选择组的最后一个通道上停止，而是再次从选择组的第一个通道继续转换**
+
+*   **如果在使用扫描模式的情况下使用中断，会在最后一个通道转换完毕后才会产生中断。而连续转换，是在每次转换后，都会产生中断。**
+
+*   如果设置了DMA位，在每次EOC后，DMA控制器把规则组通道的转换数据传输到SRAM中，而注入通道转换的数据总是存储在ADC_JDRx寄存器中。
+
+*   ADC转换可以由**外部事件触发**，比如定时器中断，EXTI，**注意：**只有它的上升沿可以启动转换。
+
+*   ADC有一个**内置自校准模式**，**校准可大幅减小因内部电容器组的变化而造成的准精度误差。**建议在每次上电后执行一次校准。
+
+*   STM32的ADC是**12位逐次逼近型的模拟数字转换器，而数据保存在16位寄存器中**。所以在配置结构体时可以选择数据左对齐或者右对齐。
+
+*   ADC的采样周期：**TCONV = 采样时间+ 12.5个周期**，当ADCCLK=14MHz，采样时间为1.5周期时，TCONV =1.5+12.5=14周期=1μs。
+
+*   示例：
+
+*   ```c
+    void AD_Init(void)
+    {
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);  //打开ADC的时钟
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); 
+        //打开ADC使用到的IO口的时钟
+    	
+    	RCC_ADCCLKConfig(RCC_PCLK2_Div6); //PCLK2为72M，ADC时钟不能超过14M，所以6分频
+    	
+    	GPIO_InitTypeDef GPIO_InitStructure;
+    	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;  //ADC转换使用模拟输入
+    	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2| GPIO_Pin_3;
+    	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    	GPIO_Init(GPIOA, &GPIO_InitStructure);
+    		
+    	ADC_InitTypeDef ADC_InitStructure;
+        //ADC模式，是ADC独立模式还是双ADC模式
+    	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent; 
+        //ADC采集数据对齐方式
+    	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+        //触发控制的触发源，可以是硬件触发或者是软件触发
+    	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+        //选择是连续转换还是单次转换
+    	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
+        //选择是扫描模式还是非扫描模式
+    	ADC_InitStructure.ADC_ScanConvMode = DISABLE;
+        //ADC转换的通道数
+    	ADC_InitStructure.ADC_NbrOfChannel = 1;
+    	ADC_Init(ADC1, &ADC_InitStructure);
+    	
+    	ADC_Cmd(ADC1, ENABLE);
+    	
+    	ADC_ResetCalibration(ADC1); //复位校准
+    	while (ADC_GetResetCalibrationStatus(ADC1) == SET); //等待复位校准完成
+    	ADC_StartCalibration(ADC1); //开始校准
+    	while (ADC_GetCalibrationStatus(ADC1) == SET); //等待校准完成
+    }
+    
+    uint16_t AD_GetValue(uint8_t ADC_Channel) //获取ADC转换值
+    {
+        //配置转换通道，通道数，转换周期
+    	ADC_RegularChannelConfig(ADC1, ADC_Channel, 1, ADC_SampleTime_55Cycles5);
+    	ADC_SoftwareStartConvCmd(ADC1, ENABLE); //软件触发
+    	while (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET); //等待转化完成
+    	return ADC_GetConversionValue(ADC1); //返回转换的数据
+    }
+    ```
+
+
 
 
 # the beginning of it all
 
-## 2023.2.8
+## 2023.2.8 （C++）
 
 ### 1 C++程序执行时内存分为4个区域:
 
@@ -744,7 +1091,7 @@ m.insert(pair<int, int>(1, 10));
 
 
 
-## 2023.2.17
+## 2023.2.17 （markdown）
 ### 1.markdown基本语法
 * 改变字体大小：<font size=5>内容</font>
 * 改变字体颜色：<font color=red>红色</font>
@@ -815,7 +1162,7 @@ m.insert(pair<int, int>(1, 10));
 
 
 
-## 2023.2.20
+## 2023.2.20 （FOC）
 
 ### 1.FOC
 
@@ -843,7 +1190,7 @@ m.insert(pair<int, int>(1, 10));
 
 
 
-## 2023.2.21
+## 2023.2.21 （FOC）
 
 ### 1. **FOC算法的Pipeline**
 
@@ -1025,7 +1372,7 @@ $U_{dc}$是电源电压，再合成矢量：
 
 ***
 
-## 2023.2.22
+## 2023.2.22 （SVPWM）
 
 ### 1.SVPWM
 
@@ -1254,7 +1601,7 @@ FOC是个强大的控制方法，通过对电机的“像素级”控制，可�
 
 
 
-## 2023.2.23
+## 2023.2.23 （git，tmux，vim）
 
 ### 1.复习git
 
@@ -1335,7 +1682,7 @@ FOC是个强大的控制方法，通过对电机的“像素级”控制，可�
 
 
 
-## 2023.2.28
+## 2023.2.28 （foc，matlab）
 
 *   学习MatLab，simulink并实现了clark变换，park变换，反clack变换，反park变换，生成C代码移植到板子上
 
@@ -1345,7 +1692,7 @@ FOC是个强大的控制方法，通过对电机的“像素级”控制，可�
 
 
 
-## 2023.2.29
+## 2023.2.29 （foc，matlab）
 
 *   学习Matlab，simlink并实现了Svpwm模块，成功进行转换产生马鞍波
 
@@ -1353,7 +1700,7 @@ FOC是个强大的控制方法，通过对电机的“像素级”控制，可�
 
 ***
 
-## 2023.3.4
+## 2023.3.4  （TIM1，TIM8）
 
 *   stm32f1的外设有默认引脚，当使用默认引脚时就不需要使用AFIO的重映射功能，如果需要重映射就使用。
 
