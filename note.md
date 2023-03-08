@@ -18,6 +18,8 @@
 
 *   [GPIO输入输出模式原理(八种工作方式附电路图详解)](https://blog.csdn.net/zhuguanlin121/article/details/118489092)
 
+*   [STM32定时器的信号触发与主从模式](https://zhuanlan.zhihu.com/p/74620029)
+
     
 
 
@@ -128,7 +130,7 @@
 | 13   | command table        | 命令表       | command descriptions       | 命令描述   |
 | 14   | maximum ratings      | 最大额定值   | DC characteristics         | 直流特性   |
 | 15   | AC characteristics   | 交流特性     | application example        | 应用举例   |
-| 16   | package information  | 组件信息     |                            |            |
+| 16   | package information  | 组件信息     | internal                   | 内部的     |
 
 # 自动控制原理
 
@@ -214,11 +216,21 @@
 
 
 
+***
+
+
+
 # STM32复习及深入
 
 ## 1.工程架构
 
 ![](C:\Users\zp\Desktop\Note\image\工程架构.jpg)
+
+
+
+***
+
+
 
 ## 2.时钟
 
@@ -346,6 +358,10 @@
 
 
 
+***
+
+
+
 ## 3.GPIO
 
 *   GPIO（General Purpose Input Output）通用输入输出口
@@ -366,7 +382,23 @@
 
 **GPIO八种模式总结：**<img src="C:\Users\zp\Desktop\Note\image\GPIO模式总结.jpg" style="zoom:50%;" />
 
-*   使用GPIO驱动按键：
+*   | GPIO_Mode_IN_FLOATING | 可以做KEY识别，RX1                                           |
+    | --------------------- | ------------------------------------------------------------ |
+    | GPIO_Mode_IPU         | IO内部上拉电阻输入                                           |
+    | GPIO_Mode_IPD         | IO内部下拉电阻输入                                           |
+    | GPIO_Mode_AIN         | 应用ADC模拟输入，或者低功耗下省电                            |
+    | GPIO_Mode_Out_OD      | IO输出0接GND，IO输出1，悬空，需要外接上拉电阻，才能实现输出高电平。当输出为1时，IO口的状态由上拉电阻拉高电平，但由于是开漏输出模式，这样IO口也就可以由外部电路改变为低电平或不变。可以读IO输入电平变化，实现C51的IO双向功能 |
+    | GPIO_Mode_Out_PP      | IO输出0-接GND， IO输出1 -接VCC，读输入值是未知的             |
+    | GPIO_Mode_AF_PP       | 片内外设功能（I2C的SCL、SDA）                                |
+    | GPIO_Mode_AF_OD       | 片内外设功能（TX1、MOSI、MISO.SCK.SS）                       |
+
+    
+
+
+
+***
+
+
 
 ## 4.中断
 
@@ -539,6 +571,188 @@
     ```
 
 
+
+***
+
+
+
+## 6.定时器
+
+<img src="C:\Users\zp\Desktop\Note\image\定时器类型.jpg" style="zoom:50%;" />
+
+*   **定时中断基本结构**
+
+![](C:\Users\zp\Desktop\Note\image\定时器中断.jpg)
+
+
+
+*   **时钟选择函数：**
+    *   `TIM_InternalClockConfig(TIM_TypeDef* TIMx);----选择内部时钟`
+    *   `TIM_ITRxExternalClockConfig(TIM_TypeDef* TIMx, uint16_t TIM_InputTriggerSource)------选择ITRx其他定时器的时钟`
+    *   `TIM_TIxExternalClockConfig(TIM_TypeDef* TIMx, uint16_t TIM_InputTriggerSource， uint16_t TIM_ICPolarity, uint16_t ICFilter);----选择TIx捕获通道的时钟`
+    *   `TIM_ETRClockMode1Config(TIM_TypeDef* TIMx, uint16_t TIM_ExtTRGPrescaler, uint16_t TIM_ExtTRGPolarity, uint16_t ExtTRGFilter);---选择ETR通过外部时钟模式1输入`
+    *   `TIM_ETRClockMode2Config(TIM_TypeDef* TIMx, uint16_t TIM_ExtTRGPrescaler, uint16_t TIM_ExtTRGPolarity, uint16_t ExtTRGFilter);---选择ETR通过外部时钟模式2输入`
+
+### 6.1基本定时器
+
+<img src="C:\Users\zp\Desktop\Note\image\基本定时器框图.jpg" style="zoom:60%;" />
+
+*   基本定时器：TIM6和TIM7，主要应用于驱动DAC和计时的功能
+*   基本定时器只能接到内部时钟（72MHz）
+*   有主从触发模式，实现硬件自动化减少CPU负担防止频繁进入中断
+*   基本定时器只有向上计数模式
+
+
+
+
+
+### 6.2通用定时器
+
+<img src="C:\Users\zp\Desktop\Note\image\通用定时器.jpg" style="zoom:60%;" />
+
+*   通用定时器的时钟来源：内部时钟（CK_INT），TIMx_ETR（比如TIM2_CH1_ETR），TRGI（触发输入）
+
+    ITRx（其他定时器的TRGO输出，实现定时器级联），TI1F_ED（输入捕获单元的CH1引脚，双沿有效）
+    
+    TI1FP1和TI1FP2（CH1和CH2通道）
+
+**信号触发和主从模式**
+
+[STM32定时器的信号触发与主从模式](https://zhuanlan.zhihu.com/p/74620029)
+
+*   触发输入信号有三类：
+
+    ![](C:\Users\zp\Desktop\Note\image\触发输入信号.webp)
+
+    *   来自定时器自身输入通道1或通道2的输入信号，经过极性选择和滤波以后生成的触发信号，连接到从模式控制器，进而控制计数器的工作；TI1F_ED是双沿脉冲信号。
+    *   来自于外部触发脚[ETR脚]经过极性选择、分频、滤波以后的信号，经过触发输入选择器，连接到从模式控制器。当然分频和滤波不是必需的，可以根据外来信号频率高低及信号干净度来决定。
+    *   来自其它定时器的触发输出信号，通过内部线路连接到本定时器的触发输入控制器而连接到从模式控制器。
+
+*   不论来自本定时器外部的哪一类触发输入信号，它们有个共同特点，就是都要经过触发输入选择器而连接到从模式控制器，从而使得计数器的工作受到从模式控制器的控制或影响，基于这一点，定时器工作在从模式。从模式控制器检测到触发输入信号时，可以对定时器进行如下操作而控制或影响计数器的工作：
+
+    *   对计数器复位
+    *   启动或停止计数器的计数动作
+    *   使能计数器模块的工作
+    *   通过触发信号为计数器提供时钟源
+
+*   STM32通用或高级定时器的从模式有如下几种：
+
+    *   **复位模式 【Reset mode】**
+    *   **触发模式 【Trigger mode】**
+    *   **门控模式【Gate mode】**
+    *   **外部时钟模式1【External clock mode 1】**
+    *   **编码器模式【Encoder mode】**
+
+#### 6.2.1 复位模式
+
+*   **当有效触发输入信号出现时，计数器将会被复位，同时还会产生更新事件和触发事件。**
+*   如果计数器向上计数或中央对齐模式的话，复位后计数器从0开始计数，如果向下计数模式，复位后计数器从ARR值开始计数
+
+<img src="C:\Users\zp\Desktop\Note\image\复位模式.webp" style="zoom:67%;" />
+
+*   **只要有复位触发脉冲出现，计数器就会被复位重置。复位次数取决于触发脉冲次数。**
+*   **工作在复位模式下的定时器，其使能需靠软件代码实现，即使能定时器的CEN@TIMx_CR1位。**
+
+
+
+#### 6.2.2 触发模式
+
+*   **当有效触发输入信号出现时，会将本来处于未使能状态的计数器使能激活，让计数器开始计数，同时还会产生触发事件。**
+*   触发从模式下，触发信号具有相当于软件使能计数器的作用，即置位CEN@TIMx_CR1，这也是它最大最明显的特征。
+
+<img src="C:\Users\zp\Desktop\Note\image\触发模式.webp" style="zoom:67%;" />
+
+
+
+#### 6.2.3 门控模式
+
+*   **定时器根据触发输入信号的电平来启动或停止计数器的计数。在计数器启动或停止时都会产生触发事件并置位相关标志位,TIF@TIMx_SR。**
+*   下图表示来自TI1的输入信号，低电平时计数器启动计数，高电平时停止计数。
+
+<img src="C:\Users\zp\Desktop\Note\image\门控模式.webp" style="zoom:67%;" />
+
+*   工作在门控模式下的定时器，其使能需靠软件代码实现，即使能定时器的CEN@TIMx_CR1位。
+
+
+
+#### 6.2.4 外部时钟模式1从模式
+
+*   **这个模式下触发信号就是时钟信号**，比如，我们可以使用来自ETR脚的滤波信号ETRF作为触发信号并担当计数器的时钟源。
+
+**TIMx_ETR**（外部时钟）
+
+```c
+void Timer_Init(void)
+{
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+	
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;  //上拉输入，根据外部输入的信号配置
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;      //TIM2_CH1_ETR
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	TIM_ETRClockMode2Config(TIM2, TIM_ExtTRGPSC_OFF,   /*外部时钟模式2*/		 TIM_ExtTRGPolarity_NonInverted, 0x0F);
+	
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
+	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;     //时钟不分频
+	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; //向上计数
+	TIM_TimeBaseInitStructure.TIM_Period = 10 - 1;                  //重装载值为10
+	TIM_TimeBaseInitStructure.TIM_Prescaler = 1 - 1;                //不分频
+	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;            //重复计数器为0
+	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);
+	
+	TIM_ClearFlag(TIM2, TIM_FLAG_Update);      //清除更新标志位
+	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); //使能更新中断
+	
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_Init(&NVIC_InitStructure);
+	
+	TIM_Cmd(TIM2, ENABLE);
+}
+
+uint16_t Timer_GetCounter(void)
+{
+	return TIM_GetCounter(TIM2);
+}
+
+void TIM2_IRQHandler(void)
+{
+	if (TIM_GetITStatus(TIM2, TIM_IT_Update) == SET)
+	{
+		Num ++;
+		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+	}
+}
+```
+
+
+
+*   到此，上面比较集中介绍了几类常见定时器触发输入信号以及四种典型的定时器从模式及各自特点。**触发模式的典型特点是触发信号可以使能计数器的工作，其它模式的计数器的工作需要软件使能**。**外部时钟模式1从模式比较特别，当计数器的时钟源来自触发信号时，此时定时器就工作在外部时钟1从模式，此时触发信号扮演着双角色，即触发信号与时钟信号。**
+
+*   **定时器的从模式就是一个从定时器的工作受到一个外来触发信号的影响和控制，如果某定时器的工作既受外来触发信号的影响或控制，同时又能输出触发信号影响或控制别的从定时器，它就是处于主从双角色模式。**
+
+### 6.3高级定时器
+
+<img src="C:\Users\zp\Desktop\Note\image\定时器框图.jpg" style="zoom:60%;" />
+
+*   **高级定时器相比于通用定时器：**
+    *   增加了一个重复次数计数器，可以实现每隔几个计数周期才发生一个更新事件和更新中断
+    *   增加了死区生成电路，一个输出引脚变成两个互补输出的引脚，主要为了驱动三相无刷电机
+    *   增加了刹车输入功能，为电机驱动提供安全保障，可以切断电机的输出
+
+
+
+*   **需要注意的是，改变预分频系数时要等到产生更新事件才会更新预分频值，在产生更新事件之前仍然按照之前的计数频率进行计数，具体的实现方法涉及到影子寄存器**
+*   **计数器计数频率：CK_CNT = CK_PSC   /  (PSC + 1)**,  CK_PSC为时钟频率，PSC为分频系数
+*   **计数器溢出频率（更新事件发生频率）：CK_CNT_OV = CK_PSC/(PSC+1)(ARR+1)**，  ARR为重装载值
 
 
 # the beginning of it all
@@ -1156,7 +1370,10 @@ m.insert(pair<int, int>(1, 10));
 ### 5.markdown分数和开根号
 
 * 分数写法：`\frac{分子}{分母}`
+
 * 开根号写法：`\sqrt{数}`
+
+    
 
 ***
 
@@ -1185,6 +1402,8 @@ m.insert(pair<int, int>(1, 10));
 ![](C:\Users\zp\Desktop\Note\image\v2-de99d63cac7edac6868bd829ce92685f_1440w.jpg)
 
 逆变电路：将直流电变换成交流电。
+
+
 
 ***
 
@@ -1368,9 +1587,9 @@ $U_{dc}$是电源电压，再合成矢量：
 
 
 
-
-
 ***
+
+
 
 ## 2023.2.22 （SVPWM）
 
@@ -1601,7 +1820,11 @@ FOC是个强大的控制方法，通过对电机的“像素级”控制，可�
 
 
 
-## 2023.2.23 （git，tmux，vim）
+***
+
+
+
+## 2023.2.23 （git，tmux，vim，GDB）
 
 ### 1.复习git
 
@@ -1677,6 +1900,34 @@ FOC是个强大的控制方法，通过对电机的“像素级”控制，可�
 <img src="C:\Users\zp\AppData\Roaming\Typora\typora-user-images\image-20230223210927487.png" alt="image-20230223210927487" style="zoom:80%;" />
 
 
+
+***
+
+### 4.复习GDB
+
+*   运行GDB：`gdb` + 可执行文件或 先`gdb`再 `file`+文件
+
+*   GDB内：
+
+    *   run (r)  :运行
+
+    *   quit (q) :退出
+
+    *   break (b) : 断点  `b+函数名(或行数)`
+
+    *   continue (c) : 继续
+
+    *   next (n) : 单步执行
+
+    *   step (s) : 进入函数
+
+    *   list (l) : 显示函数
+
+    *   print (p) : 查看值  `p + 变量`
+
+    *   delete(d) : 删除断点 `d + 数字，删除哪个断点`
+
+        
 
 ***
 
@@ -1822,3 +2073,12 @@ FOC是个强大的控制方法，通过对电机的“像素级”控制，可�
 >
 >   DT = (32+ DTG[4:0]) * 16 * tDTS = (32+ 26) * 16 * 23.81ns = 22095.68ns = 22.01us， 即死区时间为 22.01us。
 
+
+
+***
+
+
+
+## 2023.3.8 （状态机）
+
+状态机的思想：说明白点就是根据不同的状态去执行不同的函数
