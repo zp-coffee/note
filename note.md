@@ -20,6 +20,8 @@
 
 *   [STM32定时器的信号触发与主从模式](https://zhuanlan.zhihu.com/p/74620029)
 
+*   [如何正确计算并最大限度减小 IGBT 的死区时间 (infineon.com)](https://www.infineon.com/dgdl/Infineon-AN2007_04_Deadtime_calculation_for_IGBT_modules-AN-v1.0-cn.pdf?fileId=db3a304340a01a660140ba682fc61302)
+
     
 
 
@@ -586,13 +588,6 @@
 
 
 
-*   **时钟选择函数：**
-    *   `TIM_InternalClockConfig(TIM_TypeDef* TIMx);----选择内部时钟`
-    *   `TIM_ITRxExternalClockConfig(TIM_TypeDef* TIMx, uint16_t TIM_InputTriggerSource)------选择ITRx其他定时器的时钟`
-    *   `TIM_TIxExternalClockConfig(TIM_TypeDef* TIMx, uint16_t TIM_InputTriggerSource， uint16_t TIM_ICPolarity, uint16_t ICFilter);----选择TIx捕获通道的时钟`
-    *   `TIM_ETRClockMode1Config(TIM_TypeDef* TIMx, uint16_t TIM_ExtTRGPrescaler, uint16_t TIM_ExtTRGPolarity, uint16_t ExtTRGFilter);---选择ETR通过外部时钟模式1输入`
-    *   `TIM_ETRClockMode2Config(TIM_TypeDef* TIMx, uint16_t TIM_ExtTRGPrescaler, uint16_t TIM_ExtTRGPolarity, uint16_t ExtTRGFilter);---选择ETR通过外部时钟模式2输入`
-
 ### 6.1基本定时器
 
 <img src="C:\Users\zp\Desktop\Note\image\基本定时器框图.jpg" style="zoom:60%;" />
@@ -615,14 +610,24 @@
     ITRx（其他定时器的TRGO输出，实现定时器级联），TI1F_ED（输入捕获单元的CH1引脚，双沿有效）
     
     TI1FP1和TI1FP2（CH1和CH2通道）
+    
+*   **时钟选择函数：**
 
-**信号触发和主从模式**
+    *   `TIM_InternalClockConfig(TIM_TypeDef* TIMx);`   **选择内部时钟**
+    *   `TIM_ITRxExternalClockConfig(TIM_TypeDef* TIMx, uint16_t TIM_InputTriggerSource)`  **选择ITRx其他定时器的时钟**
+    *   `TIM_TIxExternalClockConfig(TIM_TypeDef* TIMx, uint16_t TIM_InputTriggerSource， uint16_t TIM_ICPolarity, uint16_t ICFilter);`     **选择TIx捕获通道的时钟**
+    *   `TIM_ETRClockMode1Config(TIM_TypeDef* TIMx, uint16_t TIM_ExtTRGPrescaler, uint16_t TIM_ExtTRGPolarity, uint16_t ExtTRGFilter);`       **选择ETR通过外部时钟模式1输入**
+    *   `TIM_ETRClockMode2Config(TIM_TypeDef* TIMx, uint16_t TIM_ExtTRGPrescaler, uint16_t TIM_ExtTRGPolarity, uint16_t ExtTRGFilter); `       **选择ETR通过外部时钟模式2输入**
+
+#### 6.2.1信号触发和主从模式
 
 [STM32定时器的信号触发与主从模式](https://zhuanlan.zhihu.com/p/74620029)
 
 *   触发输入信号有三类：
 
     ![](C:\Users\zp\Desktop\Note\image\触发输入信号.webp)
+
+    <img src="C:\Users\zp\Desktop\Note\image\主从触发模式.jpg" style="zoom:50%;" />
 
     *   来自定时器自身输入通道1或通道2的输入信号，经过极性选择和滤波以后生成的触发信号，连接到从模式控制器，进而控制计数器的工作；TI1F_ED是双沿脉冲信号。
     *   来自于外部触发脚[ETR脚]经过极性选择、分频、滤波以后的信号，经过触发输入选择器，连接到从模式控制器。当然分频和滤波不是必需的，可以根据外来信号频率高低及信号干净度来决定。
@@ -643,7 +648,7 @@
     *   **外部时钟模式1【External clock mode 1】**
     *   **编码器模式【Encoder mode】**
 
-#### 6.2.1 复位模式
+##### 1 复位模式
 
 *   **当有效触发输入信号出现时，计数器将会被复位，同时还会产生更新事件和触发事件。**
 *   如果计数器向上计数或中央对齐模式的话，复位后计数器从0开始计数，如果向下计数模式，复位后计数器从ARR值开始计数
@@ -655,7 +660,7 @@
 
 
 
-#### 6.2.2 触发模式
+##### 2 触发模式
 
 *   **当有效触发输入信号出现时，会将本来处于未使能状态的计数器使能激活，让计数器开始计数，同时还会产生触发事件。**
 *   触发从模式下，触发信号具有相当于软件使能计数器的作用，即置位CEN@TIMx_CR1，这也是它最大最明显的特征。
@@ -664,7 +669,7 @@
 
 
 
-#### 6.2.3 门控模式
+##### 3 门控模式
 
 *   **定时器根据触发输入信号的电平来启动或停止计数器的计数。在计数器启动或停止时都会产生触发事件并置位相关标志位,TIF@TIMx_SR。**
 *   下图表示来自TI1的输入信号，低电平时计数器启动计数，高电平时停止计数。
@@ -675,7 +680,7 @@
 
 
 
-#### 6.2.4 外部时钟模式1从模式
+##### 4 外部时钟模式1从模式
 
 *   **这个模式下触发信号就是时钟信号**，比如，我们可以使用来自ETR脚的滤波信号ETRF作为触发信号并担当计数器的时钟源。
 
@@ -736,8 +741,160 @@ void TIM2_IRQHandler(void)
 
 
 *   到此，上面比较集中介绍了几类常见定时器触发输入信号以及四种典型的定时器从模式及各自特点。**触发模式的典型特点是触发信号可以使能计数器的工作，其它模式的计数器的工作需要软件使能**。**外部时钟模式1从模式比较特别，当计数器的时钟源来自触发信号时，此时定时器就工作在外部时钟1从模式，此时触发信号扮演着双角色，即触发信号与时钟信号。**
-
 *   **定时器的从模式就是一个从定时器的工作受到一个外来触发信号的影响和控制，如果某定时器的工作既受外来触发信号的影响或控制，同时又能输出触发信号影响或控制别的从定时器，它就是处于主从双角色模式。**
+*   **触发源函数选择：**
+    *   `void TIM_SelectInputTrigger(TIM_TypeDef* TIMx, uint16_t TIM_InputTriggerSource);`
+    *   触发源为：**TRGI：ITRx，TI1F_ED，TI1FPx，ETRF**
+    *   `void TIM_SelectOutputTrigger(TIM_TypeDef* TIMx, uint16_t TIM_TRGOSource);`
+    *   选择主模式的输出触发源**TRGO**
+    *   `void TIM_SelectSlaveMode(TIM_TypeDef* TIMx, uint16_t TIM_SlaveMode);`
+    *   选择**从模式**
+    *   `void TIM_ETRClockMode2Config(TIM_TypeDef* TIMx, uint16_t TIM_ExtTRGPrescaler, 
+         uint16_t TIM_ExtTRGPolarity, uint16_t ExtTRGFilter);`
+    *   选择外部时钟模式2，将**外部输入的时钟作为定时器时钟**
+    *   `void TIM_ETRClockMode1Config(TIM_TypeDef* TIMx, uint16_t TIM_ExtTRGPrescaler, uint16_t TIM_ExtTRGPolarity, uint16_t ExtTRGFilter);`
+    *   选择外部时钟模式1，与外部时钟模式2差不多只不过**外部信号的来源更多**
+
+
+
+
+#### 6.2.2 输入捕获
+
+*   输入捕获模式下，当通道输入引脚出现指定电平跳变时，当前CNT的值将被锁存到CCR中，可用于测量PWM波形的频率、占空比、脉冲间隔、电平持续时间等参数
+
+*   可配置为PWMI模式，同时测量频率和占空比
+
+*   可配合主从触发模式，实现硬件全自动测量
+
+*   从TIMx_CH中输入的信号经过滤波和边沿检测器可以前往2个通道（TI1FP1和TI1FP2）从而检测2个不同的数据比如**使用TIM2_CH1来同时检测输入信号的频率和占空比**
+
+*   输入捕获测量原理：<img src="C:\Users\zp\Desktop\Note\image\输入捕获.jpg" style="zoom:50%;" />
+
+*   频率高使用测频法，频率低使用测周法，中界频率表示两种方法的测量的频率参考值，比中界频率低就用测周法误差比较小
+
+*   输入捕获流程：<img src="C:\Users\zp\Desktop\Note\image\输入捕获流程.jpg" style="zoom:50%;" />
+
+*   输入信号经过边沿检测和极性选择后**可通往触发源选择实现主从模式从而达到硬件自动化的效果**
+
+*   ```c
+    void IC_Init(void)
+    {
+    	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    	
+    	GPIO_InitTypeDef GPIO_InitStructure;
+    	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+    	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    	GPIO_Init(GPIOA, &GPIO_InitStructure);
+    	
+    	TIM_InternalClockConfig(TIM3);
+    	
+    	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
+    	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+    	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+    	TIM_TimeBaseInitStructure.TIM_Period = 65536 - 1;		//ARR
+    	TIM_TimeBaseInitStructure.TIM_Prescaler = 72 - 1;		//PSC
+    	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0; //重复计数器
+    	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStructure);
+    	
+    	TIM_ICInitTypeDef TIM_ICInitStructure;
+    	TIM_ICInitStructure.TIM_Channel = TIM_Channel_1;  	
+        //外部输入为通道1输入
+    	TIM_ICInitStructure.TIM_ICFilter = 0xF;               
+        //滤波器，值越大滤波越好
+    	TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising; 
+        //选择什么边沿触发
+    	TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;   
+        //定时器时钟分频
+    	TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI; 
+        //选择是哪个通道输入，可以是直连通道来的信号或者是交叉通道来的
+        
+        //TIM_ICInit(TIM3, &TIM_ICInitStructure);
+    	TIM_PWMIConfig(TIM3, &TIM_ICInitStructure);
+        //PWMI模式，系统自动配置一个与上面配置相反的通道
+        //通道一为下降沿触发，通道二自动为上升沿触发且时钟和分频一样
+        //相当于：
+        //TIM_ICInitStructure.TIM_Channel = TIM_Channel_2; //通道二
+        //TIM_ICInitStructure.TIM_ICFilter = 0xF;
+        //TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Falling; //下降沿
+        //TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+        //TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_IndirectTI;//交叉
+        //TIM_ICInit(TIM3, &TIM_ICInitStructure);
+    
+    	TIM_SelectInputTrigger(TIM3, TIM_TS_TI1FP1); 
+        //选择触发源为TI1FP1
+    	TIM_SelectSlaveMode(TIM3, TIM_SlaveMode_Reset); 
+        //从模式选择复位模式，硬件自动测量
+    	
+    	TIM_Cmd(TIM3, ENABLE);
+    }
+    
+    uint32_t IC_GetFreq(void)   //根据获取的数据计算想要的数据
+    {
+    	return 1000000 / (TIM_GetCapture1(TIM3) + 1);
+    }
+    
+    uint32_t IC_GetDuty(void)
+    {
+    	return (TIM_GetCapture2(TIM3) + 1) * 100 / (TIM_GetCapture1(TIM3) + 1);
+    }
+    ```
+
+#### 6.2.3 编码器模式
+
+*   编码器接口可接收增量（正交）编码器的信号，根据编码器旋转产生的正交信号脉冲，自动控制CNT自增或自减，从而指示编码器的位置、旋转方向和旋转速度，由内部硬件电路完成，防止频繁进入中断
+
+*   每个高级定时器和通用定时器都拥有1个编码器接口
+
+*   两个输入引脚借用了输入捕获的通道1和通道2
+
+*   <img src="C:\Users\zp\Desktop\Note\image\编码器.jpg" style="zoom:67%;" />
+
+*   ```c
+    void Encoder_Init(void)
+    {
+    	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    	
+    	GPIO_InitTypeDef GPIO_InitStructure;
+    	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+    	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    	GPIO_Init(GPIOA, &GPIO_InitStructure);
+    		
+    	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
+    	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+    	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+    	TIM_TimeBaseInitStructure.TIM_Period = 65536 - 1;		//ARR
+    	TIM_TimeBaseInitStructure.TIM_Prescaler = 1 - 1;		//PSC
+    	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
+    	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStructure);
+    	
+    	TIM_ICInitTypeDef TIM_ICInitStructure;
+    	TIM_ICStructInit(&TIM_ICInitStructure);
+    	TIM_ICInitStructure.TIM_Channel = TIM_Channel_1;
+    	TIM_ICInitStructure.TIM_ICFilter = 0xF;
+    	TIM_ICInit(TIM3, &TIM_ICInitStructure);
+    	TIM_ICInitStructure.TIM_Channel = TIM_Channel_2;
+    	TIM_ICInitStructure.TIM_ICFilter = 0xF;
+    	TIM_ICInit(TIM3, &TIM_ICInitStructure);
+    	
+    	TIM_EncoderInterfaceConfig(TIM3, TIM_EncoderMode_TI12,  /*选择编码器模式*/ TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
+    	
+    	TIM_Cmd(TIM3, ENABLE);
+    }
+    
+    int16_t Encoder_Get(void)
+    {
+    	int16_t Temp;
+    	Temp = TIM_GetCounter(TIM3);
+    	TIM_SetCounter(TIM3, 0);
+    	return Temp;
+    }
+    ```
+
+
 
 ### 6.3高级定时器
 
@@ -748,11 +905,224 @@ void TIM2_IRQHandler(void)
     *   增加了死区生成电路，一个输出引脚变成两个互补输出的引脚，主要为了驱动三相无刷电机
     *   增加了刹车输入功能，为电机驱动提供安全保障，可以切断电机的输出
 
+#### 6.3.1 死区功能和互补PWM输出
 
+[STM32 TIM高级定时器死区时间的计算](https://blog.csdn.net/u010632165/article/details/104294576)
+
+*   死区时间是两路互补PWM输出时，为了使桥式换相电路上管T1和下管T2、上管T3和下管T4、上管T5和下管T6不会因为开关速度问题发生同时导通（同时导通电源会短路）而设置的一个保护时段。
+*   **所以死区时间应该按照驱动器的电气开关（MOS管或者IGBT）的导通和关断延迟时间来确定**，相对于PWM来说，死区时间是在PWM输出的这个时间，上下管都不会有输出，当然会使波形输出中断，死区时间一般只占百分之几的周期。但是当PWM波本身占空比小时，空出的部分要比死区还大，**所以死区会影响输出的纹波**，但应该不是起到决定性作用的。**如果死区设置过小，但是仍然出现上下管同时导通，因为导通时间较短，电流较小，不足以烧毁，此时会导致开关元器件发热严重，所以选择合适的死区时间尤为重要；**
+*   驱动器的死区时间具体计算：[如何正确计算并最大限度减小 IGBT 的死区时间 (infineon.com)](https://www.infineon.com/dgdl/Infineon-AN2007_04_Deadtime_calculation_for_IGBT_modules-AN-v1.0-cn.pdf?fileId=db3a304340a01a660140ba682fc61302)
+
+NXP的IRF540数据手册中，栅极开关时间如下所示：
+
+![](C:\Users\zp\Desktop\Note\image\栅极.png)
+
+*   $t_{don}$:门极的开通延迟时间，$t_{doff}$:门极的关断延迟时间，$t_r$:门极上升时间，$t_f$:门极下降时间
+
+一个IGBT的数据手册中也能找到这些参数：
+
+<img src="C:\Users\zp\Desktop\Note\image\IGBT.png" style="zoom:67%;" />
+
+使用$t_{dead}$代表死区时间：
+
+$T_{dead} = [(T_{doffmax } - T_{donmin}) + (T_{pddmax} - T_{pddmin})] * 1.2$
+
+*   $T_{doffmax}$:最大的关断延迟时间，$T_{donmin}$:最小的开通延迟时间
+*   $T_{pddmax}$:最大的驱动信号传递延迟时间，$T_{pddmin}$:最小的驱动信号传递延迟时间
+
+*   $T_{doffmax}和T_{donmin}$可以在元器件的数据手册中找到，$T_{pddmax}和T_{pddmin}$一般由驱动器厂家给出，如果是`MCU`的`IO`驱动的话，需要考虑`IO`的上升时间和下降时间，另外一般会加光耦进行隔离，这里还需要考虑到光耦的开关延时。
+*   最后乘以1.2表示安全裕量，由于下降和上升时间通常比延迟时间小很多，这里不考虑它们。
+
+**我们已经知道驱动器的死区时间，下面我们在STM32中来配置这个死区时间**
+
+![](C:\Users\zp\Desktop\Note\image\死区时间.png)
+
+其中死区时间 $DT$由 $UTG[7:0]$寄存器来配置，$T_{DTS}$表示的是步长时间，由 $CKD[1:0]$来配置：
+
+![](C:\Users\zp\Desktop\Note\image\TDTS.png)
+
+其中 $t_{CK\_INT}$为定时器时钟频率
+
+```c
+void TIM8_PWM_Init(u16 arr,u16 psc)
+{  
+	GPIO_InitTypeDef GPIO_InitStructure;
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	TIM_BDTRInitTypeDef TIM_BDTRInitStructure; 
+	TIM_OCInitTypeDef  TIM_OCInitStructure;
+	
+	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8, ENABLE);
+ 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC , ENABLE);  //使能GPIO外设时钟使能
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB , ENABLE);
+	
+	
+    //设置该引脚为复用输出功能,输出TIM8 CH3 CH3N的PWM脉冲波形
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;        //TIM8_CH3 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  //复用推挽输出
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;        //TIM8_CH3N
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  //复用推挽输出
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	
+
+	TIM_TimeBaseStructure.TIM_Period = arr; 
+    //设置在下一个更新事件装入活动的自动重装载寄存器周期的值	 
+	TIM_TimeBaseStructure.TIM_Prescaler =psc; 
+    //设置用来作为TIMx时钟频率除数的预分频值  不分频
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0; 
+    //设置时钟分割:TDTS = Tck_tim
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  
+    //TIM向上计数模式
+	TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure); 
+    //根据TIM_TimeBaseInitStruct中指定的参数初始化TIMx的时间基数单位
+
+ 
+	 
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
+    //选择定时器模式:TIM脉冲宽度调制模式1
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; 
+    //比较输出使能
+	TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable;
+    //互补输出使能
+	TIM_OCInitStructure.TIM_Pulse = 0;                            
+    //设置待装入捕获比较寄存器的脉冲值
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;     
+    //输出极性:TIM输出比较极性高
+	TIM_OCInitStructure.TIM_OCNPolarity  = TIM_OCNPolarity_High;
+    //互补输出有效电平为高
+	TIM_OCInitStructure.TIM_OCIdleState  = TIM_OCIdleState_Set;
+    //输出空闲时为高电平，当MOE=0时，也就是发生刹车，死区后OC3=1
+	TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
+    //互补输出空闲时为低电平，当MOE=0时，也就是发生刹车，死区后OC3N=0
+	
+    //当LOCk级别为1，2，3时，该位不能被修改
+    
+	TIM_OC3Init(TIM8, &TIM_OCInitStructure);
+	
+	TIM_CtrlPWMOutputs(TIM8,ENABLE);	//MOE 主输出使能	
+
+	TIM_OC3PreloadConfig(TIM8, TIM_OCPreload_Enable);  //CH4预装载使能	
+	
+	TIM_BDTRInitStructure.TIM_OSSRState       = TIM_OSSRState_Enable;
+    //运行模式下“关闭模式”选择 = 1
+	TIM_BDTRInitStructure.TIM_OSSIState       = TIM_OSSIState_Enable;
+    //空闲模式下“关闭模式”选择 = 1
+	TIM_BDTRInitStructure.TIM_LOCKLevel       = TIM_LOCKLevel_1;
+    //锁定级别1，见参考手册
+	TIM_BDTRInitStructure.TIM_DeadTime        = 0x80;
+    //死区时间：1.78us
+	TIM_BDTRInitStructure.TIM_Break           = TIM_Break_Disable;
+    //刹车使能
+	TIM_BDTRInitStructure.TIM_BreakPolarity   = TIM_BreakPolarity_Low;
+    //刹车输入低电平有效
+	TIM_BDTRInitStructure.TIM_AutomaticOutput = TIM_AutomaticOutput_Enable;
+    //开启自动输出
+	TIM_BDTRConfig(TIM8, &TIM_BDTRInitStructure);
+
+	
+	TIM_ARRPreloadConfig(TIM8, ENABLE); //使能TIMx在ARR上的预装载寄存器
+	
+	TIM_Cmd(TIM8, ENABLE);  //使能TIM1
+	TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCx_Enable);
+	TIM_CCxNCmd(TIM8, TIM_Channel_3, TIM_CCxN_Enable);
+}
+//死区时间计算过程：
+//CK_INT为72M,设置CKD[1:0]为00，所以t_DTS=1/CK_INT = 13.9ns
+//t_DTS = 13.9ns(72MHZ)，
+//这里设置TIM_DeadTime=0x80，也就是0x1000 0000
+//对应DTG[7:5]=0x100 DTG[5:0]=0x000000=0
+//所以Dead_time = (64 + DTG[5:0])*2*t_DTS = 64*2*13.9 = 1.78us
+```
+
+*   `TIM_TimeBaseStructure.TIM_ClockDivision`对应的参数为：**TIM_CKD_DIV1（0x0000），TIM_CKD_DIV2（0x0100），TIM_CKD_DIV3（0x0200）**也就是对应**0，256，512**，这个参数设置的是**CKD[1:0]位来对定时器时钟进行分频来计算死区时间**
+*   `TIM_TimeBaseStructure.TIM_CounterMode`的计数模式为对齐计数模式时相对于向上计数模式和向下计数模式的**计数溢出频率/2(也就是周期*2)**
+*   `TIM_OCInitStructure.TIM_OCMode`：![](C:\Users\zp\Desktop\Note\image\oc模式.jpg)
+*   有效电平的状态通过`TIM_OCInitStructure.TIM_OCPolarity`来配置为高电平或者低电平
+*   使用高级定时器一定要调用函数：`TIM_CtrlPWMOutputs(TIM8,ENABLE);	//MOE主输出使能	`
+*   其中GPIO的模式配置参考：![](C:\Users\zp\Desktop\Note\image\gpio模式配置.png)
+
+
+
+
+
+#### 6.3.2刹车输入功能
+
+*   刹车功能的目的是保护由这些定时器生成的 PWM 信号所驱动的功率器件。当被故障触发 时，刹车电路会关闭 PWM 输出，并将其强制设为预定义的安全状态。
+*   TIM1/8 有三个刹车输入 （BRK、 BRK_ACTH、 BRK2）
+*   在死区时间插入之后， BRK 输入可**禁止 PWM 输出 （无效状态）或将其强制为预定义的安全状态 （有效或无效）**，这就防止了击穿半桥。 BRK2 **仅能禁用 PWM 输出 （无效状态）**。 BRK 优先级高于 BRK2。
+*   典型情况下，永磁 3 相无刷电机驱动将使用如下的保护：
+    *   BRK2 输入作为过流保护，从驱动级打开 6 个开关
+    *   BRK 输入作为过压保护，覆盖过流，关闭 3 个下桥臂开关，以防止发电电流增大母线电压，超过电容耐压值。
+
+*   **刹车和死区结构体：**
+
+```c
+typedef struct
+{
+  uint16_t TIM_OSSRState;/*运行模式下关闭状态选择。Value：
+  #define TIM_OSSRState_Enable               ((uint16_t)0x0800)
+  #define TIM_OSSRState_Disable              ((uint16_t)0x0000)*/       
+ 
+  uint16_t TIM_OSSIState;/*空闲模式下关闭状态选择。Value：
+  #define TIM_OSSIState_Enable               ((uint16_t)0x0400)
+  #define TIM_OSSIState_Disable              ((uint16_t)0x0000)*/       
+ 
+  uint16_t TIM_LOCKLevel;/*锁定配置。Value：
+  #define TIM_LOCKLevel_OFF                  ((uint16_t)0x0000)
+  #define TIM_LOCKLevel_1                    ((uint16_t)0x0100)
+  #define TIM_LOCKLevel_2                    ((uint16_t)0x0200)
+  #define TIM_LOCKLevel_3                    ((uint16_t)0x0300)*/       
+ 
+  uint16_t TIM_DeadTime;/*死区时间。Vlaue：0x0~0xFF*/
+ 
+  uint16_t TIM_Break;/*短路输入使能控制。Value：
+  #define TIM_Break_Enable                   ((uint16_t)0x1000)
+  #define TIM_Break_Disable                  ((uint16_t)0x0000)*/          
+ 
+  uint16_t TIM_BreakPolarity;/*断路输出极性。Value：
+  #define TIM_BreakPolarity_Low              ((uint16_t)0x0000)
+  #define TIM_BreakPolarity_High             ((uint16_t)0x2000)*/    
+ 
+  uint16_t TIM_AutomaticOutput;/*自动输出使能。Value：
+  #define TIM_AutomaticOutput_Enable         ((uint16_t)0x4000)
+  #define TIM_AutomaticOutput_Disable        ((uint16_t)0x0000)*/
+ 
+} TIM_BDTRInitTypeDef;
+```
+
+*   TIM_OSSRState和TIM_OSSIState：关闭状态选择，具体看以下描述:**一般设置为ENABLE**
+
+![](C:\Users\zp\Desktop\Note\image\OSSR.png)
+
+*   TIM_LOCKLevel：锁定等级
+
+![](C:\Users\zp\Desktop\Note\image\LOCK.png)
+
+*   TIM_Break：刹车功能使能，**使用刹车功能则设置为ENABLE**
+
+![](C:\Users\zp\Desktop\Note\image\break.png)
+
+*   TIM_BreakPolarity：刹车极性，当为0时，低电平触发刹车（停止输出），当为1时，高电平触发刹车，**根据刹车输入源的极性来进行设置**
+
+![](C:\Users\zp\Desktop\Note\image\bkp.png)
+
+*   TIM_AutomaticOutput：自动输出使能 **一般设置为ENABLE**
+
+![](C:\Users\zp\Desktop\Note\image\aoe.png)
+
+### 6.4 要点
 
 *   **需要注意的是，改变预分频系数时要等到产生更新事件才会更新预分频值，在产生更新事件之前仍然按照之前的计数频率进行计数，具体的实现方法涉及到影子寄存器**
 *   **计数器计数频率：CK_CNT = CK_PSC   /  (PSC + 1)**,  CK_PSC为时钟频率，PSC为分频系数
 *   **计数器溢出频率（更新事件发生频率）：CK_CNT_OV = CK_PSC/(PSC+1)(ARR+1)**，  ARR为重装载值
+*   **死区时间计算过程**
+*   **刹车功能以及配置**
+*   
 
 
 # the beginning of it all
