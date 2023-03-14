@@ -116,23 +116,26 @@
 
 # 英语词汇
 
-| 1    | algorithm            | 算法         | mention                    | 提到       |
-| ---- | :------------------- | ------------ | -------------------------- | ---------- |
-| 2    | as the following     | 如下         | plugin                     | 插件       |
-| 3    | toolkit              | 工具包       | course                     | 课程       |
-| 4    | executable           | 可执行的     | cumbersome                 | 麻烦的     |
-| 5    | Oscillator           | 振荡器       | parallel                   | 并行       |
-| 6    | interface            | 接口         | indicate                   | 表示       |
-| 7    | format               | 格式         | extension                  | 扩大       |
-| 8    | resistance           | 电阻         | column                     | 列         |
-| 9    | general description  | 简述         | feature                    | 特征       |
-| 10   | ordering information | 订购信息     | block diagram              | 框图       |
-| 11   | die pad floor plan   | 摸具垫平面图 | pin arrangement            | 引脚排列   |
-| 12   | pin description      | 引脚描述     | function block description | 功能块描述 |
-| 13   | command table        | 命令表       | command descriptions       | 命令描述   |
-| 14   | maximum ratings      | 最大额定值   | DC characteristics         | 直流特性   |
-| 15   | AC characteristics   | 交流特性     | application example        | 应用举例   |
-| 16   | package information  | 组件信息     | internal                   | 内部的     |
+| 1    | algorithm            | 算法         | mention                    | 提到           |
+| ---- | :------------------- | ------------ | -------------------------- | -------------- |
+| 2    | as the following     | 如下         | plugin                     | 插件           |
+| 3    | toolkit              | 工具包       | course                     | 课程           |
+| 4    | executable           | 可执行的     | cumbersome                 | 麻烦的         |
+| 5    | Oscillator           | 振荡器       | parallel                   | 并行           |
+| 6    | interface            | 接口         | indicate                   | 表示           |
+| 7    | format               | 格式         | extension                  | 扩大           |
+| 8    | resistance           | 电阻         | column                     | 列             |
+| 9    | general description  | 简述         | feature                    | 特征           |
+| 10   | ordering information | 订购信息     | block diagram              | 框图           |
+| 11   | die pad floor plan   | 摸具垫平面图 | pin arrangement            | 引脚排列       |
+| 12   | pin description      | 引脚描述     | function block description | 功能块描述     |
+| 13   | command table        | 命令表       | command descriptions       | 命令描述       |
+| 14   | maximum ratings      | 最大额定值   | DC characteristics         | 直流特性       |
+| 15   | AC characteristics   | 交流特性     | application example        | 应用举例       |
+| 16   | package information  | 组件信息     | internal                   | 内部的         |
+| 17   | vector               | 向量         | optional                   | 自选的，选修的 |
+| 18   | allocate             | 分配         | amont                      | 数量           |
+| 19   | tailor               | 剪裁，裁缝   | Dummy                      | 假的           |
 
 # 自动控制原理
 
@@ -215,6 +218,35 @@
 *   环节的并联：将各放大倍数相加，$G(s)=\frac{Y(s)}{X(s)}=\sum\limits_{i=1}^nG_i(s)$
 *   反馈联接：<img src="C:\Users\zp\Desktop\Note\image\自动控制原理\反馈联接.jpg" style="zoom:50%;" /> $Y(s)=E(s)G(s)$  ，$E(s)=X(s)+- H(s)Y(s)$
 *   所以反馈联接的传递函数为：$\frac{Y(s)}{X(s)}=\frac{G(s)}{1-+G(s)H(s)}$,特殊的 $H(s)短路，为1$，$\frac{Y(s)}{X(s)}=\frac{G(s)}{1-+G(s)}$
+*   结构图简化：
+    *   对于比较点：往前移相除，往后移相乘<img src="C:\Users\zp\Desktop\Note\image\比较点.jpg" style="zoom:50%;" />
+    *   对于引出点：往前移相乘，往后移相除<img src="C:\Users\zp\Desktop\Note\image\引出点.jpg" style="zoom: 60%;" />
+    *   相邻的比较点可以互换位置<img src="C:\Users\zp\Desktop\Note\image\比较点呼唤.jpg" style="zoom:60%;" />
+
+
+
+
+### 第四节：信号流图
+
+*   梅逊公式：$P= \frac{1}{\Delta}\sum\limits_{k=1}^nP_k\Delta_k$
+*   $\Delta=1-\sum\limits_iL_i+\sum\limits_{j,k}L_iL_k$
+    *   $L_i$：各独立回路的增益 ，$L_iL_k$: 每个互不接触的回路增益的积
+    *   $P_k$：各前向通道的增益，$\Delta_k$：各前向通道的余子项
+    *   余子项的计算：选定前向通道后将前向通道的节点去掉后，**1减去剩下的各独立回路增益的和**
+*   <img src="C:\Users\zp\Desktop\Note\image\流图.jpg" style="zoom:50%;" />
+*   $\Delta = 1-(m+dl+ke+lkg)+(mke+hld+mh)$
+*   $\sum\limits_{k=1}^nP_k\Delta_k=(bde*1)+(f*(1-m-dl)+(bg*1))=bde+f(1-m-dl)+bg$
+*   所以得到：增益为 $P=\frac{1}{\Delta}\sum\limits_{k=1}^nP_k\Delta_k=\frac{bde+f(1-m-dl)+bg}{1-(m+dl+ke+h+gkl)+mh+dlh+mke}$
+
+
+
+## 第三章：线性系统的时域分析法
+
+### 第一节：系统时间响应的性能指标
+
+
+
+
 
 
 
@@ -470,7 +502,7 @@
     }
     ```
 
-*   
+    
 
 ## 5.ADC
 
@@ -496,7 +528,7 @@
     *   **ADC供电要求：2.4V-3.6V；**
     *   **ADC输入范围：VREF- ≤ VIN ≤ VREF+。**
 
-*   ADC时钟来源于PCLK2，ADC专门有一个寄存器来对时钟频率进行分频，可在ADC结构体中进行设置**不要让ADC的时钟超过14MHz，否则可能不准。**
+*   ADC时钟来源于PCLK2，ADC专门有一个寄存器来对时钟频率进行分频，可在ADC结构体中进行设置，**不要让ADC的时钟超过14MHz，否则可能不准。**
 
 *   ADC转换中可以分为2个通道：规则通道组和注入通道组：
 
@@ -1122,8 +1154,749 @@ typedef struct
 *   **计数器溢出频率（更新事件发生频率）：CK_CNT_OV = CK_PSC/(PSC+1)(ARR+1)**，  ARR为重装载值
 *   **死区时间计算过程**
 *   **刹车功能以及配置**
+
+
+
+## 7.通信
+
+### 7.1 通信方式
+
+*   按数据传送的方式，通讯可分为**串行通讯**和**并行通讯**
+    *   **串行通讯：**是指设备之间通过少量数据信号 线 (一般是 8 根以下)，地线以及控制信号线，按数据位形式一位一位地传输数据的通讯方式
+    *   **并行通讯：**是指使用 8、16、32 及 64 根或更多的数据线进行传输的通讯方式，可以同时传输多个数据位的数据
+    *   <img src="C:\Users\zp\Desktop\Note\image\通讯.jpg" style="zoom:50%;" />
+*   根据数据通讯的方向分为：
+    *   **全双工：**可同时收发数据
+    *   **半双工：**不可同时收发数据
+    *   **单工：**任何时刻只能进行一个方向的通讯，即一个固定为发送设备，另一个固定为接送设备
+*   根据通讯的数据同步方式分为：
+    *   **同步：**收发设备双方会使用一根信号线表示时钟信号，在时钟信号的驱动下双方进行协调
+    *   **异步：**不使用时钟信号进行数据同步，它们直接在数据信号中穿插一些同步用的信号位， 或者把主体数据进行打包，以数据帧的格式传输数据
+
+>   在同步通讯中，数据信号所传输的内容绝大部分就是有效数据，而异步通讯中会包含有帧的各种 标识符，所以同步通讯的效率更高，但是同步通讯双方的时钟允许误差较小，而异步通讯双方的 时钟允许误差较大。
+
+*   通信速率：常用比特率来表示，即每秒钟传输的二进制位数，单位为比特每秒(bit/s)
+
+>   容易与比特率混淆的概念是“波特率”(Baudrate)，它 表示每秒钟传输了多少个码元。而码元是通讯信号调制的概念，通讯中常用时间间隔相同的符号 来表示一个二进制数字，这样的信号称为码元。如常见的通讯传输中，用 0V 表示数字 0，5V 表 示数字 1，那么一个码元可以表示两种状态 0 和 1，所以一个码元等于一个二进制比特位，此时 波特率的大小与比特率一致；如果在通讯传输中，有 0V、2V、4V 以及 6V 分别表示二进制数 00、 01、10、11，那么每个码元可以表示四种状态，即两个二进制比特位，所以码元数是二进制比特 位数的一半，这个时候的波特率为比特率的一半。
+
+*   以下为一些常见的通信方式：![](C:\Users\zp\Desktop\Note\image\通信方式.jpg)
+
+### 7.2 USART
+
+*   USART（Universal Synchronous/Asynchronous Receiver/Transmitter）通用同步/异步收发器
+*   USART是STM32内部集成的硬件外设，可根据**数据寄存器的一个字节数据自动生成数据帧时序**，从TX引脚发送出去，也可**自动接收RX引脚的数据帧时序，拼接为一个字节数据，存放在数据寄存器里**
+*   自带波特率发生器，最高达4.5Mbits/s
+*   可配置数据位长度（8/9）、停止位长度（0.5/1/1.5/2）
+*   可选校验位（无校验/奇校验/偶校验）
+*   串口常用的电平标准有三种：
+    *   TTL电平：+3.3V或+5V表示1，0V表示0，通信距离几十米
+    *   RS232电平：-3~-15V表示1，+3 ~ +15V表示0 ，通信距离几十米
+    *   RS485电平：两线压差+2 ~ +6表示1，-2~-6表示0，通信距离几千米
+
+*   支持同步模式、硬件流控制、DMA、智能卡、IrDA、LIN
+*   框图：![](C:\Users\zp\Desktop\Note\image\usart框图.jpg)
+*   USART基本结构：![](C:\Users\zp\Desktop\Note\image\usart基本结构.jpg)
+
+*   串口参数及时序：
+
+    *   波特率：串口通信的速率，**一秒钟传输多少个码元**
+    *   起始位：标志一个数据帧的开始，固定为低电平，**下降沿代表起始位**
+    *   数据位：数据帧的有效载荷，1为高电平，0为低电平，低位先行
+    *   校验位：用于数据验证，根据数据位计算得来
+    *   停止位：用于数据帧间隔，固定为高电平，**上升沿代表停止位**
+    *   ![](C:\Users\zp\Desktop\Note\image\usart时序.jpg)
+
+*   如果有校验位则：
+
+    *   奇校验：每个字节传送整个过程中bit为1的个数是奇数个（校验位调整个数），加上一位校验位保证一个数据帧高位（1）为奇数个
+    *   偶校验：每个字节传送整个过程中bit为1的个数是偶数个（校验位调整个数），加上一位校验位保证一个数据帧高位（1）为偶数个
+
+*   流控：当2个设备传输数据的速率不匹配导致一个设备接受的数据还没处理就有新的数据传来覆盖旧的数据，这里就会出现丢失数据的现象，这时我们可以通过流控来控制设备是否进行发送数据
+
+    *   硬件流控：<img src="C:\Users\zp\Desktop\Note\image\硬件流控.jpg" style="zoom:50%;" />
+        *   相比于不使用流控多了RTS和CTS，接收端发出来的信号叫 RTS 信号，发送端检测管脚叫 CTS
+        *   当RTS置高：表示接收端接受的数据还没有处理完，让发送端先暂停发送数据
+        *   当CTS置高：表示对面接收端数据还没处理完，作为发送端应该先停一下
+    *   软件流控：以特殊的字符来代表从机已经不能再接收新的数据了，基本的流程就是从机在接收数据很多的时候或主动给发送端发送一个特殊字符，当发送端接收到这个特殊字符后就不能再发送数据了
+
+```C
+char Serial_RxPacket[100];			
+uint8_t Serial_RxFlag;
+
+void Serial_Init(void)
+{
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+	
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //TX配置为复用输出功能
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;   //RT配置为上拉输入
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	USART_InitTypeDef USART_InitStructure;
+	USART_InitStructure.USART_BaudRate = 9600;
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
+	USART_InitStructure.USART_Parity = USART_Parity_No; //无校验位
+	USART_InitStructure.USART_StopBits = USART_StopBits_1; //1位停止位
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b; //1帧数据的字长为8位
+	USART_Init(USART1, &USART_InitStructure);
+	
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+	
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_Init(&NVIC_InitStructure);
+	
+	USART_Cmd(USART1, ENABLE);
+}
+
+
+
+//发送字节
+void Serial_SendByte(uint8_t Byte)
+{
+	USART_SendData(USART1, Byte);
+	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+    //检查USART_FLAG_TXE标志位，代表发送寄存器空可以再写入新的数据到发送寄存器中
+}
+
+Serial_SendByte(0x41);
+
+//发送数组
+void Serial_SendArray(uint8_t *Array, uint16_t Length)
+{
+	uint16_t i;
+	for (i = 0; i < Length; i ++)
+	{
+		Serial_SendByte(Array[i]);
+	}
+}
+
+uint8_t i[] = {0x42, 0x43, 0x44, 0x45};
+Serial_SendArray(i, 4)
+    
+//发送字符串
+void Serial_SendString(char *String)
+{
+    uint8_t i;
+	for (i = 0; String[i] != '\0'; i ++)
+	{
+		Serial_SendByte(String[i]);
+	}
+}
+
+Serial_SendString("Hello World!\r\n");
+
+//发送数字
+uint32_t Serial_Pow(uint32_t X, uint32_t Y)
+{
+	uint32_t Result = 1;
+	while (Y --)
+	{
+		Result *= X;
+	}
+	return Result;
+}
+
+void Serial_SendNumber(uint32_t Number, uint8_t Length)
+{
+	uint8_t i;
+	for (i = 0; i < Length; i ++)
+	{
+		Serial_SendByte(Number / Serial_Pow(10, Length - i - 1) % 10 + '0');
+	}
+}
+
+Serial_SendNumber(12345, 5);
+
+//要使用printf，首先在设置中选择使用MicroLIB
+//包括头文件“stdio.h”
+//写重定向函数
+int fputc(int ch, FILE *f)
+{
+	Serial_SendByte(ch);
+	return ch;
+}
+
+pritnf("%d\n",12345);
+
+
+void USART1_IRQHandler(void)
+{
+	if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
+	{
+		uint8_t RxData = USART_ReceiveData(USART1);
+		Serial_SendByte(RxData);
+		
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+	}
+}
+```
+
 *   
 
+## 8.STM32启动文件的详解
+
+*   涉及到的**ARM**的汇编指令和 **Cortex** 内核的指令，有关 **Cortex** 内核的指令可以参考《CM3 权威指南 CnR2》第四章：指令集。剩下的 **ARM** 的汇编指令我们可以在 MDK->Help->Uvision Help 中搜索到
+
+*   启动文件由汇编编写，是系统上电复位后第一个执行的程序。主要做了以下工作：
+
+    *   初始化堆栈指针 SP=_initial_sp
+    *   初始化 PC 指针 =Reset_Handler
+    *   初始化中断向量表
+    *   配置系统时钟
+    *   调用 C 库函数 _main 初始化用户堆栈，从而最终调用 main 函数去到 C 的世界
+
+*   ![](C:\Users\zp\Desktop\Note\image\汇编.jpg)
+
+*   **startup_stm32f10x_hd.s** 的内容如下：
+
+    ```c
+    ;******************** (C) COPYRIGHT 2011 STMicroelectronics ********************
+    ;* File Name          : startup_stm32f10x_hd.s
+    ;* Author             : MCD Application Team
+    ;* Version            : V3.5.0
+    ;* Date               : 11-March-2011
+    ;* Description        : STM32F10x High Density Devices vector table for MDK-ARM 
+    ;*                      toolchain. 
+        
+    This module performs:
+           - Set the initial SP  
+             //初始化堆栈指针SP=_initial_sp
+           - Set the initial PC == Reset_Handler  
+             //初始化PC指针=Reset_Handler
+           - Set the vector table entries with the exceptions ISR address
+             //初始化中断向量表
+           - Configure the clock system and also configure the external 
+             SRAM mounted on STM3210E-EVAL board to be used as data 
+             memory (optional, to be enabled by user)
+             //配置时钟系统并配置外部SRAM作为数据内存（用户自选）
+           - Branches to __main in the C library (which eventually calls main()).
+             //调用 C 库函数 _main 初始化用户堆栈，从而最终调用 main 函数去到 C 的世界
+        
+             After Reset the CortexM3 processor is in Thread mode, priority is Privileged, and the Stack is set to Main.  
+    
+    
+     Amount of memory (in bytes) allocated for Stack  堆栈分配内存数量
+     Tailor this value to your application needs
+     <h> Stack Configuration
+       <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
+     </h>
+    
+               //定义栈的大小和一些属性
+    Stack_Size      EQU     0x00000400
+    
+                    AREA    STACK, NOINIT, READWRITE, ALIGN=3
+    Stack_Mem       SPACE   Stack_Size
+    __initial_sp
+    
+    //EQU：宏定义的伪指令，相当于等于，类似与 C 中的 define。
+    //AREA：告诉汇编器定义一个新的代码段或者数据段，定义一个STACK的数据段，不初始化，可读可写，8字  节对齐
+    //开辟栈的大小为 0X00000400（1KB），名字为 STACK，
+    //NOINIT 即不初始化
+    //READWRITE 表示可读可写
+    //ALIGN=3 : 8（2^3）字节对齐。
+    //SPACE：用于分配一定大小的内存空间，单位为字节，指定大小为Stack_Size
+    //标号 __initial_sp 紧挨着 SPACE 语句放置，表示栈的结束地址，即栈顶地址，栈是由高向低生长的
+    
+               
+    ; <h> Heap Configuration
+    ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
+    ; </h>
+    
+        
+    //定义堆的大小和一些属性
+    Heap_Size       EQU     0x00000200
+    
+                    AREA    HEAP, NOINIT, READWRITE, ALIGN=3
+    __heap_base
+    Heap_Mem        SPACE   Heap_Size
+    __heap_limit
+    
+                    PRESERVE8
+                    THUMB
+        
+    //堆大小为0x00000200（512字节），不初始化，可读可写，8字节对齐
+    //__heap_base 代表堆的起始地址， __heap_limit 代表堆的结束地址
+    //堆是由低向高生长的，跟栈的生长方向相反。
+    //堆主要用来动态内存的分配，像 malloc() 函数申请的内存就在堆上面。
+    //PRESERVE8：指定当前文件的堆栈按照8字节对齐
+    //THUMB：表示后面指令兼容 THUMB 指令。THUBM 是 ARM 以前的指令集，16bit，现在 Cortex-M系列的都使用 THUMB-2 指令集，THUMB-2 是 32 位的，兼容 16 位和 32 位的指令，是 THUMB 的超集。
+    
+    
+    ; Vector Table Mapped to Address 0 at Reset
+                    AREA    RESET, DATA, READONLY
+                    EXPORT  __Vectors
+                    EXPORT  __Vectors_End
+                    EXPORT  __Vectors_Size
+    
+        //定义一个数据段RESET，只读，并声明__Vectors，__Vectors_End，__Vectors_Size具有全局属性，可供外部的文件调用
+        //EXPORT：声明一个标号可被外部的文件使用，使标号具有全局属性。如果是 IAR 编译器，则使用的是 GLOBAL 这个指令。
+    
+        
+    //当内核响应了一个发生的异常后，对应的异常服务例程 (ESR) 就会执行。为了决定 ESR 的入口地址，内核使用了“向量表查表机制”。这里使用一张向量表。向量表其实是一个 WORD（32 位整数）数组，每个下标对应一种异常，该下标元素的值则是该 ESR 的入口地址。向量表在地址空间中的位置是可以设置的，通过 NVIC 中的一个重定位寄存器来指出向量表的地址。在复位后，该寄存器的值为 0。因此，在地址 0 （即 FLASH 地址 0）处必须包含一张向量表，用于初始时的异常分配。要注意的是这里有个另类：0 号类型并不是什么入口地址，而是给出了复位后 MSP 的初值。  
+        
+        //下面就是向量表：
+        //向量表从 FLASH 的 0 地址开始放置，以 4 个字节为一个单位，地址 0 存放的是栈顶地址，0X04存放的是复位程序的地址，以此类推。
+        //__Vectors为向量表起始地址
+    __Vectors       DCD     __initial_sp               ; Top of Stack
+                    DCD     Reset_Handler              ; Reset Handler
+                    DCD     NMI_Handler                ; NMI Handler
+                    DCD     HardFault_Handler          ; Hard Fault Handler
+                    DCD     MemManage_Handler          ; MPU Fault Handler
+                    DCD     BusFault_Handler           ; Bus Fault Handler
+                    DCD     UsageFault_Handler         ; Usage Fault Handler
+                    DCD     0                          ; Reserved
+                    DCD     0                          ; Reserved
+                    DCD     0                          ; Reserved
+                    DCD     0                          ; Reserved
+                    DCD     SVC_Handler                ; SVCall Handler
+                    DCD     DebugMon_Handler           ; Debug Monitor Handler
+                    DCD     0                          ; Reserved
+                    DCD     PendSV_Handler             ; PendSV Handler
+                    DCD     SysTick_Handler            ; SysTick Handler
+    
+    //DCD：分配一个或者多个以字为单位的内存，以四字节对齐，并要求初始化这些内存。在向量表中，DCD 分配了一堆内存，并且以 ESR 的入口地址初始化它们。
+                        
+                    //下面是向量表中的外部中断的地址
+                    DCD     WWDG_IRQHandler            ; Window Watchdog
+                    DCD     PVD_IRQHandler             ; PVD through EXTI Line detect
+                    DCD     TAMPER_IRQHandler          ; Tamper
+                    DCD     RTC_IRQHandler             ; RTC
+                    DCD     FLASH_IRQHandler           ; Flash
+                    DCD     RCC_IRQHandler             ; RCC
+                    DCD     EXTI0_IRQHandler           ; EXTI Line 0
+                    DCD     EXTI1_IRQHandler           ; EXTI Line 1
+                    DCD     EXTI2_IRQHandler           ; EXTI Line 2
+                    DCD     EXTI3_IRQHandler           ; EXTI Line 3
+                    DCD     EXTI4_IRQHandler           ; EXTI Line 4
+                    DCD     DMA1_Channel1_IRQHandler   ; DMA1 Channel 1
+                    DCD     DMA1_Channel2_IRQHandler   ; DMA1 Channel 2
+                    DCD     DMA1_Channel3_IRQHandler   ; DMA1 Channel 3
+                    DCD     DMA1_Channel4_IRQHandler   ; DMA1 Channel 4
+                    DCD     DMA1_Channel5_IRQHandler   ; DMA1 Channel 5
+                    DCD     DMA1_Channel6_IRQHandler   ; DMA1 Channel 6
+                    DCD     DMA1_Channel7_IRQHandler   ; DMA1 Channel 7
+                    DCD     ADC1_2_IRQHandler          ; ADC1 & ADC2
+                    DCD     USB_HP_CAN1_TX_IRQHandler  ; USB High Priority or CAN1 TX
+                    DCD     USB_LP_CAN1_RX0_IRQHandler ; USB Low Priority or CAN1 RX0
+                    DCD     CAN1_RX1_IRQHandler        ; CAN1 RX1
+                    DCD     CAN1_SCE_IRQHandler        ; CAN1 SCE
+                    DCD     EXTI9_5_IRQHandler         ; EXTI Line 9..5
+                    DCD     TIM1_BRK_IRQHandler        ; TIM1 Break
+                    DCD     TIM1_UP_IRQHandler         ; TIM1 Update
+                    DCD     TIM1_TRG_COM_IRQHandler    ; TIM1 Trigger and Commutation
+                    DCD     TIM1_CC_IRQHandler         ; TIM1 Capture Compare
+                    DCD     TIM2_IRQHandler            ; TIM2
+                    DCD     TIM3_IRQHandler            ; TIM3
+                    DCD     TIM4_IRQHandler            ; TIM4
+                    DCD     I2C1_EV_IRQHandler         ; I2C1 Event
+                    DCD     I2C1_ER_IRQHandler         ; I2C1 Error
+                    DCD     I2C2_EV_IRQHandler         ; I2C2 Event
+                    DCD     I2C2_ER_IRQHandler         ; I2C2 Error
+                    DCD     SPI1_IRQHandler            ; SPI1
+                    DCD     SPI2_IRQHandler            ; SPI2
+                    DCD     USART1_IRQHandler          ; USART1
+                    DCD     USART2_IRQHandler          ; USART2
+                    DCD     USART3_IRQHandler          ; USART3
+                    DCD     EXTI15_10_IRQHandler       ; EXTI Line 15..10
+                    DCD     RTCAlarm_IRQHandler        ; RTC Alarm through EXTI Line
+                    DCD     USBWakeUp_IRQHandler       ; USB Wakeup from suspend
+                    DCD     TIM8_BRK_IRQHandler        ; TIM8 Break
+                    DCD     TIM8_UP_IRQHandler         ; TIM8 Update
+                    DCD     TIM8_TRG_COM_IRQHandler    ; TIM8 Trigger and Commutation
+                    DCD     TIM8_CC_IRQHandler         ; TIM8 Capture Compare
+                    DCD     ADC3_IRQHandler            ; ADC3
+                    DCD     FSMC_IRQHandler            ; FSMC
+                    DCD     SDIO_IRQHandler            ; SDIO
+                    DCD     TIM5_IRQHandler            ; TIM5
+                    DCD     SPI3_IRQHandler            ; SPI3
+                    DCD     UART4_IRQHandler           ; UART4
+                    DCD     UART5_IRQHandler           ; UART5
+                    DCD     TIM6_IRQHandler            ; TIM6
+                    DCD     TIM7_IRQHandler            ; TIM7
+                    DCD     DMA2_Channel1_IRQHandler   ; DMA2 Channel1
+                    DCD     DMA2_Channel2_IRQHandler   ; DMA2 Channel2
+                    DCD     DMA2_Channel3_IRQHandler   ; DMA2 Channel3
+                    DCD     DMA2_Channel4_5_IRQHandler ; DMA2 Channel4 & Channel5
+    __Vectors_End
+                        
+    //__Vectors_End为向量表结束地址
+    //(__Vectors_End) - (__Vectors)即是向量表大小
+                       
+    __Vectors_Size  EQU  __Vectors_End - __Vectors
+    
+                    AREA    |.text|, CODE, READONLY
+                    
+                    //定义一个名称为.text的代码段，可读    
+                      
+    //下面是复位中断程序
+    //复位子程序是系统上电后第一个执行的程序，调用 SystemInit 函数初始化系统时钟，然后调用 C 库函数 _mian，最终调用 main 函数去到 C 的世界。
+    
+    Reset_Handler   PROC
+                    EXPORT  Reset_Handler             [WEAK]
+                    IMPORT  __main
+                    IMPORT  SystemInit
+                    LDR     R0, =SystemInit
+                    BLX     R0               
+                    LDR     R0, =__main
+                    BX      R0
+                    ENDP
+      
+    //WEAK：表示弱定义，如果外部文件优先定义了该标号则首先引用该标号，如果外部文件没有声明也不会出错。这里表示复位子程序可以由用户在其他文件重新实现，这里并不是唯一的。带WEAK都是用户可以自己实现
+    //IMPORT：表示该标号来自外部文件，跟 C 语言中的 EXTERN 关键字类似。这里表示 SystemInit    和 __main 这两个函数均来自外部的文件。
+    //SystemInit() 是一个标准的库函数，在 system_stm32f10x.c 这个库文件总定义。主要作用是配置系统时钟，这里调用这个函数之后，单片机的系统时钟配被配置为 72M。
+    //__main 是一个标准的 C 库函数，主要作用是初始化用户堆栈，并在函数的最后调用 main 函数去到 C 的世界。这就是为什么我们写的程序都有一个 main 函数的原因。
+    //LDR: 从存储器中加载字到一个寄存器中，这里表示将函数SystemInit的地址加载到R0寄存器中
+    //BL : 跳转到由寄存器/标号给出的地址，并把跳转前的下条指令地址保存到LR，跳转到SystemInit执行
+    //再将main的地址存放到R0寄存器中，再通过BX跳转到main函数执行
+    //BX : 跳转到由寄存器/标号给出的地址，不用返回        
+                        
+                        
+    ; Dummy Exception Handlers (infinite loops which can be modified)
+    //下面的中断都是空的，用户自己在程序中定义
+    //B：跳转到一个标号，这里跳转到一个‘·’表示无限循环
+    NMI_Handler     PROC
+                    EXPORT  NMI_Handler                [WEAK]
+                    B       .
+                    ENDP
+    HardFault_Handler\
+                    PROC
+                    EXPORT  HardFault_Handler          [WEAK]
+                    B       .
+                    ENDP
+    MemManage_Handler\
+                    PROC
+                    EXPORT  MemManage_Handler          [WEAK]
+                    B       .
+                    ENDP
+    BusFault_Handler\
+                    PROC
+                    EXPORT  BusFault_Handler           [WEAK]
+                    B       .
+                    ENDP
+    UsageFault_Handler\
+                    PROC
+                    EXPORT  UsageFault_Handler         [WEAK]
+                    B       .
+                    ENDP
+    SVC_Handler     PROC
+                    EXPORT  SVC_Handler                [WEAK]
+                    B       .
+                    ENDP
+    DebugMon_Handler\
+                    PROC
+                    EXPORT  DebugMon_Handler           [WEAK]
+                    B       .
+                    ENDP
+    PendSV_Handler  PROC
+                    EXPORT  PendSV_Handler             [WEAK]
+                    B       .
+                    ENDP
+    SysTick_Handler PROC
+                    EXPORT  SysTick_Handler            [WEAK]
+                    B       .
+                    ENDP
+    
+    Default_Handler PROC
+    
+                    EXPORT  WWDG_IRQHandler            [WEAK]
+                    EXPORT  PVD_IRQHandler             [WEAK]
+                    EXPORT  TAMPER_IRQHandler          [WEAK]
+                    EXPORT  RTC_IRQHandler             [WEAK]
+                    EXPORT  FLASH_IRQHandler           [WEAK]
+                    EXPORT  RCC_IRQHandler             [WEAK]
+                    EXPORT  EXTI0_IRQHandler           [WEAK]
+                    EXPORT  EXTI1_IRQHandler           [WEAK]
+                    EXPORT  EXTI2_IRQHandler           [WEAK]
+                    EXPORT  EXTI3_IRQHandler           [WEAK]
+                    EXPORT  EXTI4_IRQHandler           [WEAK]
+                    EXPORT  DMA1_Channel1_IRQHandler   [WEAK]
+                    EXPORT  DMA1_Channel2_IRQHandler   [WEAK]
+                    EXPORT  DMA1_Channel3_IRQHandler   [WEAK]
+                    EXPORT  DMA1_Channel4_IRQHandler   [WEAK]
+                    EXPORT  DMA1_Channel5_IRQHandler   [WEAK]
+                    EXPORT  DMA1_Channel6_IRQHandler   [WEAK]
+                    EXPORT  DMA1_Channel7_IRQHandler   [WEAK]
+                    EXPORT  ADC1_2_IRQHandler          [WEAK]
+                    EXPORT  USB_HP_CAN1_TX_IRQHandler  [WEAK]
+                    EXPORT  USB_LP_CAN1_RX0_IRQHandler [WEAK]
+                    EXPORT  CAN1_RX1_IRQHandler        [WEAK]
+                    EXPORT  CAN1_SCE_IRQHandler        [WEAK]
+                    EXPORT  EXTI9_5_IRQHandler         [WEAK]
+                    EXPORT  TIM1_BRK_IRQHandler        [WEAK]
+                    EXPORT  TIM1_UP_IRQHandler         [WEAK]
+                    EXPORT  TIM1_TRG_COM_IRQHandler    [WEAK]
+                    EXPORT  TIM1_CC_IRQHandler         [WEAK]
+                    EXPORT  TIM2_IRQHandler            [WEAK]
+                    EXPORT  TIM3_IRQHandler            [WEAK]
+                    EXPORT  TIM4_IRQHandler            [WEAK]
+                    EXPORT  I2C1_EV_IRQHandler         [WEAK]
+                    EXPORT  I2C1_ER_IRQHandler         [WEAK]
+                    EXPORT  I2C2_EV_IRQHandler         [WEAK]
+                    EXPORT  I2C2_ER_IRQHandler         [WEAK]
+                    EXPORT  SPI1_IRQHandler            [WEAK]
+                    EXPORT  SPI2_IRQHandler            [WEAK]
+                    EXPORT  USART1_IRQHandler          [WEAK]
+                    EXPORT  USART2_IRQHandler          [WEAK]
+                    EXPORT  USART3_IRQHandler          [WEAK]
+                    EXPORT  EXTI15_10_IRQHandler       [WEAK]
+                    EXPORT  RTCAlarm_IRQHandler        [WEAK]
+                    EXPORT  USBWakeUp_IRQHandler       [WEAK]
+                    EXPORT  TIM8_BRK_IRQHandler        [WEAK]
+                    EXPORT  TIM8_UP_IRQHandler         [WEAK]
+                    EXPORT  TIM8_TRG_COM_IRQHandler    [WEAK]
+                    EXPORT  TIM8_CC_IRQHandler         [WEAK]
+                    EXPORT  ADC3_IRQHandler            [WEAK]
+                    EXPORT  FSMC_IRQHandler            [WEAK]
+                    EXPORT  SDIO_IRQHandler            [WEAK]
+                    EXPORT  TIM5_IRQHandler            [WEAK]
+                    EXPORT  SPI3_IRQHandler            [WEAK]
+                    EXPORT  UART4_IRQHandler           [WEAK]
+                    EXPORT  UART5_IRQHandler           [WEAK]
+                    EXPORT  TIM6_IRQHandler            [WEAK]
+                    EXPORT  TIM7_IRQHandler            [WEAK]
+                    EXPORT  DMA2_Channel1_IRQHandler   [WEAK]
+                    EXPORT  DMA2_Channel2_IRQHandler   [WEAK]
+                    EXPORT  DMA2_Channel3_IRQHandler   [WEAK]
+                    EXPORT  DMA2_Channel4_5_IRQHandler [WEAK]
+    
+    WWDG_IRQHandler
+    PVD_IRQHandler
+    TAMPER_IRQHandler
+    RTC_IRQHandler
+    FLASH_IRQHandler
+    RCC_IRQHandler
+    EXTI0_IRQHandler
+    EXTI1_IRQHandler
+    EXTI2_IRQHandler
+    EXTI3_IRQHandler
+    EXTI4_IRQHandler
+    DMA1_Channel1_IRQHandler
+    DMA1_Channel2_IRQHandler
+    DMA1_Channel3_IRQHandler
+    DMA1_Channel4_IRQHandler
+    DMA1_Channel5_IRQHandler
+    DMA1_Channel6_IRQHandler
+    DMA1_Channel7_IRQHandler
+    ADC1_2_IRQHandler
+    USB_HP_CAN1_TX_IRQHandler
+    USB_LP_CAN1_RX0_IRQHandler
+    CAN1_RX1_IRQHandler
+    CAN1_SCE_IRQHandler
+    EXTI9_5_IRQHandler
+    TIM1_BRK_IRQHandler
+    TIM1_UP_IRQHandler
+    TIM1_TRG_COM_IRQHandler
+    TIM1_CC_IRQHandler
+    TIM2_IRQHandler
+    TIM3_IRQHandler
+    TIM4_IRQHandler
+    I2C1_EV_IRQHandler
+    I2C1_ER_IRQHandler
+    I2C2_EV_IRQHandler
+    I2C2_ER_IRQHandler
+    SPI1_IRQHandler
+    SPI2_IRQHandler
+    USART1_IRQHandler
+    USART2_IRQHandler
+    USART3_IRQHandler
+    EXTI15_10_IRQHandler
+    RTCAlarm_IRQHandler
+    USBWakeUp_IRQHandler
+    TIM8_BRK_IRQHandler
+    TIM8_UP_IRQHandler
+    TIM8_TRG_COM_IRQHandler
+    TIM8_CC_IRQHandler
+    ADC3_IRQHandler
+    FSMC_IRQHandler
+    SDIO_IRQHandler
+    TIM5_IRQHandler
+    SPI3_IRQHandler
+    UART4_IRQHandler
+    UART5_IRQHandler
+    TIM6_IRQHandler
+    TIM7_IRQHandler
+    DMA2_Channel1_IRQHandler
+    DMA2_Channel2_IRQHandler
+    DMA2_Channel3_IRQHandler
+    DMA2_Channel4_5_IRQHandler
+                    B       .
+    
+                    ENDP
+    
+                    ALIGN
+    //ALIGN: 对指令或者数据存放的地址进行对齐，后面会跟一个立即数。缺省表示 4 字节对齐。
+        
+        
+    ;*******************************************************************************
+    ; User Stack and Heap initialization //用户栈和堆初始化, 由 C 库函数_main 来完成
+    ;*******************************************************************************
+                     IF      :DEF:__MICROLIB  //这个宏在KEIL中开启
+                    
+                     EXPORT  __initial_sp
+                     EXPORT  __heap_base
+                     EXPORT  __heap_limit
+                    
+                     ELSE
+                    
+                     IMPORT  __use_two_region_memory  
+         //如果上面的宏没有定义则使用用户自己定义的栈和堆空间，__use_two_region_memory函数用户自己实现，函数中定义栈和堆的空间，如果没有定义 __MICROLIB，则才用双段存储器模式，在keil设置中定义
+                     EXPORT  __user_initial_stackheap
+                     
+    __user_initial_stackheap
+    
+                     LDR     R0, =  Heap_Mem
+                     LDR     R1, = (Stack_Mem + Stack_Size)
+                     LDR     R2, = (Heap_Mem +  Heap_Size)
+                     LDR     R3, = Stack_Mem
+                     BX      LR
+    
+                     ALIGN
+    
+                     ENDIF
+    
+                     END
+    
+    ;******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE*****
+    
+    ```
+    
+    
+
+## 9.delay实现
+
+*   延时使用**SysTick**定时器：属于**M3内核**的外设，所有**M3内核**的芯片都具有这个定时器
+*   **SysTick**定时器是24位的向下递减的计数器，通过**SysTick_Config（）**设置重装载值来决定中断频率
+*   SysTick—系统定时器有 4 个寄存器：（第四个寄存器一般不用）![](C:\Users\zp\Desktop\Note\image\systick.jpg)
+
+*   **SysTick_Config()**：SysTick配置函数
+
+*   ```c
+    static __INLINE uint32_t SysTick_Config(uint32_t ticks)
+    { 
+      if (ticks > SysTick_LOAD_RELOAD_Msk)  return (1); 
+      //SysTick_LOAD_RELOAD_Msk：重装载值，输入的ticks大于重装载值，说明输入ticks无效返回1                                                             
+      SysTick->LOAD  = (ticks & SysTick_LOAD_RELOAD_Msk) - 1;  
+      //LOAD寄存器代表的是重装载寄存器，这里设置重装载值为（ticks-1）
+        
+      NVIC_SetPriority (SysTick_IRQn, (1<<__NVIC_PRIO_BITS) - 1);
+      //设置中断优先级，__NVIC_PRIO_BITS为4，这里设置SysTick_IRQn的优先级为15，最低
+      //如果要修改SysTick的优先级可以修改 (1<<__NVIC_PRIO_BITS) - 1 
+        
+      SysTick->VAL   = 0;
+      //设置当前数值寄存器为0
+        
+      SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | 
+                       SysTick_CTRL_TICKINT_Msk   | 
+                       SysTick_CTRL_ENABLE_Msk;     
+      //设置系统定时器的时钟源为 AHBCLK=72M
+      //使能系统定时器中断   
+      //使能定时器
+        
+      return (0);                                                 
+    }
+    ```
+
+*   其中调用了NVIC_SetPriority() 来配置系统定时器的中断优先级，该库函数也在 core_m3.h 中定义：
+
+*   ```c
+    static __INLINE void NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
+    {
+      if (IRQn < 0)  //先判断中断是不是小于0，小于0代表这个是系统异常，系统异常的优先级由内核外设 SCB 的寄存器 SHPRx 控制，如果大于 0 则是外部中断，外部中断的优先级由内核外设 NVIC 中的 IPx 寄存器控制。可以在中断向量表中查看哪些是内核外设
+      {
+        //内核外设的优先级由SCB寄存器来设置
+        SCB->SHP[((uint32_t)(IRQn) & 0xF)-4] = 
+            ((priority << (8 - __NVIC_PRIO_BITS)) & 0xff); 
+      } 
+      else 
+      {
+        //普通外设由NVIC寄存器来设置
+        NVIC->IP[(uint32_t)(IRQn)] = ((priority << (8 - __NVIC_PRIO_BITS)) & 0xff);     }       
+    }
+    ```
+
+*   **内核外设**和**普通外设**都有优先级，内核外设的中断优先级只有16个可编程优先级，数值越小，优先级越高
+
+*   **SysTick**属于内核外设，优先级为15，优先级最低
+
+*   普通外设在设置中断时首先要分组，设置抢占优先级和子优先级，在与内核外设的优先级进行比较的时候，可以将内核外设的优先级假设分组，比如：
+
+    *   配置一个外设的中断优先级分组为 2，抢占优先级为 1，子优先级也为 1，systick 的优先级为 固件库默认配置的 15。当我们比较内核外设和片上外设的中断优先级的时候，我们只需要抓住 NVIC 的中断优先级分组不仅对片上外设有效，同样对内核的外设也有效。我们把 systick 的优先 级 15 转换成二进制值就是 1111(0b)，又因为 NVIC 的优先级分组 2，那么前两位的 11(0b) 就是 3，后两位的 11(0b) 也是 3。
+
+*   **SysTick**初始化函数：
+
+*   ```c
+    /**
+      * @brief  启动系统滴答定时器 SysTick
+      * @param  无
+      * @retval 无
+      */
+    static __IO u32 TimingDelay;
+    
+    void SysTick_Init(void)
+    {
+    	/* SystemFrequency / 1000    1ms中断一次
+    	 * SystemFrequency / 100000	 10us中断一次
+    	 * SystemFrequency / 1000000 1us中断一次
+    	 */
+    //	if (SysTick_Config(SystemFrequency / 100000))	
+    	if (SysTick_Config(SystemCoreClock / 100000)) //SystemCoreClock为72M
+    	{                                            //所以配置的ticks为720,也就是重装载值
+    		/* Capture error */                      //频率为72M，所以10us中断一次
+    		while (1);
+    	}
+    }
+    
+    /**
+      * @brief   us延时程序,10us为一个单位
+      * @param  
+      *		@arg nTime: Delay_us( 1 ) 则实现的延时为 1 * 10us = 10us
+      * @retval  无
+      */
+    void Delay_us(__IO u32 nTime)
+    { 
+    	TimingDelay = nTime;	
+    
+    	// 使能滴答定时器  
+    	SysTick->CTRL |=  SysTick_CTRL_ENABLE_Msk;
+    
+    	while(TimingDelay != 0);
+    }
+    
+    /**
+      * @brief  获取节拍程序
+      * @param  无
+      * @retval 无
+      * @attention  在 SysTick 中断函数 SysTick_Handler()调用
+      */
+    void TimingDelay_Decrement(void)
+    {
+    	if (TimingDelay != 0x00)
+    	{ 
+    		TimingDelay--;
+    	}
+    }
+    
+    void SysTick_Handler(void)
+    {
+    	TimingDelay_Decrement();	
+    }
+    ```
+
+*   
 
 # the beginning of it all
 
@@ -1730,7 +2503,7 @@ m.insert(pair<int, int>(1, 10));
 
 * 两个$之间加入“ \ ”和字母名称
 * 常见：[Markdown常用操作：数学符号、空格、字体](https://www.jianshu.com/p/5a27d195678f)
-* $\alpha$:alpha   $\beta$:beta   $\gamma$:gamma   $\theta$:theta   $\pi$:pi   
+* $\alpha$:alpha   $\beta$:beta   $\gamma$:gamma   $\theta$:theta   $\pi$:pi   $\Delta$:Delta
 * 也可用2个$包住公式
 * 在2个$中：_表示下标，^表示上标
 * `^`用{\wedge}表示
