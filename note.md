@@ -22,6 +22,12 @@
 
 *   [如何正确计算并最大限度减小 IGBT 的死区时间 (infineon.com)](https://www.infineon.com/dgdl/Infineon-AN2007_04_Deadtime_calculation_for_IGBT_modules-AN-v1.0-cn.pdf?fileId=db3a304340a01a660140ba682fc61302)
 
+*   [深入理解STM32之储存器和总线架构1（基于STM32F411）](https://blog.csdn.net/charmingsun/article/details/52258419)
+
+*   [[STM32寄存器映射]](https://blog.csdn.net/charmingsun/article/details/52258419)
+
+*   [STM32基础知识—内存映射](https://zhuanlan.zhihu.com/p/511268958)
+
     
 
 
@@ -244,11 +250,127 @@
 
 ### 第一节：系统时间响应的性能指标
 
+*   **时域分析法**就是在时间域内对系统进行分析，具体来说就是以**系统的微分方程或传递函数**为工具，在典型输入信号的作用下，求解**输出的时间响应**来分析和评价系统的性能。
+*   时域分析是直接在时间域中对系统进行分析的方法，具有直观和准确的优点
+*   在初值为0的时候，一般都利用传递函数进行研究，用传递函数间接的评价系统的性能指标，具体是根据**闭环系统传递函数的极点和零点来分析系统的性能**，此时也称为复频域分析
+*   典型输入作用：![](C:\Users\zp\Desktop\Note\image\典型输入作用.jpg)
+*   线性系统时域性能指标：
+    *   **延迟时间 $t_d$**:阶跃响应第一次达到终值的50%所需的时间
+    *   **上升时间 $t_r$**:阶跃响应从终值的10％上升到终值的90％所需的时间，有振荡时，可定义为从 **0** 到第一次达到终值所需的时间
+    *   **峰值时间 $t_p$**:阶跃响应越过终值达到第一个峰值所需的时间
+    *   **超调量 $\sigma \%$**:峰值超出终值的百分比,$\sigma\%=\frac{h(tp)-h(\infty)}{h(\infty)}*100\%$
+    *   **调节时间 $t_s$:**阶跃响应到达并保持在终值 **5**％误差带内所需的最短时间
+    *   <img src="C:\Users\zp\Desktop\Note\image\延迟时间.jpg" style="zoom:50%;" />
+
+### 第二节：一阶系统的时域分析
+
+*   一阶系统的标准形式： $G(s)=\frac{K}{s},\phi(s) = \frac{\frac{K}{s}}{1+\frac{K}{s}}=\frac{1}{Ts+1},T=\frac{1}{K}$
+*   所以：$C(s)=\phi(s)R(s) = \frac{1}{s}-\frac{1}{s+\frac{1}{T}},h(t)=L^{-1}[C(s)]=1-e^{-\frac{t}{T}}$
+
+<img src="C:\Users\zp\Desktop\Note\image\一阶.jpg" style="zoom:60%;" />
+
+*   <img src="C:\Users\zp\Desktop\Note\image\一阶性能.jpg" style="zoom:50%;" />
+
+*   <img src="C:\Users\zp\Desktop\Note\image\一阶系统的典型响应.jpg" style="zoom: 50%;" />
+*   其中一阶系统的单位斜坡响应：$c(t)=(t-T)+Te^{-t/T}$
+    *   $(t-T)$为稳态分量，$Te^{-t/T}$为瞬态分量，初始状态下，初始位置和初始斜率都为0，输出量和输入量之间的位置误差随时间而增大最后趋近于 $T$
 
 
 
+### 第三节：二阶系统的时域分析
+
+*   二阶系统的典型结构为：$G(s)=\frac{w_n^2}{s(s+2\zeta w_n)}, \phi(s)=\frac{w_n^2}{s^2+2\zeta w_ns+w_n^2}$
+
+*   $K=\frac{w_n}{2\zeta}$,    $\zeta:$阻尼比，  $w_n:$无阻尼自然系数
+
+*   特征方程为：$D(s)=s^2+2\zeta w_n s + w_n^2 = 0$
+
+    *   | $\zeta=0$   | **0阻尼 **   | $\lambda _{1,2} = \pm jw_n$                          |
+        | ----------- | ------------ | ---------------------------------------------------- |
+        | $0<\zeta<1$ | **欠阻尼**   | $\lambda_{1,2}=-\zeta w_n \pm j \sqrt{1-\zeta^2}w_n$ |
+        | $\zeta = 1$ | **临界阻尼** | $\lambda _{1,2} = -w_n$                              |
+        | $\zeta > 1$ | **过阻尼**   | $\lambda_{1,2}=-\zeta w_n \pm j \sqrt{\zeta^2-1}w_n$ |
+
+    *   ![](C:\Users\zp\Desktop\Note\image\二阶阻尼.jpg)
+
+#### $\zeta >=1$(临界阻尼，过阻尼)
+
+<img src="C:\Users\zp\Desktop\Note\image\临界阻尼.jpg" style="zoom:50%;" />
+
+<img src="C:\Users\zp\Desktop\Note\image\过阻尼.jpg" style="zoom:55%;" />
+
+*   求特征方程的解：$\lambda_{1,2}$
+*   用 $T_1和T_2$来替换，其中 $T_1大于T_2$
+*   得到 $T_1,T_2和w_n,\zeta$的关系，将传递函数换成二阶典型方程后 $\phi(s)=\frac{w_n^2}{(s+\frac{1}{T_1})(s+\frac{1}{T_2})}$ 就能方便求得 $T_1,T_2$
+*   $w_n,\zeta$可由传递函数换成二阶典型方程 $\phi(s)=\frac{w_n^2}{s^2+2\zeta w_ns+w_n^2}$求得
+*   得到输出响应方程，**调节时间**与 $T_1，T_2$的关系，可以看出$\frac{t_s}{T_1}=f(T_1/T_2)$,如图：
+*   <img src="C:\Users\zp\Desktop\Note\image\关系.jpg" style="zoom:50%;" />
+*   知道了 $t_s/T_1$,可得：$t_S=\frac{t_s}{T_1}T_1$
+*   上升时间 $t_r=\frac{1+1.5\zeta+\zeta^2}{w_n}$
+*   当 $T_1 大于4倍T_2$,系统可等效为具有 $-1/T_1$闭环极点的一阶系统，此时 $t_S = 3T_1$
+*   **对于临界系统：**$T_1=T_2,\zeta=1,t_s=4.75T_1,t_r=\frac{1+1.5\zeta+\zeta^2}{w_n}$
 
 
+
+#### $0<\zeta<1$（欠阻尼）
+
+  ![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼.jpg)
+
+*   **对特征方程进行求解得到 $\lambda_{1,2}$,并表示在复平面上 **
+*   **对 $\beta$ 角进行理解，以及分解到实轴和虚轴的值**
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼2.jpg)
+
+*   **求输出响应函数，并利用在分子凑分母的方法进行拉氏反变换求解，其中用到sin函数的反变换**
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼3.jpg)
+
+
+
+*   **求解得到输出响应方程的时域方程**
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼4.jpg)
+
+*   **特殊情况下，$\zeta = 0，\beta = 90^。，h(t)$不断震荡，调节时间 $t_s$为无穷，超调量为100%**
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼5.jpg)
+
+*   **在 $0<= \zeta < 1$,输出响应方程的时域方程，其中图像被包含在两条包络线中，在t=0时，斜率为0，这是与一阶系统不同的一点，二阶系统斜率先增加再减少**
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼6.jpg)
+
+*   **问题：为什么要对输出响应方程求导？**
+
+*   **因为我们想要求 $t_p$峰值时间，需要知道函数什么时候达到峰值也就是导数为0的地方**
+*   **对二阶输出响应方程进行求导就是对传递函数进行拉氏反变换（单位脉冲响应）**
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼7.jpg)
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼8.jpg)
+
+*   **当导数为0时，我们发现 $\sqrt{1-\zeta ^2}w_nt_p=\pi$,这样我们就可以求得 $t_p$**
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼9.jpg)
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼10.jpg)
+
+*   **根据超调量的定义求得超调量，其中利用到 $sin{\beta}$的关系，然后得到 $\zeta，\sigma$的关系，$\sigma$只与 $\zeta$ 有关**
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼11.jpg)
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼12.jpg)
+
+*   **在$\zeta=0.7$的时候，$h(t)$ 刚好不超出5%，而在 $\zeta =0.65$ 的时候，$h(t)$又刚好超过了一点，导致在 $\zeta$ 连续变小的过程中，$t_s$不是连续的，所以工程上为了方便，统一以两条包络线进入5%误差带的时间作为 $t_s$**
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼13.jpg)
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼14.jpg)
+
+*   **得到 $t_s$ 的计算方程，其中 $\Delta\%=5\%$**
+
+![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼15.jpg)
+
+*   **重点的三个公式，结合复平面上的参数进行记忆**
 
 ***
 
@@ -256,9 +378,79 @@
 
 # STM32复习及深入
 
-## 1.工程架构
+## 1.架构
+
+### 1.1 工程架构
 
 ![](C:\Users\zp\Desktop\Note\image\工程架构.jpg)
+
+
+
+### 1.2 系统构架
+
+![](C:\Users\zp\Desktop\Note\image\系统结构.jpg)
+
+*   **ICode总线**：该总线将Cortex™-M3内核的指令总线与闪存指令接口相连接。指令预取在此总线上完成
+*   **DCode总线**：该总线将Cortex™-M3内核的DCode总线与闪存存储器的数据接口相连接(常量加载和调试访问)
+*   **系统总线**：此总线连接Cortex™-M3内核的系统总线(外设总线)到总线矩阵，总线矩阵协调着内核和DMA间 的访问
+*   **DMA总线**：此总线将DMA的AHB主控接口与总线矩阵相联，总线矩阵协调着CPU的DCode和DMA到 SRAM、闪存和外设的访问
+*   **总线矩阵**：以STM32F411为例：([深入理解STM32之储存器和总线架构1（基于STM32F411）](https://blog.csdn.net/charmingsun/article/details/52258419))
+    *   六条主控总线：
+        *   Cortex™-M4F 内核 I 总线、D 总线和 S 总线
+        *   DMA1 存储器总线
+        *   DMA2 存储器总线
+        *   DMA2 外设总线
+    *   五条被控总线：
+        *   内部 Flash ICode 总线
+        *   内部 Flash DCode 总线
+        *   主要内部 SRAM
+        *   AHB1 外设（包括 AHB-APB 总线桥和 APB 外设）
+        *   AHB2 外设
+    *   借助总线矩阵，可以实现主控总线到被控总线的访问，这样即使在多个高速外设同时运行期间，系统也可以实现并发访问和高效运行
+    *   ![](C:\Users\zp\Desktop\Note\image\总线.jpg)
+    *   **I总线**：此总线用于将 Cortex™-M4F 内核的指令总线连接到总线矩阵。内核通过此总线获取指令。此总线访问的对象是包含代码的存储器（内部 Flash/SRAM）。**（内核指令）**
+    *   **D总线**：此总线用于将 Cortex™-M4F 数据总线连接到总线矩阵。内核通过此总线进行立即数加载和调试访问。此总线访问的对象是包含代码或数据的存储器（内部 Flash/SRAM）。**（数据）**
+    *   **S总线**：此总线用于将 Cortex™-M4F 内核的系统总线连接到总线矩阵。此总线用于访问位于外设或SRAM 中的数据。也可通过此总线获取指令（效率低于 I 总线）。此总线访问的对象是内部 SRAM、包括 APB 外设在内的 AHB1 外设、AHB2 外设。**（外设或SRAM数据，指令）**
+    *   **DMA存储器总线**：此总线用于将 DMA 存储器总线主接口连接到总线矩阵。DMA 通过此总线来执行存储器数据的传入和传出。此总线访问的对象是数据存储器：内部 Flash、内部 SRAM 以及 S4 可以额外访问包括 APB 外设在内的 AHB1/AHB2 外设。**（DMA，存储器数据）**
+    *   **DMA外设总线**：此总线用于将 DMA 外设主总线接口连接到总线矩阵。DMA 通过此总线访问 AHB 外设或执行存储器间的数据传输。此总线访问的对象是 AHB 和 APB 外设以及数据存储器：Flash 储存器和内部 SRAM。**（DMA，外设数据）**
+    *   **总线矩阵**：总线矩阵用于主控总线之间的访问仲裁管理，仲裁采用循环调度算法
+    *   **AHB/APB 总线桥 (APB)**：借助两个 AHB/APB 总线桥 APB1 和 APB2，可在 AHB 总线与两个 APB 总线之间实现完全同步的连接，从而灵活选择外设频率
+
+### 1.3 存储器映射
+
+[STM32寄存器映射](https://zhuanlan.zhihu.com/p/96133532)
+
+[STM32基础知识—内存映射](https://zhuanlan.zhihu.com/p/511268958)
+
+![](C:\Users\zp\Desktop\Note\image\存储器映射.jpg)
+
+*   ![](C:\Users\zp\Desktop\Note\image\映像.jpg)
+*   STM32芯片内部的地址总线为32根，理论上可以访问4G字节的存储器空间,但实际上并没有4G的内存来访问
+
+>   STM32的32表示MCU芯片内部CPU在处理数据时，每次可以处理的数据**位宽为32个bit**
+
+*   **存储器本身并不具备地址，将芯片理论上的地址分配给存储器**，这就是**存储器映射**
+*   **寄存器映射：**在Block2区域，以4个字节为一个单元给予一个地址，再用别名来命名这些地址
+
+>   在存储器Block2区域，设计的是片上外设，以4个字节为一个单元，共32bit，每一个单元对应不同的功能，当我们控制这些单元时就可以驱动外设工作可以找到每个单元的起始地址，然后**通过C语言指针的操作方式来访问这些单元**，如果每次都是通过这种地址的方式来访问，不仅不好记忆还容易出错，聪明的工程师就根据每个单元功能的不同，以功能为名给这个内存单元取一个别名，这个别名就是我们经常说的寄存器，这个给已经分配好地址的有特定功能的内存单元取别名的过程就叫寄存器映射。
+
+*   ![](C:\Users\zp\Desktop\Note\image\寄存器.webp)
+*   GPIOB_IDR的地址：0x4002 0410，0x4002 0410就是在Block2区域中一个存储器的所赋予的立即数作为地址，GPIOB_IDR就是寄存器映射取的别名，通过基地址加上偏移地址来访问具体的寄存器
+*   **地址重映射**:
+    *   **单片机的自举就是单片机的启动。**单片机程序基本都是从0地址出开始运行的，F429的0x00000000-0x001FFFFF地址映射了到什么存储器上，那么就从该存储器上读取指令，开始运行。
+    *   0x00000000-0x001FFFFF到底映射在了什么存储器上决定于BOOT1、BOOT0这两个引脚的电平值，说白了就是，**通过BOOT1和BOOT0 引脚的电平值，可以选择将0x00000000-0x001FFFFF映射到不同的存储器上。**
+    *   STM32片内的FLASH分成两部分：**主存储块(主Flash)**、**信息块**。
+        *   **主存储块(主Flash)**用于存储程序，我们写的程序一般存储在这里。
+        *   **信息块**又分成两部分：**系统存储器(系统FLASH)**、**选项字节**。
+            *   **系统存储器**存储用于存放在系统存储器自举模式下的启动程序(BootLoader)，当使用ISP方式加载程序时，就是由这个程序执行。这个区域由芯片厂写入BootLoader，然后锁死，用户是无法改变这个区域的。
+            *   **选项字节**存储芯片的配置信息及对主存储块的保护信息。
+        *   ![](C:\Users\zp\Desktop\Note\image\flash.webp)
+    *   **通过BOOT1和BOOT0 引脚的电平值，可以选择将0x00000000-0x001FFFFF映射到不同的存储器上。**![](C:\Users\zp\Desktop\Note\image\boot.jpg)
+    *   **地址重映射**就是将地址再次映射到其他地方使两个区域拥有相同的地址（立即数），这样就可以在不同的区域访问相同的地址
+        *   比如我们使用**jlink**下载时，是将代码下载到0x0800 0000这个区域，但是CPU从0x0000 0000地址启动，这时我们将0x0000 0000 - 0x001F FFFF重映射到0x0800 0000 - 0x081F FFFF上，这样CPU就可以从0x 0000 0000的地址执行我们的代码 
+        *   当我们使用串口下载时由于不能直接将代码下载到**主FLASH(0x0800 0000)**中，所以我们需要借助**ST公司内嵌于系统存储区的Bootloader来引导把程序下载到主FLASH里面**。然后我们还需要将BOOT引脚为BOOT0=0，BOOT1=X(即从主闪存存储器启动)，复位后才能正常启动程序，因为代码下载在主FLASH中，需要从主FLASH中启动
+
+>   **JLink能直接把程序下载到内置的FLASH里面，是因为JLink下载器内部有Bootloader来引导把程序下载到FLASH里面**，我们使用串口下载软件**FlyMcu**要设置DTR(复位引脚)的低电平复位，RTS(BOOT0)的高电平进BootLoader，软件可以通过DTR和RTS改变BOOT的引脚电平，就不需要我们不断的手动改变BOOT引脚电平
 
 
 
@@ -1200,13 +1392,14 @@ typedef struct
 *   串口参数及时序：
 
     *   波特率：串口通信的速率，**一秒钟传输多少个码元**
-    *   起始位：标志一个数据帧的开始，固定为低电平，**下降沿代表起始位**
+    *   起始位：标志一个数据帧的开始，固定为低电平，**起始位必须是持续一个比特时间的逻辑0电平**
     *   数据位：数据帧的有效载荷，1为高电平，0为低电平，低位先行
     *   校验位：用于数据验证，根据数据位计算得来
-    *   停止位：用于数据帧间隔，固定为高电平，**上升沿代表停止位**
+    *   停止位：用于数据帧间隔，固定为高电平，**必须是逻辑1电平以确定下一次起始位的到来**
+    *   空闲位：空闲位是指从一个字符的停止位结束到下一个字符的起始位开始，表示线路处于空闲状态，**必须由高电平来填充**。
     *   ![](C:\Users\zp\Desktop\Note\image\usart时序.jpg)
 
-*   如果有校验位则：
+*   如果有校验位：
 
     *   奇校验：每个字节传送整个过程中bit为1的个数是奇数个（校验位调整个数），加上一位校验位保证一个数据帧高位（1）为奇数个
     *   偶校验：每个字节传送整个过程中bit为1的个数是偶数个（校验位调整个数），加上一位校验位保证一个数据帧高位（1）为偶数个
@@ -1335,6 +1528,7 @@ pritnf("%d\n",12345);
 
 void USART1_IRQHandler(void)
 {
+    //获取USART_IT_RXNE的状态，查看是否接受到了数据
 	if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
 	{
 		uint8_t RxData = USART_ReceiveData(USART1);
@@ -1776,7 +1970,7 @@ void USART1_IRQHandler(void)
     
     
 
-## 9.delay实现
+## 9.SysTick
 
 *   延时使用**SysTick**定时器：属于**M3内核**的外设，所有**M3内核**的芯片都具有这个定时器
 *   **SysTick**定时器是24位的向下递减的计数器，通过**SysTick_Config（）**设置重装载值来决定中断频率
@@ -1896,7 +2090,137 @@ void USART1_IRQHandler(void)
     }
     ```
 
-*   
+
+
+
+## 10.DMA
+
+*   DMA（Direct Memory Access）直接存储器存取
+*   DMA可以提供外设和存储器或者存储器和存储器之间的高速数据传输，无须CPU干预，节省了CPU的资源
+*   12个独立可配置的通道： DMA1（7个通道）， DMA2（5个通道）
+*   每个通道都支持软件触发和特定的硬件触发
+*   还有一个仲裁器来协调各个DMA请求的优先权
+*   DMA基本结构：
+*   ![](C:\Users\zp\Desktop\Note\image\dma.jpg)
+*   总的来说就是：将A的内容转运到B，其中需要设置**A和B的起始地址**，**转运的数据宽度**，**地址是否自增**，**转运的方向**，转运的开始是**软件触发还是硬件触发**(通过M2M来设置)，还有一个传输计数器可以配置自动重装器来设置**是否连续使用DMA**
+*   每个外设使用DMA的通道不同：![](C:\Users\zp\Desktop\Note\image\dma通道.jpg)
+*   两边传输的数据宽度如果不同则遵循 C 的规则，少位补0，多位舍去高位
+*   **配合ADC使用：**
+*   ```C
+    uint16_t AD_Value[4];
+    
+    void AD_Init(void)
+    {
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE); //打开DMA时钟
+    	
+    	RCC_ADCCLKConfig(RCC_PCLK2_Div6); //12M
+    	
+    	GPIO_InitTypeDef GPIO_InitStructure;
+    	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;  //模拟输入
+    	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3;
+    	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    	GPIO_Init(GPIOA, &GPIO_InitStructure);
+    	
+        //配置ADC1的规则组通道1-4，优先级，采样周期
+    	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_55Cycles5);
+    	ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 2, ADC_SampleTime_55Cycles5);
+    	ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 3, ADC_SampleTime_55Cycles5);
+    	ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 4, ADC_SampleTime_55Cycles5);
+    		
+    	ADC_InitTypeDef ADC_InitStructure;
+    	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent; //独立模式
+    	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right; //数据右对齐
+    	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None; //无外部触发
+    	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE; //使能连续转换
+    	ADC_InitStructure.ADC_ScanConvMode = ENABLE; //使能扫描模式
+    	ADC_InitStructure.ADC_NbrOfChannel = 4; //ADC转换的通道数为4
+    	ADC_Init(ADC1, &ADC_InitStructure);
+    	
+    	DMA_InitTypeDef DMA_InitStructure;
+    	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;  //源地址
+    	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+    	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable; //是否自增
+    	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)AD_Value; //目标地址
+    	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord; //半字长度
+    	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable; //地址自增
+    	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC; //传输方向
+    	DMA_InitStructure.DMA_BufferSize = 4; //传输计数器
+    	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular; //是否使用自动重装
+    	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable; 
+        //软件触发还是硬件触发，Disable代表硬件触发
+    	DMA_InitStructure.DMA_Priority = DMA_Priority_Medium; //优先级
+    	DMA_Init(DMA1_Channel1, &DMA_InitStructure); //DMA1的1通道
+    	
+    	DMA_Cmd(DMA1_Channel1, ENABLE);  //如果不是连续使用DMA在使能DMA后就会执行转运工作
+    	ADC_DMACmd(ADC1, ENABLE); //开启ADC的DMA触发信号
+    	ADC_Cmd(ADC1, ENABLE);
+    	
+    	ADC_ResetCalibration(ADC1);  //复位校准
+    	while (ADC_GetResetCalibrationStatus(ADC1) == SET);  //等待复位校准完成
+    	ADC_StartCalibration(ADC1);  //开始校准
+    	while (ADC_GetCalibrationStatus(ADC1) == SET);  //等待校准完成
+    	
+    	ADC_SoftwareStartConvCmd(ADC1, ENABLE);  //软件触发ADC
+    }
+    
+    //如果是单次转运：使用下面来软件触发DMA转换
+    void MyDMA_Transfer(void)
+    {
+    	DMA_Cmd(DMA1_Channel1, DISABLE);
+    	DMA_SetCurrDataCounter(DMA1_Channel1, MyDMA_Size);
+    	DMA_Cmd(DMA1_Channel1, ENABLE);
+    	
+    	while (DMA_GetFlagStatus(DMA1_FLAG_TC1) == RESET); //转运完成标志位
+    	DMA_ClearFlag(DMA1_FLAG_TC1);
+    }
+    
+    ```
+*   **USART配合DMA使用：**
+*   ```c
+    //从内存到外设
+    uint8_t buff[5] = {0,1,2,3,4};
+    
+    void MyDMA_Init()
+    {
+    	DMA_InitTypeDef DMA_InitStructure;
+    	
+    	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+    	
+    	DMA_InitStructure.DMA_BufferSize = 5;
+    	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+    	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+    	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)buff;
+    	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+    	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+    	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+    	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART1->DR;
+    	DMA_InitStructure.DMA_PeripheralDataSize = DMA_MemoryDataSize_Byte;
+    	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+    	DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;
+    	
+    	DMA_Init(DMA1_Channel4, &DMA_InitStructure);
+    	
+    	DMA_Cmd (DMA1_Channel4,DISABLE);
+    }
+    
+    //如果是单次转运：使用下面来软件触发DMA转换
+    void MyDMA_Transfer(void)
+    {
+    	DMA_Cmd(DMA1_Channel4, DISABLE);
+    	DMA_SetCurrDataCounter(DMA1_Channel4, 5);
+    	DMA_Cmd(DMA1_Channel4, ENABLE);
+    	
+    	while (DMA_GetFlagStatus(DMA1_FLAG_TC4) == RESET); //转运完成标志位
+    	DMA_ClearFlag(DMA1_FLAG_TC4);  //通道改变的时候标志位也要改变
+    }
+    
+    
+    //接收同理
+    ```
+
+
 
 # the beginning of it all
 
