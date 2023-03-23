@@ -10,7 +10,7 @@
 
 *   [Google](https://www.google.com.mm/)
 
-*   [‎Apple Music 上周杰伦的歌曲《青花瓷》](https://music.apple.com/cn/album/青花瓷/536030690?i=536030695)
+*   [‎Apple Music 《青花瓷》](https://music.apple.com/cn/album/青花瓷/536030690?i=536030695)
 
 *   [自动控制原理课件](http://mooc1.xtu.edu.cn/nodedetailcontroller/visitnodedetail?courseId=217407879&knowledgeId=418213775)
 
@@ -27,6 +27,10 @@
 *   [[STM32寄存器映射]](https://blog.csdn.net/charmingsun/article/details/52258419)
 
 *   [STM32基础知识—内存映射](https://zhuanlan.zhihu.com/p/511268958)
+
+*   [SparkFun Electronics—芯片手册](https://www.sparkfun.com/)
+
+*   [常见蓝牙模块介绍和AT指令](https://blog.csdn.net/qlexcel/article/details/103815926)
 
     
 
@@ -390,9 +394,9 @@
 
 ![](C:\Users\zp\Desktop\Note\image\系统结构.jpg)
 
-*   **ICode总线**：该总线将Cortex™-M3内核的指令总线与闪存指令接口相连接。指令预取在此总线上完成
-*   **DCode总线**：该总线将Cortex™-M3内核的DCode总线与闪存存储器的数据接口相连接(常量加载和调试访问)
-*   **系统总线**：此总线连接Cortex™-M3内核的系统总线(外设总线)到总线矩阵，总线矩阵协调着内核和DMA间 的访问
+*   **ICode总线**：该总线将Cortex™-M3内核的**指令总线**与**闪存指令接口**相连接。指令预取在此总线上完成
+*   **DCode总线**：该总线将Cortex™-M3内核的**DCode总线**与**闪存存储器的数据接口**相连接(常量加载和调试访问)
+*   **系统总线**：此总线连接Cortex™-M3内核的系统总线(外设总线)到总线矩阵，总线矩阵协调着内核和DMA间的访问
 *   **DMA总线**：此总线将DMA的AHB主控接口与总线矩阵相联，总线矩阵协调着CPU的DCode和DMA到 SRAM、闪存和外设的访问
 *   **总线矩阵**：以STM32F411为例：([深入理解STM32之储存器和总线架构1（基于STM32F411）](https://blog.csdn.net/charmingsun/article/details/52258419))
     *   六条主控总线：
@@ -413,7 +417,7 @@
     *   **S总线**：此总线用于将 Cortex™-M4F 内核的系统总线连接到总线矩阵。此总线用于访问位于外设或SRAM 中的数据。也可通过此总线获取指令（效率低于 I 总线）。此总线访问的对象是内部 SRAM、包括 APB 外设在内的 AHB1 外设、AHB2 外设。**（外设或SRAM数据，指令）**
     *   **DMA存储器总线**：此总线用于将 DMA 存储器总线主接口连接到总线矩阵。DMA 通过此总线来执行存储器数据的传入和传出。此总线访问的对象是数据存储器：内部 Flash、内部 SRAM 以及 S4 可以额外访问包括 APB 外设在内的 AHB1/AHB2 外设。**（DMA，存储器数据）**
     *   **DMA外设总线**：此总线用于将 DMA 外设主总线接口连接到总线矩阵。DMA 通过此总线访问 AHB 外设或执行存储器间的数据传输。此总线访问的对象是 AHB 和 APB 外设以及数据存储器：Flash 储存器和内部 SRAM。**（DMA，外设数据）**
-    *   **总线矩阵**：总线矩阵用于主控总线之间的访问仲裁管理，仲裁采用循环调度算法
+    *   **总线矩阵**：总线矩阵用于主控总线之间的访问仲裁管理，仲裁采用循环调度算法**（仲裁管理）**
     *   **AHB/APB 总线桥 (APB)**：借助两个 AHB/APB 总线桥 APB1 和 APB2，可在 AHB 总线与两个 APB 总线之间实现完全同步的连接，从而灵活选择外设频率
 
 ### 1.3 存储器映射
@@ -482,7 +486,7 @@
 
 *   **B，**这里是 RTC 时钟源，从图上可以看出，RTC 的时钟源可以选择 LSI，LSE，以及 HSE 的 128 分频。
 
-*   **C，**从图中可以看出 C 处 USB 的时钟是来自 PLL 时钟源。STM32 中有一个全速功能 的 USB 模块，其串   行接口引擎需要一个频率为 48MHz 的时钟源。该时钟源只能从 PLL 输出端获取，可以选择为 1.5 分频或者 1 分频，也就是，当需要使用 USB 模块时，PLL 必须使能，并且时钟频率配置为 48MHz 或 72MHz。
+*   **C，**从图中可以看出 C 处 USB 的时钟是来自 PLL 时钟源。STM32 中有一个全速功能的 USB 模块，其串行接口引擎需要一个频率为 48MHz 的时钟源。该时钟源只能从 PLL 输出端获取，可以选择为 1.5 分频或者 1 分频，也就是，当需要使用 USB 模块时，PLL 必须使能，并且时钟频率配置为 48MHz 或 72MHz。
 
 *   **D，**D 处是 STM32 的系统时钟 SYSCLK，它是供 STM32 中绝大部分部件工作的时钟源。系统时钟可选择为 PLL 输出、HSI 或者 HSE。系统时钟最大频率为 72MHz， 当然也可以超频，不过一般情况为了系统稳定性是没有必要冒风险去超频的。
 
@@ -1539,7 +1543,160 @@ void USART1_IRQHandler(void)
 }
 ```
 
+
+
+### 7.3 IIC
+
+*   I2C总线（Inter IC BUS）是由Philips公司开发的一种通用数据总线
+*   两根通信线：时钟线SCL（Serial Clock）、数据线SDA（Serial Data）
+*   同步，半双工，主要用于**低速**，**低距离**的芯片之间的通信
+*   带数据应答
+
+*   支持总线挂载多设备（一主多从、多主多从）
+*   **设备的SCL和SDA均要配置成开漏输出模式，使用外部上拉电阻(一般 $4.7k\Omega$)连接到正电源**
+    *   开漏输出只能输出低电平，输出高电平会使引脚处于浮空状态，由外部上拉电阻来拉高
+    *   这样当总线空闲时，两根线均是高电平，只要有设备输出低电平都将使总线的信号变低从而来实现多主机模式下的时钟同步和总线仲裁
+    *   防止设备间短路
+    *   避免引脚模式的频繁切换，要输出就可以通过输出高低电平，要输入就直接输出高电平
+
+![](C:\Users\zp\Desktop\Note\image\iic.jpg)
+
+*   **IIC时序：**
+
+    *   **空闲状态：**SCl和SDA都是高电平
+    *   **第一个字节：**设备地址(7位)和读写判断(1位)，0表示主机发送数据，1表示主机接收数据
+    *   **起始条件：**SCL**高电平**期间，SDA从**高电平**切换到**低电平**
+    *   **终止条件：**SCL**高电平**期间，SDA从**低电平**切换到**高电平**
+    *   <img src="C:\Users\zp\Desktop\Note\image\起始.jpg" style="zoom:50%;" />
+    *   **发送字节：**SCL低电平期间，**主机**在SCL低电平期间将数据位依次放到SDA线上（高位先行），然后释放SCL，**从机**将在SCL高电平期间**读取**数据位，所以SCL高电平期间SDA不允许有数据变化，依次循环上述过程8次，即可发送一个字节
+    *   **接收字节：**SCL低电平期间，**从机**在低电平期间将数据位依次放到SDA线上（高位先行），然后释放SCL，**主机**将在SCL高电平期间**读取**数据位，所以SCL高电平期间SDA不允许有数据变化，依次循环上述过程8次，即可接收一个字节（主机在接收之前，需要释放SDA）
+    *   <img src="C:\Users\zp\Desktop\Note\image\字节.jpg" style="zoom:50%;" />
+    *   **发送应答：**主机在接收完一个字节之后，在下一个时钟发送一位数据，数据0表示应答，数据1表示非应答
+    *   **接收应答：**主机在发送完一个字节之后，在下一个时钟接收一位数据，判断从机是否应答，数据0表示应答，数据1表示非应答（主机在接收之前，需要释放SDA）
+    *   <img src="C:\Users\zp\Desktop\Note\image\应答.jpg" style="zoom:50%;" />
+    *   **特殊情况：**
+        *   由于某种原因从机不对主机寻址信号应答时（如从机正在进行实时性的处理工作而无法接收总线上的数据），从机必须将SDA线置于高电平，而由主机产生一个终止信号来结束总线的数据传送
+        *   如果从机对主机进行了应答，但在数据传送一段时间后从机无法接收更多的数据时，从机可以通过对无法接收的第一个数据字节的“非应答”通知主机，主机则应发出终止信号来结束数据的继续传送
+        *   当主机接收数据时，主机接收到最后一个数据字节后，必须向从机发出一个结束传送的信号，这个信号是由从机的“非应答”来实现的，然后，从机释放SDA线，以允许主机产生终止信号
+
+*   每次数据传送总是由主机产生的**终止信号**来结束。但是，若主机希望继续占用总线进行新的数据传送，则可以**不产生终止信号**，马上再次发出**起始信号**对另一从机进行寻址。
+
+*   模拟IIC实现：
+
+*   ```c
+    #define delay_i2c()  delay_us(10);
+    
+    void MyI2c_W_SCL(uint8_t BitValue)
+    {
+        GPIO_WriteBit(GPIO_SCL_PORT, GPIO_SCL_PIN, (BitAction)BitValue);  
+        //对SCL进行写位,写1为拉高，写0为拉低
+    }
+    
+    void MyI2c_W_SDA(uint8_t BitValue)
+    {
+        GPIO_WriteBit(GPIO_SDA_PORT, GPIO_SDA_PIN, (BitAction)BitValue);  
+        //对SDA进行写位,写1为拉高，写0为拉低
+    }
+    
+    uint8_t MyI2c_R_SDA(void)   //对数据只需要看SDA上的电平就行
+    {
+        uint8_t BitValue;
+        BitValue = GPIO_ReadInputDataBit(GPIO_SDA_PORT,GPIO_SDA_PIN); //读SDA上的电平
+        delay_i2c()
+        return BitValue;
+    }
+    
+    void MyI2C_Init(void)
+    {
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    	
+    	GPIO_InitTypeDef GPIO_InitStructure;
+    	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD; //配置为开漏输出
+    	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
+    	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    	GPIO_Init(GPIOB, &GPIO_InitStructure);
+    	
+    	GPIO_SetBits(GPIOB, GPIO_Pin_10 | GPIO_Pin_11); //起始先拉高
+    }
+    
+    void MyI2C_Start(void)  //起始信号
+    {
+        MyI2C_W_SDA(1); delay_i2c()    //先将SDA拉高为拉低做准备
+    	MyI2C_W_SCL(1); delay_i2c()    //再将SCL拉高
+    	MyI2C_W_SDA(0); delay_i2c()    //SDA和SCL都是高之后，先将SDA拉低(代表起始信号)
+    	MyI2C_W_SCL(0); delay_i2c()    //再将SCL拉低，这时主机或者从机在SDA上写数据
+    }
+    
+    void MyI2C_SendByte(uint8_t Byte)  //发送数据
+    {
+        uint8_t i;
+        for (i = 0; i < 8; i ++)
+        {                                                 //写数据之前SCL为低
+            MyI2C_W_SDA(Byte & (0x80 >> i)); delay_i2c()  //在SDA上写数据，循环8次
+            MyI2C_W_SCL(1); delay_i2c()  //先将SCL拉高，即保证SCL为高期间，SDA的电平不变
+            MyI2C_W_SCL(0); delay_i2c()  //从机读取完后将SCL拉低，之后改变SDA数据
+        }
+    }
+    
+    uint8_t MyI2C_ReceiveByte(void)    //接收数据
+    {
+        uint8_t i,Byte = 0x00;
+        MyI2C_W_SDA(1); delay_i2c()    //先将SDA拉高(释放)，交由从机来控制，从机在SDA上写数据
+        for (i = 0; i < 8; i ++)
+        {
+            MyI2C_W_SCL(1); delay_i2c()   //将SCL拉高，保证SDA的电平比SCL长
+            if (MyI2C_R_SDA() == 1){Byte |= (0x80 >> i);} //读SDA数据存放在Byte中
+            MyI2C_W_SCL(0); delay_i2c()   //将SCL拉低，数据读取完成，从机改变SDA的数据
+        }
+        return Byte;
+    }
+    
+    void MyI2C_SendAck(uint8_t AckBit)     //发送应答，主机在接收一个数据之后要发送一个应答
+    {
+        MyI2C_W_SDA(AckBit); delay_i2c()   //写之前SCL为低电平，主机写应答位
+        MyI2C_W_SCL(1); delay_i2c()        //将SCL拉高，从机开始读取应答位
+        MyI2C_W_SCL(0); delay_i2c()        //将SCl拉低，从机已经读取完成
+    }
+    
+    uint8_t MyI2C_ReceiveAck(void)    //主机接收应答位
+    {
+    	uint8_t AckBit;
+    	MyI2C_W_SDA(1); delay_i2c()   //主机先释放SDA，从机在SDA上写应答位
+    	MyI2C_W_SCL(1); delay_i2c()   //将SCL拉高，开始读取SDA上的应答位
+    	AckBit = MyI2C_R_SDA();       //读取SDA
+    	MyI2C_W_SCL(0);               //将SCL拉低，应答位读取完成，为下一次通讯做准备
+    	return AckBit;
+    }
+    
+    void MyI2c_Stop(void)
+    {
+        MyI2C_W_SDA(0); delay_i2c()   //先将SDA拉低，为拉高做准备
+    	MyI2C_W_SCL(1); delay_i2c()   //将SCL拉高
+        MyI2C_W_SDA(1); delay_i2c()   //在SCL为高期间将SDA拉高表示终止位
+    }
+    
+    //每次发送或者接收一次数据后，SCL都必须为低，这样才能修改SDA的数据
+    //而每次发送或者接收一次数据后，SDA的电平是不确定的，因为SDA是数据位
+    //MyI2C_W_SDA(1);并不代表将SDA拉高，因为是开漏输出，SDA的电平由外界决定
+    //MyI2C_W_SDA(1);可以代表将SDA释放交给从机，或者主机对SDA写数据
+    ```
+
+
+
+### 7.4蓝牙
+
+*   [常见蓝牙模块介绍和AT指令](https://blog.csdn.net/qlexcel/article/details/103815926)
+
+*   每种不同的模块有不同的AT指令，配置好蓝牙之后就可以将蓝牙当串口使用
+
+*   蓝牙调参模板：
+
+*   ```c
+    ```
+
 *   
+
+
 
 ## 8.STM32启动文件的详解
 
@@ -2219,6 +2376,10 @@ void USART1_IRQHandler(void)
     
     //接收同理
     ```
+
+
+
+
 
 
 
