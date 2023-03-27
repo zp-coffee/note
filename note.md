@@ -266,7 +266,7 @@
     *   **调节时间 $t_s$:**阶跃响应到达并保持在终值 **5**％误差带内所需的最短时间
     *   <img src="C:\Users\zp\Desktop\Note\image\延迟时间.jpg" style="zoom:50%;" />
 
-### 第二节：一阶系统的时域分析
+### 第二节：一阶系统的动态性能指标
 
 *   一阶系统的标准形式： $G(s)=\frac{K}{s},\phi(s) = \frac{\frac{K}{s}}{1+\frac{K}{s}}=\frac{1}{Ts+1},T=\frac{1}{K}$
 *   所以：$C(s)=\phi(s)R(s) = \frac{1}{s}-\frac{1}{s+\frac{1}{T}},h(t)=L^{-1}[C(s)]=1-e^{-\frac{t}{T}}$
@@ -281,7 +281,7 @@
 
 
 
-### 第三节：二阶系统的时域分析
+### 第三节：二阶系统的阶跃响应及动态性能
 
 *   二阶系统的典型结构为：$G(s)=\frac{w_n^2}{s(s+2\zeta w_n)}, \phi(s)=\frac{w_n^2}{s^2+2\zeta w_ns+w_n^2}$
 
@@ -306,11 +306,12 @@
 *   求特征方程的解：$\lambda_{1,2}$
 *   用 $T_1和T_2$来替换，其中 $T_1大于T_2$
 *   得到 $T_1,T_2和w_n,\zeta$的关系，将传递函数换成二阶典型方程后 $\phi(s)=\frac{w_n^2}{(s+\frac{1}{T_1})(s+\frac{1}{T_2})}$ 就能方便求得 $T_1,T_2$
+*   知道了 $T_1,T_2$,就能求得 $\frac{T_1}{T_2}$,方便后面查表求得 $\frac{t_s}{T_1}$
 *   $w_n,\zeta$可由传递函数换成二阶典型方程 $\phi(s)=\frac{w_n^2}{s^2+2\zeta w_ns+w_n^2}$求得
 *   得到输出响应方程，**调节时间**与 $T_1，T_2$的关系，可以看出$\frac{t_s}{T_1}=f(T_1/T_2)$,如图：
 *   <img src="C:\Users\zp\Desktop\Note\image\关系.jpg" style="zoom:50%;" />
 *   知道了 $t_s/T_1$,可得：$t_S=\frac{t_s}{T_1}T_1$
-*   上升时间 $t_r=\frac{1+1.5\zeta+\zeta^2}{w_n}$
+*   上升时间 $t_r=\frac{1+1.5\zeta+\zeta^2}{w_n}$,峰值时间 $t_p=\infty$,超调量 $\sigma \%= 0$
 *   当 $T_1 大于4倍T_2$,系统可等效为具有 $-1/T_1$闭环极点的一阶系统，此时 $t_S = 3T_1$
 *   **对于临界系统：**$T_1=T_2,\zeta=1,t_s=4.75T_1,t_r=\frac{1+1.5\zeta+\zeta^2}{w_n}$
 
@@ -375,6 +376,125 @@
 ![](C:\Users\zp\Desktop\Note\image\二阶欠阻尼15.jpg)
 
 *   **重点的三个公式，结合复平面上的参数进行记忆**
+
+
+
+#### $\zeta =0.707$(最佳阻尼比)
+
+*   $w_n$确定时，$t_s$实际最小
+*   例如当实轴上 $\zeta w_n = C$ 时，实轴为常数，改变虚轴大小
+*   ![](C:\Users\zp\Desktop\Note\image\最佳阻尼比.jpg)
+*   **当虚轴的值不断增加，$\beta$ 也不断增加，导致 $\zeta$ 的值不断减小，按照工程上计算 $t_s$ 的公式来算本应该保持不变（$t_s$等于3.5除以实轴），但是实际上的值如右图所示，在 $\zeta = 0.707$ 的位置上达到最小**
+*   再假如 $w_n = C$ 时，也就是模不变，改变 $\beta$ 的值
+*   ![](C:\Users\zp\Desktop\Note\image\最佳.jpg)
+*   **在 $\beta=45$ 的地方，再增大的话，实轴增大，$t_s$应该减小，但是实际上如右图所示，在 $\beta =45$ 的地方最小，这时 $\zeta = 0.707$，$t_s$最小，之后上升**
+*   <img src="C:\Users\zp\Desktop\Note\image\变化规律.jpg" style="zoom:67%;" />
+*   **$\beta$ 怎么变化 $\sigma$ 就怎么变化，$t_s$ 随着实轴的大小进行变化，$t_p$ 随着虚轴的大小进行变化**
+*   ![](C:\Users\zp\Desktop\Note\image\变化图.jpg)
+*   **上图在 s 平面中：**
+    *   **虚轴增加峰值时间减小，对应峰值来的时间变短，所以振荡频率增加**
+    *   **实轴增加调节时间变短，对应包络线收缩的越紧，所以收敛的越快**
+    *   在虚轴上，也就是0阻尼情况，超调量100%，调节时间无穷
+    *   在虚轴右边的根就是发散的了
+
+
+
+### 第四节：改善二阶系统动态性能的措施
+
+*   测速反馈  ————增加阻尼
+*   比例+微分————提前控制
+*   ![](C:\Users\zp\Desktop\Note\image\反馈调节.jpg)
+*   **其中K=10**
+*   测速反馈相比于原系统：**改变了 $2w_n\zeta$ 的大小，增加阻尼**
+*   比例加微分相比于原系统：**改变 $2w_n\zeta$ 的同时增加了零点，达到提前控制的效果**
+*   测速反馈计算动态性能指标按照前面的欠阻尼公式：
+*   <img src="C:\Users\zp\Desktop\Note\image\二阶欠阻尼15.jpg" style="zoom:50%;" />
+*   对于比例加微分控制：使用零点极点法
+*   <img src="C:\Users\zp\Desktop\Note\image\零点极点法.jpg" style="zoom:67%;" />
+*   相比于原来的公式，这里多出了 $\theta$ 角，起到提前控制，D为虚轴上的值，$\sigma_1$ 是实轴上的值 
+
+
+
+### 第五节：高阶系统的阶跃响应及动态性能
+
+<img src="C:\Users\zp\Desktop\Note\image\高阶系统.jpg" style="zoom:50%;" />
+
+*   上图为高阶系统的传递函数和时域方程（略看）
+
+*   对于高阶系统，我们采用估算，只计算闭环主导极点
+
+*   **主导极点：距离虚轴最近而且附近又没有闭环零点的闭环极点**
+*   ![](C:\Users\zp\Desktop\Note\image\高阶零点极点.jpg)
+*   偶极子表示在闭环零极点图上，零点和极点相邻，可以一起约掉
+*   <img src="C:\Users\zp\Desktop\Note\image\偶极点.jpg" style="zoom:50%;" />
+*   <img src="C:\Users\zp\Desktop\Note\image\高阶计算.jpg" style="zoom:50%;" />
+*   <img src="C:\Users\zp\Desktop\Note\image\高阶计算2.jpg" style="zoom:50%;" />
+
+
+
+### 第六节：线性系统的稳定性分析
+
+*   稳定性的概念：$\lim\limits_{t\rightarrow\infty}k(t) = 0$
+*   稳定的充要条件：系统闭环特征方程的所有根都在s平面的左平面
+*   稳定判据：<img src="C:\Users\zp\Desktop\Note\image\稳定盘踞.jpg" style="zoom:50%;" />
+    *   必要条件：$a_i>0\quad i=0，1，2，····，n-1$,不满足绝对不稳定
+    *   劳斯判定：
+        *   列劳斯表：<img src="C:\Users\zp\Desktop\Note\image\劳斯表.jpg" style="zoom:50%;" />
+        *   第一行的系数从最高次开始，再到减2次幂的系数直到为0，只列前2行
+        *   到第三行之后：采用交叉相乘再相除的方法求得
+        *   **在劳斯表中，第一列的元素变号几次就有几个正根，代表系统不稳定**
+        *   <img src="C:\Users\zp\Desktop\Note\image\劳斯表2.jpg" style="zoom:50%;" />
+        *   **对于某行第一列元素为0，但是该行元素不全为0的情况：将0改为 $\varepsilon(大于0)$**
+        *   <img src="C:\Users\zp\Desktop\Note\image\劳斯表3.jpg" style="zoom:50%;" />
+        *   **对于某一行全为0：用上一行元素组成辅助方程，将其对s求导一次，用新方程的系数代替全零行系数**
+        *   **出现全零行时：系统可能出现一对纯虚根，或者一对符号相反的实根，或者两对实部符号相异、虚部相同的复根**
+*   **系统闭环稳定和开环稳定之间没有直接关系**
+*   **系统的稳定性是其自身的属性，与输入类型、形式无关**
+*   **系统稳定与否，只取决于闭环极点，与闭环零点无关**
+*   **闭环零点影响系数，会改变动态性能，但不影响稳定性**
+*   **闭环极点决定模态，因此决定系统的稳定性，也影响动态性能**
+
+
+
+### 第七节：线性系统的稳态误差
+
+*   **稳态误差**是系统的稳态性能指标，是对系统控制精度的度量
+*   对**稳定**的系统研究稳态误差才有意义
+*   **无差系统：**在阶跃输入作用下没有原理性稳态误差的系统，也就是稳态误差为0
+*   **有差系统：**在阶跃作用下有原理性稳态误差的系统，稳态误差不为0
+*   ![](C:\Users\zp\Desktop\Note\image\稳态误差.jpg)
+*   稳态误差：
+    *   静态误差： $e_{ss}\lim\limits_{t\rightarrow\infty}e(t) = e(\infty)$
+    *   动态误差：误差中的稳态分量 $e_s(t)$
+*   计算稳态误差的一般方法：
+    *   判定系统的稳定性
+    *   求误差传递函数  $\Phi(s) = \frac{E(s)}{R(s)} , \Phi_{en}(s) = \frac{E(s)}{N(s)},N(s)为干扰项$
+    *   用终值定理求稳态误差：$e_{ss} = \lim\limits_{s\rightarrow0}s[\Phi_e(s)R(s)+\Phi_{en}(s)N(s)]$ 
+*   影响 $e_{ss}$的因素：
+    *   系统自身的结构参数
+    *   外作用的类型（控制量，扰动量及作用点）
+    *   外作用的形式（阶跃，斜坡或加速度等）
+*   一般形式：<img src="C:\Users\zp\Desktop\Note\image\一般形式.jpg" style="zoom:50%;" />
+*   令<img src="C:\Users\zp\Desktop\Note\image\一般形式2.jpg" style="zoom:50%;" />
+*   其中有2个非常重要的参数：**K，v**，v等于几就代表这是几型的系统，K为开环增益
+*   所以 $e_{ss}$与**$R(S),K,v$**有关
+*   下面对不同的输入信号和多型系统进行讨论：
+    *   对于阶跃信号：<img src="C:\Users\zp\Desktop\Note\image\阶跃.jpg" style="zoom:67%;" />
+    *   对于斜坡信号：![](C:\Users\zp\Desktop\Note\image\斜坡.jpg)
+    *   对于加速度信号：![](C:\Users\zp\Desktop\Note\image\加速度.jpg)
+*   我们可以发现其中的规律如下：<img src="C:\Users\zp\Desktop\Note\image\稳态误差计算.jpg" style="zoom: 67%;" />
+*   **重点：型次和档次同等级时稳态误差为常数**
+
+
+
+### 第八节：动态误差系数法
+
+*   静态误差系数法只能求出误差的最终稳态值，也就是当 t 趋近于无穷时的稳态误差值，可能是零，常数或者无穷大，而稳态误差随时间变化的规律无法获得
+*   所以我们用动态误差系数法来研究误差中的稳态分量 $e_s(t)$ 随时间的变换规律
+*   <img src="C:\Users\zp\Desktop\Note\image\动态误差.jpg" style="zoom:50%;" />
+*   传递函数可以通过泰勒展开，再求得 $E(s)=C_0R(s)+C_1sR(s)+C_2s^2R(s)+.....$，其中乘以s相当于求一次导数，进行系数对比求出 $C_0,C_1,C_2$, 所以最终可以得到 $e_s(t)$
+*   ![](C:\Users\zp\Desktop\Note\image\系数比较.jpg)
+*   其中所求的动态误差只是误差中的稳态分量(一部分)，误差中还包含有瞬态分量
 
 ***
 
@@ -1692,6 +1812,238 @@ void USART1_IRQHandler(void)
 *   蓝牙调参模板：
 
 *   ```c
+    #include "usart2.h"
+    #include "stdio.h"
+    #include "string.h"
+    #include "control.h"
+    
+    
+    u8 USART2_state = USART2_Waiting;  //接收状态标记
+    u8 USART2_Rx_index = 0;            //串口2接收数据位数的数组下标
+    u8 USART2_Tx_index = 0;            //串口2发送数据位数的数组下标
+    
+    int controlFlag = 0;               //设置pid和控制小车的标志位
+    int rxLength = 17;                 //数据包总长度
+              
+    unsigned char Usart2Rx_Info[USART_Rx_LEN];   //存放接收数据的数组
+    unsigned char Usart2Tx_Info[USART_Tx_LEN];   //存放发送数据的数组
+     
+    
+    
+    /**************************************************************************
+    函数功能：串口2初始化
+    入口参数：bound:波特率
+    返回  值：无
+    **************************************************************************/
+    void uart2_init(u32 bound)
+    {  	 
+    	//GPIO端口设置
+        GPIO_InitTypeDef GPIO_InitStructure;
+    	USART_InitTypeDef USART_InitStructure;
+    	 
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);	 //使能UGPIOB时钟
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE); 	 //使能USART2时钟
+    	//USART2_TX  
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;                //PA2
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	         //复用推挽输出
+        GPIO_Init(GPIOA, &GPIO_InitStructure);
+       
+        //USART2_RX	  
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;                //PA3
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;    //浮空输入
+        GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+        //USART 初始化设置
+    	USART_InitStructure.USART_BaudRate = bound;                                       //串口波特率
+    	USART_InitStructure.USART_WordLength = USART_WordLength_8b;					     //字长为8位数据格式
+    	USART_InitStructure.USART_StopBits = USART_StopBits_1;                           //一个停止位
+    	USART_InitStructure.USART_Parity = USART_Parity_No;                               //无奇偶校验位
+    	USART_InitStructure.USART_HardwareFlowControl=USART_HardwareFlowControl_None;     //无硬件数据流控制
+    	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	                 //收发模式
+        USART_Init(USART2, &USART_InitStructure);                                         //初始化串口2
+        USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);                                   //开启串口接受中断
+        USART_Cmd(USART2, ENABLE);                                                       //使能串口2 
+    }
+    
+    
+    
+    /**************************************************************************
+    函数功能：串口2接收中断
+    入口参数：无
+    返回  值：无
+    **************************************************************************/
+    
+    
+    void USART2_IRQHandler(void)                	           //串口2中断服务程序
+    {
+    	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)  //接收中断
+    	{
+    		u8 Res;
+    	    Res = USART_ReceiveData(USART2);     	           //读取接收到的数据
+    		if (Res == '9') 
+    		{
+    			controlFlag = !controlFlag;                    //对应按键（模式改变），用于切换调pid模式和小车控制模式 
+    			printf("controlFlag = %d\n",controlFlag);
+    		}
+    		if (controlFlag == 0)  carControl();               //小车控制模式
+    		else if (controlFlag == 1)  pidControl();          //调pid模式
+    	}
+    } 
+    
+    
+    /**************************************************************************
+    函数功能：进行数据包的校验
+    入口参数：无
+    返回  值：无
+    **************************************************************************/
+    
+    void pidControl() 
+    {
+    	    u8 Res;
+    	    Res =USART_ReceiveData(USART2);     	                 //读取接收到的数据
+    		if ((USART2_state == USART2_Waiting) && (Res == 'A'))    //判断帧头
+    		{
+    			USART2_state = USART2_Receiving;              //帧头正确就改变串口2的状态
+    			USART2_Rx_index = 0;                                //接收数组的计数器
+    			Usart2Rx_Info[USART2_Rx_index] = Res;               //进行pid数据的存储
+                USART2_Rx_index++;                       
+    		}
+    		else if (USART2_state == USART2_Receiving)
+    		{
+    			if (USART2_Rx_index < rxLength)
+    			{
+    				Usart2Rx_Info[USART2_Rx_index]=Res;
+    				USART2_Rx_index++;                                                         		 //没有接收完就一直在这里循环
+    				if (USART2_Rx_index == rxLength && Usart2Rx_Info[USART2_Rx_index-1] == 'B') 	 //接收完成，判断帧尾，如果帧尾正确就修改pid
+                    {   
+                        
+    				   changePID(&balance_UP_KP,&balance_UP_KI,&balance_UP_KD);                 		//pid参数修改函数
+    
+                       USART2_Rx_index = 0;                                                     		//数据长度置0
+                       USART2_state = USART2_Waiting;                                           		//串口2的状态回到等待状态
+                    }
+    				if (USART2_Rx_index == rxLength && Usart2Rx_Info[USART2_Rx_index-1] != 'B') 		//接收完成，判断帧尾，如果错误就重新接收
+                    {      
+    				   printf("PLEASE SET AGAIN");          
+                       USART2_Rx_index = 0;                                                     		 //数据长度置0
+                       USART2_state = USART2_Waiting;                                          			 //串口2的状态回到等待状态
+                    }
+    			}
+    		  
+    		} 
+    		USART_ClearFlag(USART2,USART_IT_RXNE);                                              //清除标志位
+    }
+    
+    /**************************************************************************
+    函数功能：控制小车运动
+    入口参数：无
+    返回  值：无
+    **************************************************************************/
+    
+    void carControl()
+    {
+    	u8 Res;
+    	Res =USART_ReceiveData(USART2);     	                   //读取接收到的数据
+    	printf("in car\r\n");
+    	switch(Res)
+    	{
+    		case '1': VelocityTarget = -30; Turn =   0;   break;   //前进
+    		case '2': VelocityTarget =   0; Turn = -40;   break;   //往左
+    		case '3': VelocityTarget =   0; Turn =   0;   break;   //停止
+    		case '4': VelocityTarget =   0; Turn =  40;   break;   //往右
+    		case '5': VelocityTarget =  30; Turn =   0;   break;   //后退
+    		case '6': VelocityTarget +=  5; Turn =   0;   break;   //加速
+    		case '7': VelocityTarget -=  5; Turn =   0;   break;   //减速
+    		default : break;
+    	}
+    }	
+    
+    /**************************************************************************
+    函数功能：修改pid参数
+    入口参数：*kp:要修改的kp值的指针,*kp:要修改的kp值的指针,*kp:要修改的kp值的指针
+    返回  值：无
+    **************************************************************************/
+    
+    
+    void changePID(float *kp,float *ki,float * kd)
+    {
+    	int i = 1;
+    	printf("in pid\r\n");                                          //下面4行为将输入的数据转换为4位整数和1位小数
+    	balance_UP_KP=0,balance_UP_KI=0,balance_UP_KD=0;
+    	for (;i<=5;)  if (i == 5)  {*kp = *kp + (Usart2Rx_Info[i++] - 48) * 1.0 / 10;} else {*kp = *kp * 10 + (Usart2Rx_Info[i++] - 48);}
+    	for (;i<=10;) if (i == 10) {*ki = *ki + (Usart2Rx_Info[i++] - 48) * 1.0 / 10;} else {*ki = *ki * 10 + (Usart2Rx_Info[i++] - 48);}
+    	for (;i<=15;) if (i == 15) {*kd = *kd + (Usart2Rx_Info[i++] - 48) * 1.0 / 10;} else {*kd = *kd * 10 + (Usart2Rx_Info[i++] - 48);}
+    	balance_UP_KP=-balance_UP_KP;                                  //这里根据自己pid参数的极性来设置
+    	balance_UP_KI=-balance_UP_KI;                                  //这里我的pid参数全是负的，所以都带了一个负号
+    	balance_UP_KD=-balance_UP_KD;
+    	printf("%f,%f,%f",balance_UP_KP,balance_UP_KI,balance_UP_KD);  //用于查看是不是协议正确
+    }
+    
+    /**************************************************************************
+    函数功能：串口2发送数据
+    入口参数：byte：字节
+    返回  值：无
+    **************************************************************************/
+    
+    void Uart2SendByte(char byte)                                    //串口发送一个字节
+    {
+    		USART_SendData(USART2, byte);                            //通过库函数  发送数据
+    		while( USART_GetFlagStatus(USART2,USART_FLAG_TC)!= SET);  
+    		//等待发送完成。   检测 USART_FLAG_TC 是否置1；          //见库函数 P359 介绍
+    }
+    
+    /**************************************************************************
+    函数功能：串口2发送数据
+    入口参数：*buf：字符串的地址，len：字符串的长度
+    返回  值：无
+    **************************************************************************/
+    
+    void Uart2SendBuf(char *buf, u16 len)
+    {
+    	u16 i;
+    	for(i=0; i<len; i++)Uart2SendByte(*buf++);
+    }
+    
+    /**************************************************************************
+    函数功能：串口2发送数据
+    入口参数：byte：字符串
+    返回  值：无
+    **************************************************************************/
+    
+    void Uart2SendStr(char *str)
+    {
+    	u16 i,len;
+    	len = strlen(str);
+    	for(i=0; i<len; i++)Uart2SendByte(*str++);
+    }
+    
+    
+    #ifndef __USRAT2_H
+    #define __USRAT2_H 
+    #include "sys.h"	  	
+    
+    #define USART_Rx_LEN  	 200  	           //定义最大接收字节数 200
+    #define USART_Tx_LEN     200
+    #define EN_USART1_RX     1		           //使能（1）/禁止（0）串口1接收
+    #define USART2_Waiting   0
+    #define USART2_Receiving 1
+    #define USART2_Success   2 
+    #define USART2_Failed    3
+    
+    void changePID (float *kp,float *ki,float * kd);
+    void carControl(void);
+    void pidControl(void);
+    
+    void uart2_init       (u32 bound);
+    void USART2_IRQHandler(void);
+    void Uart2SendByte    (char byte);         //串口发送一个字节
+    void Uart2SendBuf     (char *buf, u16 len);
+    void Uart2SendStr     (char *str);
+    void BluetoothCMD     (int Uart_Receive);
+    
+    #endif
+    
     ```
 
 *   
