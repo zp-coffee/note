@@ -405,7 +405,7 @@
 *   比例+微分————提前控制
 *   ![](C:\Users\zp\Desktop\Note\image\反馈调节.jpg)
 *   **其中K=10**
-*   测速反馈相比于原系统：**改变了 $2w_n\zeta$ 的大小，增加阻尼**
+*   测速反馈相比于原系统：**改变了 $2w_n\zeta$ 的大小，但是 $w_n$不变，增加阻尼**
 *   比例加微分相比于原系统：**改变 $2w_n\zeta$ 的同时增加了零点，达到提前控制的效果**
 *   测速反馈计算动态性能指标按照前面的欠阻尼公式：
 *   <img src="C:\Users\zp\Desktop\Note\image\二阶欠阻尼15.jpg" style="zoom:50%;" />
@@ -468,7 +468,7 @@
     *   动态误差：误差中的稳态分量 $e_s(t)$
 *   计算稳态误差的一般方法：
     *   判定系统的稳定性
-    *   求误差传递函数  $\Phi(s) = \frac{E(s)}{R(s)} , \Phi_{en}(s) = \frac{E(s)}{N(s)},N(s)为干扰项$
+    *   求误差传递函数  $\Phi(s) = \frac{E(s)}{R(s)}, \Phi_{en}(s) = \frac{E(s)}{N(s)},N(s)为干扰项$
     *   用终值定理求稳态误差：$e_{ss} = \lim\limits_{s\rightarrow0}s[\Phi_e(s)R(s)+\Phi_{en}(s)N(s)]$ 
 *   影响 $e_{ss}$的因素：
     *   系统自身的结构参数
@@ -476,7 +476,7 @@
     *   外作用的形式（阶跃，斜坡或加速度等）
 *   一般形式：<img src="C:\Users\zp\Desktop\Note\image\一般形式.jpg" style="zoom:50%;" />
 *   令<img src="C:\Users\zp\Desktop\Note\image\一般形式2.jpg" style="zoom:50%;" />
-*   其中有2个非常重要的参数：**K，v**，v等于几就代表这是几型的系统，K为开环增益
+*   其中有2个非常重要的参数：**K，v**，  **v**  等于几就代表这是几型的系统，**K** 为开环增益
 *   所以 $e_{ss}$与**$R(S),K,v$**有关
 *   下面对不同的输入信号和多型系统进行讨论：
     *   对于阶跃信号：<img src="C:\Users\zp\Desktop\Note\image\阶跃.jpg" style="zoom:67%;" />
@@ -484,6 +484,9 @@
     *   对于加速度信号：![](C:\Users\zp\Desktop\Note\image\加速度.jpg)
 *   我们可以发现其中的规律如下：<img src="C:\Users\zp\Desktop\Note\image\稳态误差计算.jpg" style="zoom: 67%;" />
 *   **重点：型次和档次同等级时稳态误差为常数**
+*   位置误差系数 $K_p$: $\lim\limits_{s\rightarrow0}G(s)H(s)$
+*   速度误差系数 $K_v$: $\lim\limits_{s\rightarrow0}sG(s)H(s)$
+*   加速度误差系数 $K_p$: $\lim\limits_{s\rightarrow0}sG(s)H(s)$
 
 
 
@@ -495,6 +498,20 @@
 *   传递函数可以通过泰勒展开，再求得 $E(s)=C_0R(s)+C_1sR(s)+C_2s^2R(s)+.....$，其中乘以s相当于求一次导数，进行系数对比求出 $C_0,C_1,C_2$, 所以最终可以得到 $e_s(t)$
 *   ![](C:\Users\zp\Desktop\Note\image\系数比较.jpg)
 *   其中所求的动态误差只是误差中的稳态分量(一部分)，误差中还包含有瞬态分量
+
+
+
+### 第九节：时域校正
+
+*   **校正：**采用适当方式，在系统中加入一些结构和参数可调整的装置（校正装置），用以改善系统性能，使系统满足指标要求。
+*   <img src="C:\Users\zp\Desktop\Note\image\校正.jpg" style="zoom:50%;" />
+*   校正方式有：串联校正，反馈校正，复合校正
+    *   反馈校正：
+        *   减小被包围环节的时间常数![](C:\Users\zp\Desktop\Note\image\反馈作用1.jpg)
+        *   深度负反馈可以有效降低被包围环节的影响，加入自己想要的函数![](C:\Users\zp\Desktop\Note\image\反馈作用2.jpg)
+        *   局部正反馈可提高环节增益![](C:\Users\zp\Desktop\Note\image\反馈作用2=3.jpg)
+    *   复合校正：         ![](C:\Users\zp\Desktop\Note\image\复合反馈.jpg)
+    *   ![](C:\Users\zp\Desktop\Note\image\复合反馈2.jpg)
 
 ***
 
@@ -842,7 +859,8 @@
     *   转换结果支持左对齐或右对齐方式存储在16位数据寄存器；
     *   **ADC转换时间：最大转换速率 1us（最大转换速度为1MHz，在ADCCLK=14M，采样周期为1.5个ADC时钟下得到）；**
     *   **ADC供电要求：2.4V-3.6V；**
-    *   **ADC输入范围：VREF- ≤ VIN ≤ VREF+。**
+    *   **ADC输入范围：VREF- ≤ VIN ≤ VREF+；**
+    *   **每个ADC通道对应于不同的IO口**
 
 *   ADC时钟来源于PCLK2，ADC专门有一个寄存器来对时钟频率进行分频，可在ADC结构体中进行设置，**不要让ADC的时钟超过14MHz，否则可能不准。**
 
@@ -1110,7 +1128,7 @@ void TIM2_IRQHandler(void)
 
 *   输入捕获模式下，当通道输入引脚出现指定电平跳变时，当前CNT的值将被锁存到CCR中，可用于测量PWM波形的频率、占空比、脉冲间隔、电平持续时间等参数
 
-*   可配置为PWMI模式，同时测量频率和占空比
+*   可配置为**PWMI**模式，同时测量频率和占空比
 
 *   可配合主从触发模式，实现硬件全自动测量
 
@@ -1718,7 +1736,7 @@ void USART1_IRQHandler(void)
         //对SDA进行写位,写1为拉高，写0为拉低
     }
     
-    uint8_t MyI2c_R_SDA(void)   //对数据只需要看SDA上的电平就行
+    uint8_t MyI2c_R_SDA(void)   //读数据只需要看SDA上的电平就行
     {
         uint8_t BitValue;
         BitValue = GPIO_ReadInputDataBit(GPIO_SDA_PORT,GPIO_SDA_PIN); //读SDA上的电平
@@ -1799,6 +1817,38 @@ void USART1_IRQHandler(void)
     //而每次发送或者接收一次数据后，SDA的电平是不确定的，因为SDA是数据位
     //MyI2C_W_SDA(1);并不代表将SDA拉高，因为是开漏输出，SDA的电平由外界决定
     //MyI2C_W_SDA(1);可以代表将SDA释放交给从机，或者主机对SDA写数据
+    以AT24为例：
+    //在寄存器地址add写入数据
+    void i2c_write_at24(unsigned char add, unsigned char data)
+    {
+    	i2c_start(); //起始信号
+        i2c_sendByte(0xa0);//发送设备地址和写命令（后面的0代表写）
+        i2c_waitAck();
+        i2c_sendByte(add); //写入寄存器地址
+        i2c_waitAck();
+        i2c_sendByte(data); //写入数据
+        i2c_waitAck();
+        i2c_stop();
+    }
+    
+    //读指定寄存器的数据
+    unsigned char i2c_read_at24(unsigned char add)  //想读的寄存器
+    {
+        unsigned char temp;
+        i2c_start(); 
+        i2c_sendByte(0xa0);   //发送设备地址和写命令
+        i2c_waitAck();
+        i2c_sendByte(add);    //写入想读的寄存器地址
+        i2c_waitAck();
+        
+        i2c_start();          //重新发送起始信号来修改成读命令
+        i2c_sendByte(0xa1);   //发送设备地址和读命令
+        i2c_waitAck();    
+        temp = i2c_receiveByte();
+        i2c_waitAck();
+        i2c_stop();
+        return temp;
+    }
     ```
 
 
@@ -2607,6 +2657,7 @@ void USART1_IRQHandler(void)
 *   DMA（Direct Memory Access）直接存储器存取
 *   DMA可以提供外设和存储器或者存储器和存储器之间的高速数据传输，无须CPU干预，节省了CPU的资源
 *   12个独立可配置的通道： DMA1（7个通道）， DMA2（5个通道）
+*   每个通道对应于相应的外设
 *   每个通道都支持软件触发和特定的硬件触发
 *   还有一个仲裁器来协调各个DMA请求的优先权
 *   DMA基本结构：
@@ -2633,7 +2684,7 @@ void USART1_IRQHandler(void)
     	GPIO_Init(GPIOA, &GPIO_InitStructure);
     	
         //配置ADC1的规则组通道1-4，优先级，采样周期
-    	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_55Cycles5);
+    	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_55Cycles5); //ADC的每个通道对应于不同的io口
     	ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 2, ADC_SampleTime_55Cycles5);
     	ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 3, ADC_SampleTime_55Cycles5);
     	ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 4, ADC_SampleTime_55Cycles5);
@@ -2660,7 +2711,7 @@ void USART1_IRQHandler(void)
     	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable; 
         //软件触发还是硬件触发，Disable代表硬件触发
     	DMA_InitStructure.DMA_Priority = DMA_Priority_Medium; //优先级
-    	DMA_Init(DMA1_Channel1, &DMA_InitStructure); //DMA1的1通道
+    	DMA_Init(DMA1_Channel1, &DMA_InitStructure); //DMA1的1通道，DMA的通道对应于不同的外设，看上图
     	
     	DMA_Cmd(DMA1_Channel1, ENABLE);  //如果不是连续使用DMA在使能DMA后就会执行转运工作
     	ADC_DMACmd(ADC1, ENABLE); //开启ADC的DMA触发信号
@@ -2731,9 +2782,113 @@ void USART1_IRQHandler(void)
 
 
 
+## 11.RTC
 
+*   STM32 的实时时钟（RTC）是一个独立的定时器。STM32 的 RTC 模块拥有一组连续计数 的计数器，在相应软件配置下，可提供时钟日历的功能。修改计数器的值可以重新设置系统当 前的时间和日期。
+*   RTC 模块和时钟配置系统(RCC_BDCR 寄存器)是在后备区域，即在系统复位或从待机模式 唤醒后 RTC 的设置和时间维持不变。但是在系统复位后，会自动禁止访问后备寄存器和 RTC， 以防止对后备区域(BKP)的意外写操作。所以在要设置时间之前， 先要取消备份区域（BKP） 写保护。
+*   简化框图：
 
+![](C:\Users\zp\Desktop\Note\image\rtc.jpg)
 
+RTC由两个主要部分组成：
+
+*   APB1接口，用来和APB1总线相连，此单元还包含一组16位寄存器，可通过APB1总线对其进行读写操作，APB1接口由APB1总线时钟驱动，用来与APB1总线连接
+
+*   RTC核心：RTC的预分频模块，32位的可编程计数器，闹钟寄存器
+
+    *   RTC的预分频模块：可编程产生1秒的RTC时间基准TR_CLK，如果在RTC_CR寄存器中设置了相应的允许位，则在每个TR_CLK周期中RTC产生一个秒中断
+    *   32位的可编程计数器：一个32位的时钟计数器，最长可以计数136年
+
+*   还有一个闹钟寄存器RTC_ATR，系统时间按照TR_CLK周期累加并与存储在RTC_ALR寄存器中的可编程时间相比较，如果设置了闹钟中断标志位，比较匹配时会产生一个闹钟中断
+
+*   RTC的配置：
+
+    ```c
+    void RTC_Configuration(void)
+    {
+      /* 使能 PWR 和 Backup 时钟 */
+      RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
+    
+      /* 允许访问 Backup 区域，才能向备份区域写入数据 */
+      PWR_BackupAccessCmd(ENABLE);
+    
+      /* 复位 Backup 区域 */
+      BKP_DeInit();
+    
+      /* 使能 LSI */
+      RCC_LSICmd(ENABLE);
+      /* 等待 LSI 准备好 */
+      while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET)
+      {}
+      /* 选择 LSI 作为 RTC 时钟源 */
+      RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);
+    
+      /* 使能 RTC 时钟 */
+      RCC_RTCCLKCmd(ENABLE);
+    
+      /* 等待时钟同步，在对 RTC 寄存器的任何操作前，必须调用本函数
+       * 等待 RTC 寄存器 同步
+       * 因为 RTC 时钟是低速的，内环时钟是高速的，所以要同步
+       */
+      RTC_WaitForSynchro();
+    
+      /* 确保上一次 RTC 的操作完成 */
+      RTC_WaitForLastTask();
+    
+      /* 使能 RTC 秒中断 */
+      RTC_ITConfig(RTC_IT_SEC, ENABLE);
+    
+      /* 确保上一次 RTC 的操作完成 */
+      RTC_WaitForLastTask();
+    
+      /* 设置 RTC 分频配置*/
+      /* 设置 RTC 分频: 使 RTC 周期为 1s ,LSI 约为 40KHz */
+      /* RTC period = RTCCLK/RTC_PR = (40 KHz)/(40000-1+1) = 1HZ */
+      RTC_SetPrescaler(40000 - 1);
+    
+      /* 确保上一次 RTC 的操作完成 */
+      RTC_WaitForLastTask();
+    
+      /* 禁止 Tamper 引脚 tamper pin(PC.13)*/
+      /* 要输出 RTCCLK/64 到 Tamper 引脚, tamper 功能必须禁止 */	 
+      // 当TAMPER引脚上的信号从0变成1或者从1变成0(取决于备份控制寄存器BKP_CR的TPAL位)，
+      // 会产生一个侵入检测事件。侵入检测事件将所有数据备份寄存器内容清除。
+      BKP_TamperPinCmd(DISABLE);
+    
+      /* Enable the RTC Second Output on Tamper Pin */
+    	// BKP_RTCOutputConfig(BKP_RTCOutputSource_Second);
+      
+      NVIC_Configuration();
+    }
+    
+    void RTC_IRQHandler(void)
+    {
+      if (RTC_GetITStatus(RTC_IT_SEC) != RESET)
+      {
+        /* 清除秒中断标志位 */
+        RTC_ClearITPendingBit(RTC_IT_SEC);
+    
+        TimeDisplay = 1;
+    
+        /* 确保上一次 RTC 的操作完成 */
+        RTC_WaitForLastTask();  
+      }
+    }
+    
+    void Time_Adjust(u8 Tmp_HH,u8 Tmp_MM,u8 Tmp_SS)
+    {
+      /* 确保上一次 RTC 的操作完成 */
+      RTC_WaitForLastTask();
+      /* 设置 RTC 计数器的值*/
+      RTC_SetCounter(Tmp_HH*3600 + Tmp_MM*60 + Tmp_SS); //时分秒
+      /* 确保上一次 RTC 的操作完成 */
+      RTC_WaitForLastTask();
+    }
+    ```
+
+    
+
+    
 
 # the beginning of it all
 
@@ -4062,3 +4217,216 @@ FOC是个强大的控制方法，通过对电机的“像素级”控制，可�
 ## 2023.3.8 （状态机）
 
 状态机的思想：说明白点就是根据不同的状态去执行不同的函数
+
+
+
+## 2023.3.29
+
+*   格式化输出：
+
+    *   ```c
+        u8 string_buf[20];
+        sprintf((char*) display_buf,"%dHz",5000);
+        LCD_DisplayStringLine(Line0,display_buf);
+        ```
+
+*   对于 $\%输出:$
+    *   $\%5d:$显示5位数据
+    *   $\%-5d:$显示5位数据并左对齐
+    *   $\%05d:$显示5位数据并前面补0
+    *   $\%.f:$   显示小数，默认6位
+    *   $\%d \%\%:$输出百分号
+
+*   ```c
+    GPIO_SetBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
+        
+    #define GPIO_Pin_0                 ((uint16_t)0x0001) 
+    #define GPIO_Pin_1                 ((uint16_t)0x0002) 
+    #define GPIO_Pin_2                 ((uint16_t)0x0004) 
+    #define GPIO_Pin_3                 ((uint16_t)0x0008)  
+    #define GPIO_Pin_4                 ((uint16_t)0x0010) 
+    #define GPIO_Pin_5                 ((uint16_t)0x0020)  
+    #define GPIO_Pin_6                 ((uint16_t)0x0040)  
+    #define GPIO_Pin_7                 ((uint16_t)0x0080) 
+    #define GPIO_Pin_8                 ((uint16_t)0x0100)  
+    #define GPIO_Pin_9                 ((uint16_t)0x0200) 
+    #define GPIO_Pin_10                ((uint16_t)0x0400) 
+    #define GPIO_Pin_11                ((uint16_t)0x0800) 
+    #define GPIO_Pin_12                ((uint16_t)0x1000) 
+    #define GPIO_Pin_13                ((uint16_t)0x2000) 
+    #define GPIO_Pin_14                ((uint16_t)0x4000) 
+    #define GPIO_Pin_15                ((uint16_t)0x8000) 
+    #define GPIO_Pin_All               ((uint16_t)0xFFFF) 
+    
+    #define IS_GPIO_PIN(PIN) ((((PIN) & (uint16_t)0x00) == 0x00) && ((PIN) != (uint16_t)0x00))
+        
+    可以通过使用：
+        GPIO_SetBits(GPIOA,0x0300);来操作多个位
+        0x0300 = 0x0000 0011 0000 0000 = 0x0100 + 0x0200
+        可以同时使GPIO_Pin_8和GPIO_Pin_9同时置高
+    ```
+
+
+
+
+## 2023.3.31
+
+*   对于16位的数据存入以一个字节(8位)为单位的存储器(EEPROM)
+    *   如果是16进制：先将数据**右移8位(高八位)或者&0xf0**存入0x00寄存器中，再将数据**&0x0f**保留低8位存入0x01寄存器中
+    *   如果是10进制：先将数据**除以258(2^8)**高八位存入0x00寄存器中，再将数据**%256**低八位存入寄存器0x01中
+
+*   一个ASCII字符占一个字节8位
+*   对于一个负数：先存入前面的符号，再存入数据的绝对值
+
+```c
+uint16_t u16_write = 1234;
+uint16_t u16_read = 0;
+
+float float_write = 3.1415;
+float float_read = 0;
+
+int8_t minus_write = -23;
+int8_t minus_read = 0;
+
+int16_t minus_s16_write = -1234;
+int16_t minus_s16_read = -1234;
+
+uint8_t str_write[11]={"hello world"};
+uint8_t str_read[11];	
+
+	/***************写入u16类型的数据**************/
+	Write_AT24c02(0x00,u16_write/256);  //在0x00中写入高八位，除以256相当于右移8位
+	Delay_Ms(5);
+	Write_AT24c02(0x01,u16_write%256);  //在0x01中写入低八位，%256相当于左移8位
+	Delay_Ms(5);
+	u16_read = Read_AT24c02(0x00)*256+Read_AT24c02(0x01);
+
+	/***************写入float类型的数据，保留小数点后四位**************/
+	Write_AT24c02(0x03,(u16)(float_write*1000)/256);
+	Delay_Ms(5);
+	Write_AT24c02(0x04,(u16)(float_write*1000)%256);
+	Delay_Ms(5);
+	float_read = (Read_AT24c02(0x03)*256+Read_AT24c02(0x04))/1000.0f;	
+
+	/***************写入负数，在数字电路中的存储形式是补码**************/
+	//if(minus_write<0)
+    //{
+    //    Write_AT24c02(0x06,'-');
+    //    Delay_Ms(5);
+    //    Write_AT24c02(0x07,-minus_write);
+    //    Delay_Ms(5);
+    //}
+    //else
+    //{
+    //    Write_AT24c02(0x06,'+');
+    //    Write_AT24c02(0x07,minus_write);
+    //}
+    //if(Read_AT24c02(0x06)=='-')
+    //{
+    //    minus_read = 0 - Read_AT24c02(0x07);
+    //}
+    //else 
+    //{
+    //    minus_read = Read_AT24c02(0x07);
+    //}
+	Write_AT24c02(0x05,minus_write);
+	Delay_Ms(5);
+	minus_read = Read_AT24c02(0x05);
+	Delay_Ms(5);
+
+	/***************写入16位的负数存储**************/
+	Write_AT24c02(0x08,minus_s16_write>>8);						//取出高8位
+	Delay_Ms(5);
+	Write_AT24c02(0x09,minus_s16_write&0x00ff);					//取出低8位
+	Delay_Ms(5);
+	minus_s16_read = (Read_AT24c02(0x08)<<8)+Read_AT24c02(0x09);
+
+
+	/***************写入字符串，字符以ASCII码存储**************/
+	for(i=0;i<sizeof(str_write);i++)
+	{
+		Write_AT24c02(0x10+i,str_write[i]);
+		Delay_Ms(5);
+	}
+	for(i=0;i<sizeof(str_write);i++)
+	{
+		str_read[i]=Read_AT24c02(0x10+i);
+	}
+```
+
+*   **union**：共用体,占用的内存等于最长的成员占用的内存。共用体使用了内存覆盖技术，同一时刻只能保存一个成员的值，如果对新的成员赋值，就会把原来成员的值覆盖掉。
+
+*   共用体的所有成员占用同一段内存，修改一个成员会影响其余所有成员。
+
+    ```c
+    union eeprom_dat
+    {
+    	uint8_t t1;    //8位
+    	uint16_t t2;   //16位
+    	uint32_t t3;   //32位
+    	int16_t t4;    //16位
+    	float f1;      //float占4个字节：32位
+    	double f2;     //double占8个字节：64位
+    	unsigned char str[64]; //char占一个字节，一共20个，所以有20个字节
+    }eeprom_dat_write,eeprom_dat_read;   //最长位64位字节，所以这个共用体占64个字节
+    
+    	//通过共用体占用同一块内存的特性来利用数组存放数据
+    	eeprom_dat_write.f2 = 3.1415926535;
+    	for(i = 0; i < sizeof(eeprom_dat_write.f2); i++)
+    	{
+    		Write_AT24c02(i,eeprom_dat_write.str[i]);
+    		Delay_Ms(5);
+    	}
+    	for(i = 0; i < sizeof(eeprom_dat_write.f2); i++)
+    	{
+    		eeprom_dat_read.str[i] = Read_AT24c02(i);
+    		Delay_Ms(5);
+    	}
+    
+    ```
+
+*   数据在计算机中怎么存储？
+    *   C语言中使用**定点数格式**来存储**short，int，long**类型的整数，使用**浮点数格式**来存储**float，double**类型的小数
+
+*   定点数格式：小数点的位置是固定的，int,short,long都是整数，所以将小数点的位置设在最后，也就是没有小数，只表示整数：![](C:\Users\zp\Desktop\Note\image\定点数格式.jpg)
+
+*   所以存储**int，short，char，long**这类的整数的时候，只需要将数据转换成补码模式存入内存中即可，对于int这种32位的数据，而存储器中一个单位为8位的话就必须要将32位分成4个地址来存储，这就涉及到了计算机的大端模式和小端模式
+
+    *   大端模式：高字节存储在低地址中
+
+    *   小端模式：高字节存储在高地址中，现在计算机普遍是小端模式
+
+    *   验证是什么模式：
+
+        ```c
+        #include "stdio.h"
+        
+        int main()
+        {
+        	char i = 1;
+        	char ret = i >> 8;
+        	if (ret == 0)
+        	{
+        		printf("xiao");  //是小端模式则1存储在最低位，右移8位后为0
+        	}
+        	else
+        	{
+        		printf("da");
+        	}
+        	return 0;
+         } 
+        ```
+
+*   **浮点数格式：**![](C:\Users\zp\Desktop\Note\image\浮点数模式.jpg)
+
+*   其中**float**为32位，最高一位存放符号位，8位存放指数位，23位存放尾数位
+
+*   指数位指的是一个数化为二进制后再化成标准形式**（1.xxxxx * 10^y）**，其中y为指数位的十进制数，再化为二进制存放在内存中，小数点后面的数则为尾数，尾数化为二进制后存放在内存中
+
+*   比如：一个内存中的数：1100 0000 1011 0100 0000 0000 0000 0000
+
+    *   上面的数可化为 1(符号位) 1000 0001(指数位) 0110 1000 0000 0000 0000 000(尾数位)
+    *   1000 0001为129，指数位可正可负，所以我们规定，在原有的指数基础上加上127，最后在减去127
+
+    *   所以上面的数化为十进制为：-1.01101 * 2^(129-127) = -1.01101 * 2^2 = -101.101=-5.625
+    *   -101.101 = -(1 * 4+1 * 1+0.5 * 1+0.125 * 1)=-5.625
