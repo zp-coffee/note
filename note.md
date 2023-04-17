@@ -32,6 +32,8 @@
 
 *   [常见蓝牙模块介绍和AT指令](https://blog.csdn.net/qlexcel/article/details/103815926)
 
+*   [FreeRTOS记录（三、RTOS任务调度原理解析_Systick、PendSV、SVC） - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/551096072)
+
     
 
 
@@ -293,7 +295,7 @@
         | ----------- | ------------ | ---------------------------------------------------- |
         | $0<\zeta<1$ | **欠阻尼**   | $\lambda_{1,2}=-\zeta w_n \pm j \sqrt{1-\zeta^2}w_n$ |
         | $\zeta = 1$ | **临界阻尼** | $\lambda _{1,2} = -w_n$                              |
-        | $\zeta > 1$ | **过阻尼**   | $\lambda_{1,2}=-\zeta w_n \pm j \sqrt{\zeta^2-1}w_n$ |
+        | $\zeta > 1$ | **过阻尼**   | $\lambda_{1,2}=-\zeta w_n \pm \sqrt{\zeta^2-1}w_n$   |
 
     *   ![](C:\Users\zp\Desktop\Note\image\二阶阻尼.jpg)
 
@@ -512,6 +514,36 @@
         *   局部正反馈可提高环节增益![](C:\Users\zp\Desktop\Note\image\反馈作用2=3.jpg)
     *   复合校正：         ![](C:\Users\zp\Desktop\Note\image\复合反馈.jpg)
     *   ![](C:\Users\zp\Desktop\Note\image\复合反馈2.jpg)
+
+
+
+## 第四章：根轨迹法
+
+### 第一节：根轨迹法的基本概念
+
+*   **根轨迹：**系统某一参数由0向无穷大变化时， $\lambda$(闭环极点)在s平面相应变化所描述出来的轨迹
+
+*   | $\zeta$ =0  | **0阻尼**    | 虚轴上2个根           | $\lambda _{1,2} = \pm jw_n$                         |
+    | ----------- | ------------ | --------------------- | --------------------------------------------------- |
+    | 0<$\zeta$<1 | **欠阻尼**   | 在s平面的第二，三象限 | $\lambda_{1,2}=-\zeta w_n \pm j\sqrt{1-\zeta^2}w_n$ |
+    | $\zeta$ = 1 | **临界阻尼** | 只有一个根            | $\lambda _{1,2} = -w_n$                             |
+    | $\zeta$ > 1 | **过阻尼**   | 两个相异的实根        | $\lambda_{1,2}=-\zeta w_n \pm  \sqrt{\zeta^2-1}w_n$ |
+
+*   ![](C:\Users\zp\Desktop\Note\image\根轨迹的基本概念.jpg)
+*   将分母化成首一标准形式得到根轨迹增益 $K^*=2K$
+*   当 $K^*$由0向无穷大变化时：根也随之变化从而影响系统的动态性能与稳定性
+*   **闭环零点=前向通道开环零点+反馈通道开环极点**
+*   **闭环极点与开环零点，开环极点和 $K^ *$均有关**
+*   ![](C:\Users\zp\Desktop\Note\image\根轨迹方程.jpg)
+*   只有模值条件和相角条件都符合才是根轨迹上的点
+*   **满足相角条件是s点位于根轨迹上的充分必要条件**
+
+
+
+### 第二节：绘制根轨迹的法则
+
+*   **法则1：**根轨迹的起点和终点
+    *   根轨迹起始于开环极点，终止与开环零点，如果开环极点个数n大于开环零点个数m，则有n-m条根轨迹终止与无穷远处
 
 ***
 
@@ -938,6 +970,11 @@
     }
     ```
 
+**双ADC模式：**
+
+```c
+```
+
 
 
 ***
@@ -995,11 +1032,11 @@
 
     <img src="C:\Users\zp\Desktop\Note\image\主从触发模式.jpg" style="zoom:50%;" />
 
-    *   来自定时器自身输入通道1或通道2的输入信号，经过极性选择和滤波以后生成的触发信号，连接到从模式控制器，进而控制计数器的工作；TI1F_ED是双沿脉冲信号。
-    *   来自于外部触发脚[ETR脚]经过极性选择、分频、滤波以后的信号，经过触发输入选择器，连接到从模式控制器。当然分频和滤波不是必需的，可以根据外来信号频率高低及信号干净度来决定。
-    *   来自其它定时器的触发输出信号，通过内部线路连接到本定时器的触发输入控制器而连接到从模式控制器。
+    *   **TI1F_ED,TI1FP1,TI2FP2:** 来自定时器自身输入通道1或通道2的输入信号，经过极性选择和滤波以后生成的触发信号，连接到从模式控制器，进而控制计数器的工作；TI1F_ED是双沿脉冲信号。
+    *   **ETRF:** 来自于外部触发脚[ETR脚]经过极性选择、分频、滤波以后的信号，经过触发输入选择器，连接到从模式控制器。当然分频和滤波不是必需的，可以根据外来信号频率高低及信号干净度来决定。
+    *   **ITR0/1/2/3:**来自其它定时器的内部触发输出信号，通过内部线路连接到本定时器的触发输入控制器而连接到从模式控制器,定时器级联。
 
-*   不论来自本定时器外部的哪一类触发输入信号，它们有个共同特点，就是都要经过触发输入选择器而连接到从模式控制器，从而使得计数器的工作受到从模式控制器的控制或影响，基于这一点，定时器工作在从模式。从模式控制器检测到触发输入信号时，可以对定时器进行如下操作而控制或影响计数器的工作：
+*   不论来自本定时器外部的哪一类触发输入信号，它们有个共同特点，就是都要经过触发输入选择器而连接到**从模式控制器**，从而使得计数器的工作受到从模式控制器的控制或影响，基于这一点，定时器工作在从模式。从模式控制器检测到触发输入信号时，可以对定时器进行如下操作而控制或影响计数器的工作：
 
     *   对计数器复位
     *   启动或停止计数器的计数动作
@@ -1023,6 +1060,58 @@
 
 *   **只要有复位触发脉冲出现，计数器就会被复位重置。复位次数取决于触发脉冲次数。**
 *   **工作在复位模式下的定时器，其使能需靠软件代码实现，即使能定时器的CEN@TIMx_CR1位。**
+
+```c
+  TIM_ICInitTypeDef  TIM_ICInitStructure;
+
+  TIM_ICInitStructure.TIM_Channel = TIM_Channel_2;
+  TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;
+  TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
+  TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+  TIM_ICInitStructure.TIM_ICFilter = 0x0;
+
+  TIM_PWMIConfig(TIM3, &TIM_ICInitStructure);    //PWMI模式
+
+  /* Select the TIM3 Input Trigger: TI2FP2 */
+  TIM_SelectInputTrigger(TIM3, TIM_TS_TI2FP2);   //触发信号位TIM3的2通道
+
+  /* Select the slave Mode: Reset Mode */
+  TIM_SelectSlaveMode(TIM3, TIM_SlaveMode_Reset); //选择从模式下的复位模式，接收到
+                                                  //触发信号就复位计数值
+  /* Enable the Master/Slave Mode */
+  TIM_SelectMasterSlaveMode(TIM3, TIM_MasterSlaveMode_Enable);
+												  //主从模式使能
+  /* TIM enable counter */
+  TIM_Cmd(TIM3, ENABLE);
+
+  /* Enable the CC2 Interrupt Request */
+  TIM_ITConfig(TIM3, TIM_IT_CC2, ENABLE);
+
+
+void TIM3_IRQHandler(void)
+{
+  /* Clear TIM3 Capture compare interrupt pending bit */
+  TIM_ClearITPendingBit(TIM3, TIM_IT_CC2);    //清除标志位
+
+  /* Get the Input Capture value */
+  IC2Value = TIM_GetCapture2(TIM3);           //获取TIM3的计数值
+
+  if (IC2Value != 0)
+  {
+    /* Duty cycle computation */
+    DutyCycle = (TIM_GetCapture1(TIM3) * 100) / IC2Value;
+
+    /* Frequency computation */
+    Frequency = SystemCoreClock / IC2Value;
+  }
+  else
+  {
+    DutyCycle = 0;
+    Frequency = 0;
+  }
+}
+
+```
 
 
 
@@ -1064,18 +1153,18 @@ void Timer_Init(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	
-	TIM_ETRClockMode2Config(TIM2, TIM_ExtTRGPSC_OFF,   /*外部时钟模式2*/		 TIM_ExtTRGPolarity_NonInverted, 0x0F);
-	
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;     //时钟不分频
 	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; //向上计数
-	TIM_TimeBaseInitStructure.TIM_Period = 10 - 1;                  //重装载值为10
-	TIM_TimeBaseInitStructure.TIM_Prescaler = 1 - 1;                //不分频
-	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;            //重复计数器为0
+	TIM_TimeBaseInitStructure.TIM_Period = 10 - 1;                //重装载值为10
+	TIM_TimeBaseInitStructure.TIM_Prescaler = 1 - 1;              //不分频
+	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;          //重复计数器为0
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);
 	
 	TIM_ClearFlag(TIM2, TIM_FLAG_Update);      //清除更新标志位
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); //使能更新中断
+    
+    TIM_ETRClockMode2Config(TIM2, TIM_ExtTRGPSC_OFF,   /*外部时钟模式2*/		 TIM_ExtTRGPolarity_NonInverted, 0x0F);
 	
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	
@@ -1206,6 +1295,137 @@ void TIM2_IRQHandler(void)
     	return (TIM_GetCapture2(TIM3) + 1) * 100 / (TIM_GetCapture1(TIM3) + 1);
     }
     ```
+
+*   **采用常规中断进行计算频率：**
+
+```c
+void CAP_Init(void)
+{
+	TIM_ICInitTypeDef  TIM_ICInitStructure;
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	GPIO_InitTypeDef GPIO_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_1 | GPIO_Pin_2;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	TIM_TimeBaseStructure.TIM_Period = 65535-1;   
+    //重装载值位65535，也就是对脉冲的计数次数位65535，超出复位为0
+	TIM_TimeBaseStructure.TIM_Prescaler = 720-1;
+    //对时钟进行720的分频也就是100000，经过测试可以测量20到50k的频率
+    //要测量更高的频率可以适当增大分频系数
+    //要测量更高的频率可以适当减小分频系数
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+
+	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+
+	TIM_ICInitStructure.TIM_Channel = TIM_Channel_2;
+	TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;
+	TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
+	TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+	TIM_ICInitStructure.TIM_ICFilter = 0xf;
+	
+	TIM_ICInit(TIM2, &TIM_ICInitStructure);
+	
+	TIM_ICInitStructure.TIM_Channel = TIM_Channel_3;
+	TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;
+	TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
+	TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+	TIM_ICInitStructure.TIM_ICFilter = 0xf;
+
+	TIM_ICInit(TIM2, &TIM_ICInitStructure);
+
+	/* TIM enable counter */
+	TIM_Cmd(TIM2, ENABLE);
+
+	/* Enable the CC2 Interrupt Request */
+	TIM_ITConfig(TIM2, TIM_IT_CC2, ENABLE);
+	TIM_ITConfig(TIM2, TIM_IT_CC3, ENABLE);
+}
+
+__IO uint32_t Capture1 = 0;
+__IO uint32_t Capture2 = 0;
+__IO uint32_t TIM2Freq2 = 0;
+__IO uint32_t TIM2Freq3 = 0;
+__IO uint32_t TIM2_CH2_Capture = 0;
+__IO uint32_t TIM3_CH3_Capture = 0;
+__IO uint16_t CaptureNumber = 0;
+char freq[32];
+
+void TIM2_IRQHandler(void)
+{ 
+	if(TIM_GetITStatus(TIM2, TIM_IT_CC2) == SET) 
+	{
+		TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);
+		if(CaptureNumber == 0)
+		{
+			Capture1 = TIM_GetCapture2(TIM2);
+			CaptureNumber = 1;
+		}
+		else if(CaptureNumber == 1)
+		{
+			Capture2 = TIM_GetCapture2(TIM2); 
+
+			if (Capture2 > Capture1)
+			{
+				TIM2_CH2_Capture = (Capture2 - Capture1); 
+			}
+			else
+			{
+				TIM2_CH2_Capture = ((0xFFFF - Capture1) + Capture2); 
+			}
+			
+			TIM2Freq2 = (uint32_t) 100000  / TIM2_CH2_Capture;
+            //其中1000000为基础频率，根据分频系数来定，72M/分频系数
+			CaptureNumber = 0;
+		}
+	}
+	
+	if(TIM_GetITStatus(TIM2, TIM_IT_CC3) == SET) 
+	{
+		TIM_ClearITPendingBit(TIM2, TIM_IT_CC3);
+		if(CaptureNumber == 0)
+		{
+			Capture1 = TIM_GetCapture3(TIM2);
+			CaptureNumber = 1;
+		}
+		else if(CaptureNumber == 1)
+		{
+			Capture2 = TIM_GetCapture3(TIM2); 
+
+			if (Capture2 > Capture1)
+			{
+				TIM3_CH3_Capture = (Capture2 - Capture1); 
+			}
+			else
+			{
+				TIM3_CH3_Capture = ((0xFFFF - Capture1) + Capture2); 
+			}
+			
+			TIM2Freq3 = (uint32_t) 100000 / TIM3_CH3_Capture;
+			CaptureNumber = 0;
+		}
+	}
+}
+
+```
+
+
+
+
 
 #### 6.2.3 编码器模式
 
@@ -1552,7 +1772,7 @@ typedef struct
         *   相比于不使用流控多了RTS和CTS，接收端发出来的信号叫 RTS 信号，发送端检测管脚叫 CTS
         *   当RTS置高：表示接收端接受的数据还没有处理完，让发送端先暂停发送数据
         *   当CTS置高：表示对面接收端数据还没处理完，作为发送端应该先停一下
-    *   软件流控：以特殊的字符来代表从机已经不能再接收新的数据了，基本的流程就是从机在接收数据很多的时候或主动给发送端发送一个特殊字符，当发送端接收到这个特殊字符后就不能再发送数据了
+    *   软件流控：以特殊的字符来代表从机已经不能再接收新的数据了，基本的流程就是从机在接收数据很多的时候主动给发送端发送一个特殊字符，当发送端接收到这个特殊字符后就不能再发送数据了
 
 ```C
 char Serial_RxPacket[100];			
@@ -1681,7 +1901,99 @@ void USART1_IRQHandler(void)
 }
 ```
 
+*   使用USART处理数据：
 
+*   ```c
+    
+    void USART2_Init(void)
+    {
+    	GPIO_InitTypeDef GPIO_InitStructure;
+    	NVIC_InitTypeDef NVIC_InitStructure;
+    	USART_InitTypeDef USART_InitStructure;
+    
+    	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE); 
+    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA , ENABLE);	
+    
+    	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+    	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    	NVIC_Init(&NVIC_InitStructure);
+    
+    	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+    	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    	GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+    	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    	GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    	USART_InitStructure.USART_BaudRate = 9600;
+    	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    	USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    	USART_InitStructure.USART_Parity = USART_Parity_No;
+    	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    
+    	/* Configure USARTy */
+    	USART_Init(USART2, &USART_InitStructure);
+    
+    	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+    	USART_ITConfig(USART2, USART_IT_IDLE, ENABLE);  //打开空闲中断
+    
+    	/* Enable USARTy */
+    	USART_Cmd(USART2, ENABLE);
+    }
+    
+    void USART2_SendStr(char*str)
+    {
+    	for (k = 0; str[k] != '\0'; k ++)
+    	{
+    		USART_SendData(USART2,str[k]);
+    		while (USART_GetFlagStatus(USART2,USART_FLAG_TXE) == RESET){}
+    	}
+    }
+    //发送数据，每次发送数据的时候记得加上等待发送寄存器为空的标志位
+    while (USART_GetFlagStatus(USART2,USART_FLAG_TXE) == RESET){}
+    //否则在快速发送或者发送字符串长度很长的时候会出现发送数据不对的现象
+    
+    void USART2_IRQHandler(void)
+    {
+    	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)  //接收数据
+    	{
+    		RxBuffer[RxCounter] = USART_ReceiveData(USART2);
+    		RxCounter ++;
+    		USART_ClearITPendingBit(USART2,USART_IT_RXNE);
+    	}
+    	
+    	if(USART_GetITStatus(USART2, USART_IT_IDLE) != RESET)  //检查空闲标志位
+    	{                      //置高表明为空闲状态，将usart_idle_flag置1，在主循环中							   //检查标志位,防止一直进入中断，消耗资源
+    		USART2 ->SR;  //清除空闲标志位要先读SR寄存器再读DR寄存器
+    		USART2 ->DR;  //使用USART_ClearITPendingBit清除是没用的
+    		
+    		usart_idle_flag = 1;
+    		USART_ClearITPendingBit(USART2,USART_IT_IDLE);
+    	}
+    }
+    
+     while(1)
+    	{
+         	if (usart_idle_flag == 1)
+    		{
+    			usart_idle_flag = 0;
+    			USART_IT_Task();
+    			RxCounter = 0;
+    		}
+     	}
+    
+    void USART_IT_Task(void)
+    {
+        //处理字符串
+    }
+    ```
+
+*   
 
 ### 7.3 IIC
 
@@ -2587,7 +2899,7 @@ void USART1_IRQHandler(void)
 
 *   普通外设在设置中断时首先要分组，设置抢占优先级和子优先级，在与内核外设的优先级进行比较的时候，可以将内核外设的优先级假设分组，比如：
 
-    *   配置一个外设的中断优先级分组为 2，抢占优先级为 1，子优先级也为 1，systick 的优先级为 固件库默认配置的 15。当我们比较内核外设和片上外设的中断优先级的时候，我们只需要抓住 NVIC 的中断优先级分组不仅对片上外设有效，同样对内核的外设也有效。我们把 systick 的优先 级 15 转换成二进制值就是 1111(0b)，又因为 NVIC 的优先级分组 2，那么前两位的 11(0b) 就是 3，后两位的 11(0b) 也是 3。
+    *   配置一个外设的中断优先级分组为 2，抢占优先级为 1，子优先级也为 1，systick 的优先级为固件库默认配置的 15。当我们比较内核外设和片上外设的中断优先级的时候，我们只需要抓住 NVIC 的中断优先级分组不仅对片上外设有效，同样对内核的外设也有效。我们把 systick 的优先级 15 转换成二进制值就是 1111(0b)，又因为 NVIC 的优先级分组 2，那么前两位的 11(0b) 就是 3，后两位的 11(0b) 也是 3。
 
 *   **SysTick**初始化函数：
 
@@ -2737,7 +3049,7 @@ void USART1_IRQHandler(void)
     }
     
     ```
-*   **USART配合DMA使用：**
+*   **USART发送配合DMA使用：**
 *   ```c
     //从内存到外设
     uint8_t buff[5] = {0,1,2,3,4};
@@ -2749,7 +3061,7 @@ void USART1_IRQHandler(void)
     	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
     	
     	DMA_InitStructure.DMA_BufferSize = 5;
-    	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+    	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST; //DST：distraction目标
     	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
     	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)buff;
     	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
@@ -2890,6 +3202,913 @@ RTC由两个主要部分组成：
 
     
 
+# FreeRTOS
+
+## 1.FreeRTOS的移植
+
+*   从官网中下载FreeRTOS的源码
+
+    *   ---Demo：以各种芯片为基础写的FreeRTOS案例
+    *   ---License：执照
+    *   ---Source：内核c和h文件
+        *   ---include：内核的各种头文件
+        *   ---portable：与编译器相关的文件夹，在不同的编译器中使用不同的支持文件，其中keil和RVDS中的内容是一样的
+        *   还有一些通用的内核c文件：croutine.c，event_groups.c，list.c，queue.c，tasks.c，timer.c
+
+*   我们需要移植的文件有：
+
+    *   FreeRTOS\Demo\CORTEX_STM32F103_Keil下的`FreeRTOSConfig.h`
+    *   FreeRTOS\Source下的`croutine.c,event_groups.c,list.c,queue.c,tasks.c,timer.c`以及include文件
+    *   FreeRTOS\Source\portable\RVDS\ARM_CM3下的`port.c,portmacro.h`
+    *   FreeRTOS\Source\portable\MemMang下的`heap_4.c`
+
+*   配置`FreeRTOSConfig.h`文件：
+
+    ```c
+    #ifndef FREERTOS_CONFIG_H
+    #define FREERTOS_CONFIG_H
+    
+    #include "stm32f10x.h"
+    #include "bsp_usart.h"
+    
+    
+    //针对不同的编译器调用不同的stdint.h文件
+    #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
+        #include <stdint.h>
+        extern uint32_t SystemCoreClock;
+    #endif
+    
+    //断言
+    #define vAssertCalled(char,int) printf("Error:%s,%d\r\n",char,int)
+    #define configASSERT(x) if((x)==0) vAssertCalled(__FILE__,__LINE__)
+    
+    /************************************************************************
+     *               FreeRTOS基础配置配置选项 
+     *********************************************************************/
+    /* 置1：RTOS使用抢占式调度器；置0：RTOS使用协作式调度器（时间片）
+     * 
+     * 注：在多任务管理机制上，操作系统可以分为抢占式和协作式两种。
+     * 协作式操作系统是任务主动释放CPU后，切换到下一个任务。
+     * 任务切换的时机完全取决于正在运行的任务。
+     */
+    #define configUSE_PREEMPTION                      1
+    
+    //置1：使能时间片调度(默认式使能的)
+    #define configUSE_TIME_SLICING                    1        
+    
+    /* 某些运行FreeRTOS的硬件有两种方法选择下一个要执行的任务：
+     * 通用方法和特定于硬件的方法（以下简称“特殊方法”）。
+     * 
+     * 通用方法：
+     *      1.configUSE_PORT_OPTIMISED_TASK_SELECTION 为 0 或者硬件不支持这种特殊方法。
+     *      2.可以用于所有FreeRTOS支持的硬件
+     *      3.完全用C实现，效率略低于特殊方法。
+     *      4.不强制要求限制最大可用优先级数目
+     * 特殊方法：
+     *      1.必须将configUSE_PORT_OPTIMISED_TASK_SELECTION设置为1。
+     *      2.依赖一个或多个特定架构的汇编指令（一般是类似计算前导零[CLZ]指令）。
+     *      3.比通用方法更高效
+     *      4.一般强制限定最大可用优先级数目为32
+     *      5.stm32
+     * 一般是硬件计算前导零指令，如果所使用的，MCU没有这些硬件指令的话此宏应该设置为0！
+     */
+    #define configUSE_PORT_OPTIMISED_TASK_SELECTION            1                       
+                                                                            
+    /* 置1：使能低功耗tickless模式；置0：保持系统节拍（tick）中断一直运行
+     * 假设开启低功耗的话可能会导致下载出现问题，因为程序在睡眠中,可用以下办法解决
+     * 
+     * 下载方法：
+     *      1.将开发版正常连接好
+     *      2.按住复位按键，点击下载瞬间松开复位按键
+     *     
+     *      1.通过跳线帽将 BOOT 0 接高电平(3.3V)
+     *      2.重新上电，下载
+     *    
+     *             1.使用FlyMcu擦除一下芯片，然后进行下载
+     *            STMISP -> 清除芯片(z)
+     */
+    #define configUSE_TICKLESS_IDLE                    0   
+    
+    /*
+     * 写入实际的CPU内核时钟频率，也就是CPU指令执行频率，通常称为Fclk
+     * Fclk为供给CPU内核的时钟信号，我们所说的cpu主频为 XX MHz，
+     * 就是指的这个时钟信号，相应的，1/Fclk即为cpu时钟周期；
+     */
+    #define configCPU_CLOCK_HZ                        (SystemCoreClock)
+    
+    //RTOS系统节拍中断的频率。即一秒中断的次数，每次中断RTOS都会进行任务调度
+    #define configTICK_RATE_HZ                        (( TickType_t )1000)
+    
+    //可使用的最大优先级
+    #define configMAX_PRIORITIES                      (32)
+    
+    //空闲任务使用的堆栈大小
+    #define configMINIMAL_STACK_SIZE                  ((unsigned short)128)
+      
+    //任务名字字符串长度
+    #define configMAX_TASK_NAME_LEN                   (16)
+    
+    //系统节拍计数器变量数据类型，1表示为16位无符号整形，0表示为32位无符号整形
+    #define configUSE_16_BIT_TICKS                    0                      
+    
+    //空闲任务放弃CPU使用权给其他同优先级的用户任务
+    #define configIDLE_SHOULD_YIELD                   1           
+    
+    //启用队列
+    #define configUSE_QUEUE_SETS                      1    
+    
+    //开启任务通知功能，默认开启
+    #define configUSE_TASK_NOTIFICATIONS              1   
+    
+    //使用互斥信号量
+    #define configUSE_MUTEXES                         1    
+    
+    //使用递归互斥信号量                                            
+    #define configUSE_RECURSIVE_MUTEXES               1   
+    
+    //为1时使用计数信号量
+    #define configUSE_COUNTING_SEMAPHORES             1
+    
+    /* 设置可以注册的信号量和消息队列个数 */
+    #define configQUEUE_REGISTRY_SIZE                 10                                 
+    //置0：禁用应用程序任务标签，置1：启用任务标签并在创建任务时最后一个参数设置任务标签
+    #define configUSE_APPLICATION_TASK_TAG            0                       
+                          
+    /*****************************************************************
+                  FreeRTOS与内存申请有关配置选项                                               
+    *****************************************************************/
+    //支持动态内存申请
+    #define configSUPPORT_DYNAMIC_ALLOCATION           1    
+    //支持静态内存
+    #define configSUPPORT_STATIC_ALLOCATION            0                    
+    //系统所有总的堆大小
+    #define configTOTAL_HEAP_SIZE                      ((size_t)(36*1024))    
+    
+    
+    /***************************************************************
+                 FreeRTOS与钩子函数有关的配置选项                                            
+    **************************************************************/
+    /* 置1：使用空闲钩子（Idle Hook类似于回调函数）；置0：忽略空闲钩子
+     * 
+     * 空闲任务钩子是一个函数，这个函数由用户来实现，
+     * FreeRTOS规定了函数的名字和参数：void vApplicationIdleHook(void )，
+     * 这个函数在每个空闲任务周期都会被调用
+     * 对于已经删除的RTOS任务，空闲任务可以释放分配给它们的堆栈内存。
+     * 因此必须保证空闲任务可以被CPU执行
+     * 使用空闲钩子函数设置CPU进入省电模式是很常见的
+     * 不可以调用会引起空闲任务阻塞的API函数
+     */
+    #define configUSE_IDLE_HOOK                        1      
+    
+    /* 置1：使用时间片钩子（Tick Hook）；置0：忽略时间片钩子
+     *
+     * 时间片钩子是一个函数，这个函数由用户来实现，
+     * FreeRTOS规定了函数的名字和参数：void vApplicationTickHook(void )
+     * 时间片中断可以周期性的调用
+     * 函数必须非常短小，不能大量使用堆栈，
+     * 不能调用以”FromISR" 或 "FROM_ISR”结尾的API函数
+     */
+     /*xTaskIncrementTick函数是在xPortSysTickHandler中断函数中被调用的。因此，vApplicationTickHook()函数执行的时间必须很短才行*/
+    #define configUSE_TICK_HOOK                        0           
+    
+    //使用内存申请失败钩子函数
+    #define configUSE_MALLOC_FAILED_HOOK               0 
+    
+    /*
+     * 大于0时启用堆栈溢出检测功能，如果使用此功能 
+     * 用户必须提供一个栈溢出钩子函数，如果使用的话
+     * 此值可以为1或者2，因为有两种栈溢出检测方法 */
+    #define configCHECK_FOR_STACK_OVERFLOW             0   
+    
+    
+    /********************************************************************
+              FreeRTOS与运行时间和任务状态收集有关的配置选项   
+    **********************************************************************/
+    //启用运行时间统计功能
+    #define configGENERATE_RUN_TIME_STATS              0             
+    //启用可视化跟踪调试
+    #define configUSE_TRACE_FACILITY                   0    
+    /* 与宏configUSE_TRACE_FACILITY同时为1时会编译下面3个函数
+     * prvWriteNameToBuffer()
+     * vTaskList(),
+     * vTaskGetRunTimeStats()
+    */
+    #define configUSE_STATS_FORMATTING_FUNCTIONS        1                       
+                                                                            
+                                                                            
+    /********************************************************************
+                    FreeRTOS与协程有关的配置选项                                                
+    *********************************************************************/
+    //启用协程，启用协程以后必须添加文件croutine.c
+    #define configUSE_CO_ROUTINES                       0                 
+    //协程的有效优先级数目
+    #define configMAX_CO_ROUTINE_PRIORITIES             ( 2 )                   
+    
+    
+    /***********************************************************************
+                    FreeRTOS与软件定时器有关的配置选项      
+    **********************************************************************/
+     //启用软件定时器
+    #define configUSE_TIMERS                       1                              
+    //软件定时器优先级
+    #define configTIMER_TASK_PRIORITY              (configMAX_PRIORITIES-1)        
+    //软件定时器队列长度
+    #define configTIMER_QUEUE_LENGTH               10                               
+    //软件定时器任务堆栈大小
+    #define configTIMER_TASK_STACK_DEPTH           (configMINIMAL_STACK_SIZE*2)    
+    
+    /************************************************************
+                FreeRTOS可选函数配置选项                                                     
+    ************************************************************/
+    #define INCLUDE_xTaskGetSchedulerState         1                       
+    #define INCLUDE_vTaskPrioritySet               1
+    #define INCLUDE_uxTaskPriorityGet              1
+    #define INCLUDE_vTaskDelete                    1
+    #define INCLUDE_vTaskCleanUpResources          1
+    #define INCLUDE_vTaskSuspend                   1
+    #define INCLUDE_vTaskDelayUntil                1
+    #define INCLUDE_vTaskDelay                     1
+    #define INCLUDE_eTaskGetState                  1
+    #define INCLUDE_xTimerPendFunctionCall         1
+    //#define INCLUDE_xTaskGetCurrentTaskHandle    1
+    //#define INCLUDE_uxTaskGetStackHighWaterMark  0
+    //#define INCLUDE_xTaskGetIdleTaskHandle       0
+    
+    
+    /******************************************************************
+                FreeRTOS与中断有关的配置选项                                                 
+    ******************************************************************/
+    #ifdef __NVIC_PRIO_BITS
+        #define configPRIO_BITS               __NVIC_PRIO_BITS
+    #else
+        #define configPRIO_BITS               4                  
+    #endif
+    //中断最低优先级
+    #define configLIBRARY_LOWEST_INTERRUPT_PRIORITY            15     
+    
+    //系统可管理的最高中断优先级
+    #define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    5 
+    
+    #define configKERNEL_INTERRUPT_PRIORITY                                    (configLIBRARY_LOWEST_INTERRUPT_PRIORITY << (8 - configPRIO_BITS))/* 240 */
+    
+    #define configMAX_SYSCALL_INTERRUPT_PRIORITY                                ( configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY << (8 - configPRIO_BITS) )
+    
+    
+    /****************************************************************
+                FreeRTOS与中断服务函数有关的配置选项                         
+    ****************************************************************/
+    #define xPortPendSVHandler     PendSV_Handler
+    #define vPortSVCHandler        SVC_Handler
+    
+    
+    /* 以下为使用Percepio Tracealyzer需要的东西，不需要时将 configUSE_TRACE_FACILITY 定义为 0 */
+    #if ( configUSE_TRACE_FACILITY == 1 )
+    #include "trcRecorder.h"
+    #define INCLUDE_xTaskGetCurrentTaskHandle               1   // 启用一个可选函数（该函数被 Trace源码使用，默认该值为0 表示不用）
+    #endif
+    
+    
+    #endif /* FREERTOS_CONFIG_H */
+    ```
+
+*   修改stm32f10x_it.c文件：注释`PendSV_Handler()`与`SVC_Handler()`，加入`SysTick_Handler()`
+
+    ```c
+    //void SVC_Handler(void)
+    //{
+    //}
+    
+    //void PendSV_Handler(void)
+    //{
+    //}
+    
+    extern void xPortSysTickHandler(void);
+    
+    //systick中断服务函数
+    void SysTick_Handler(void)
+    {    
+        #if (INCLUDE_xTaskGetSchedulerState  == 1 )
+          if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+          {
+        #endif  /* INCLUDE_xTaskGetSchedulerState */  
+            xPortSysTickHandler();
+        #if (INCLUDE_xTaskGetSchedulerState  == 1 )
+          }
+        #endif  /* INCLUDE_xTaskGetSchedulerState */
+    }
+    ```
+
+*   创建任务：
+
+    ```c
+    /* FreeRTOS头文件 */
+    #include "FreeRTOS.h"
+    #include "task.h"
+    /* 开发板硬件bsp头文件 */
+    #include "bsp_led.h"
+    
+    static void AppTaskCreate(void);/* AppTask任务 */
+    
+     /* 创建任务句柄 */
+    static TaskHandle_t AppTask_Handle = NULL;
+    
+    int main(void)
+    {    
+      BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
+    
+      /* 开发板硬件初始化 */
+      BSP_Init();
+    
+       /* 创建AppTaskCreate任务 */
+      xReturn = xTaskCreate((TaskFunction_t )AppTask,  /* 任务入口函数 */
+                            (const char*    )"AppTask",/* 任务名字 */
+                            (uint16_t       )512,  /* 任务栈大小 */
+                            (void*          )NULL,/* 任务入口函数参数 */
+                            (UBaseType_t    )1, /* 任务的优先级 */
+                            (TaskHandle_t*  )&AppTask_Handle);/* 任务控制块指针 */ 
+      /* 启动任务调度 */           
+      if(pdPASS == xReturn)
+        vTaskStartScheduler();   /* 启动任务，开启调度 */
+      else
+        return -1;  
+      
+      while(1);   /* 正常不会执行到这里 */    
+    }
+    
+    static void AppTask(void* parameter)
+    {    
+        while (1)
+        {
+            LED1_ON;
+            vTaskDelay(500);   /* 延时500个tick */
+            LED1_OFF;     
+            vTaskDelay(500);   /* 延时500个tick */                 
+        }
+    }
+    ```
+
+    任务必须是一个死循环，否则任务将通过LR返回，如果LR指向了非法的内存就会产生HardFault_Handler，而FreeRTOS指向一个死循环，那么任务返回之后就在死循环中执行，这样子的任务是不安全的，所以避免这种情况，任务一般都是死循环并且无返回值的。
+    **并且每个任务循环主体中应该有阻塞任务的函数，否则就会饿死比它优先级更低的任务！！！**
+
+    
+
+
+
+
+
+## 2.FreeRTOS任务调度的原理
+
+[FreeRTOS记录（三、RTOS任务调度原理解析_Systick、PendSV、SVC） - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/551096072)
+
+*   **在Cortex-M内核上，FreeRTOS使用Systick定时器作为心跳时钟，一般默认心跳时钟为1ms，进入Systick中断后，内核会进入处理模式进行处理，在Systick中断处理中，系统会在 ReadList 就绪链表从高优先级到低优先找需要执行的任务，进行调度，如果有任务的状态发生了变化，改变了状态链表，就会产生一个pendSV异常，进入pendSV异常，通过改变进程栈指针（PSP）切换到不同的任务。**
+
+*   **对于相同优先级的任务，每隔一个Systick，运行过的任务被自动排放至该优先级链表的尾部（时间片调度）**
+
+*   **用户也可以在线程模式下主动触发PendSV，进行任务切换。**
+
+*   **在FreeRTOS中SVC只使用了一次（M0中没有使用），就是第一次。**
+
+*   **FreeRTOS进入临界区是通过配置BASEPRI寄存器来进行的。**
+
+
+
+**上下文(任务)切换被触发的场合：**
+
+*   **可以执行一个系统调用**
+
+*   **系统滴答定时器(SysTick)中断**
+
+
+
+**执行系统调用：**
+
+*   执行系统调用就是执行 FreeRTOS系统提供的相关API函数，比如任务切换函数 taskYIELD()， FreeRTOS 有些 API 函数也会调用函数 taskYIELD()，这些 API 函数都会导致任务切换，这些 API 函 数和任务切换函数 taskYIELD()都统称为系统调用。函数 taskYIELD()其实就是个宏，在文件 task.h 中有如下定义：
+
+    ```c
+    #define taskYIELD() portYIELD()
+    
+    //portYIELD()在portmacro.h中定义如下：
+    
+    #define portYIELD() 
+    { 
+    portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;  (1)
+    
+    __dsb( portSY_FULL_READ_WRITE ); 
+    __isb( portSY_FULL_READ_WRITE ); 
+    }
+    
+    (1):通过向中断控制和壮态寄存器 ICSR 的 bit28 写入 1 挂起 PendSV 来启动 PendSV 中断。
+    这样就可以在 PendSV 中断服务函数中进行任务切换了。
+        
+    //中断级的任务切换函数为 portYIELD_FROM_ISR()，定义如下：
+    #define portEND_SWITCHING_ISR( xSwitchRequired ) \
+    if( xSwitchRequired != pdFALSE ) portYIELD()
+    #define portYIELD_FROM_ISR( x ) portEND_SWITCHING_ISR( x )
+    //最终也是调用函数portYIELD()来完成任务切换
+    ```
+
+**系统滴答定时器(SysTick)中断：**
+
+FreeRTOS 中滴答定时器(SysTick)中断服务函数中也会进行任务切换，滴答定时器中断服务函数如下：
+
+```c
+void SysTick_Handler(void)
+{ 
+    if(xTaskGetSchedulerState()!=taskSCHEDULER_NOT_STARTED)//系统已经运行
+    {
+        xPortSysTickHandler();
+    }
+}
+
+void xPortSysTickHandler( void )
+{
+	vPortRaiseBASEPRI(); (1)
+	{
+		if( xTaskIncrementTick() != pdFALSE ) //增加时钟计数器 xTickCount 的值
+		{
+			portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT; (2)
+		}
+	}
+	vPortClearBASEPRIFromISR(); (3)
+}
+
+(1):关闭中断
+(2):通过向中断控制和壮态寄存器 ICSR 的 bit28 写入 1 挂起 PendSV 来启动 PendSV 中
+断。这样就可以在 PendSV 中断服务函数中进行任务切换了。
+(3):打开中断
+```
+
+
+
+### 2.1PendSV_Handler
+
+FreeRTOS 任务切换的具体过程是在 PendSV 中断服务函数中完成的，PendSV 中断服务函数本应该为 PendSV_Handler()，但是 FreeRTOS 使用#define 重定义了，如下：
+
+```c
+#define xPortPendSVHandler PendSV_Handler
+
+__asm void xPortPendSVHandler( void )
+{
+    extern uxCriticalNesting;
+    extern pxCurrentTCB;
+    extern vTaskSwitchContext;
+    PRESERVE8
+    mrs r0, psp                 (1)
+    isb
+    ldr r3, =pxCurrentTCB       (2)
+    ldr r2, [r3]                (3)
+    stmdb r0!, {r4-r11, r14}    (4)
+    str r0, [r2]                (5)
+    stmdb sp!, {r3,r14}         (6)
+    mov r0, #configMAX_SYSCALL_INTERRUPT_PRIORITY (7)
+    msr basepri, r0     	    (8)
+    dsb
+    isb
+    bl vTaskSwitchContext 	    (9)
+    mov r0, #0 				    (10)
+    msr basepri, r0 		    (11)
+    ldmia sp!, {r3,r14} 	    (12)
+    ldr r1, [r3] 			    (13)
+    ldr r0, [r1] 			    (14)
+    ldmia r0!, {r4-r11} 	    (15)
+    msr psp, r0 				(16)
+    isb
+    bx r14 						(17)
+	nop
+}
+(1)：读取进程栈指针，保存在寄存器 R0 里面。
+(2)和(3)：获取当前任务的任务控制块，并将任务控制块的地址保存在寄存器 R2 里面。
+(4)：保存 r4-r11 和 R14 这几个寄存器的值。
+(5)：将寄存器 R0 的值写入到寄存器 R2 所保存的地址中去，也就是将新的栈顶保存在任务控制块的第一个字段中。此时的寄存器 R0 保存着最新的堆栈栈顶指针值，所以要将这个最新的栈顶指针写入到当前任务的任务控制块第一个字段，而经过(2)和(3)已经获取到了任务控制块，并将任务控制块的首地址写入到了寄存器 R2 中。
+(6)：将寄存器 R3 和 R14 的值临时压栈，寄存器 R3 中保存了当前任务的任务控制块，而接下来要调用函数 vTaskSwitchContext()，为了防止 R3 和 R14 的值被改写，所以这里临时将 R3 和 R14 的值先压栈。
+(7)和(8)：关闭中断，进入临界区
+(9)：调用函数 vTaskSwitchContext()，此函数用来获取下一个要运行的任务，并将 pxCurrentTCB 更新为这个要运行的任务。
+(10)和(11)：打开中断，退出临界区。
+(12)：刚刚保存的寄存器 R3 和 R14 的值出栈，恢复寄存器 R3 和 R14 的值。注意，经过(12)步，此时 pxCurrentTCB 的值已经改变了，所以读取 R3 所保存的地址处的数据就会发现其值改变了，成为了下一个要运行的任务的任务控制块。
+(13)和(14)：获取新的要运行的任务的任务堆栈栈顶,并将栈顶保存在寄存器 R0 中。
+(15)：R4-R11,R14 出栈，也就是即将运行的任务的现场。
+(16)：更新进程栈指针 PSP 的值。
+(17)：执行此行代码以后硬件自动恢复寄存器 R0~R3、R12、LR、PC 和 xPSR 的值，确定异常返回以后应该进入处理器模式还是进程模式，使用主栈指针(MSP)还是进程栈指针(PSP)。很明显这里会进入进程模式，并且使用进程栈指针(PSP)，寄存器 PC 值会被恢复为即将运行的任务的任务函数，新的任务开始运行！至此，任务切换成功。
+```
+
+*   **PSP（进程堆栈指针）：**也称为线程堆栈指针，是Cortex-M系列处理器中用于处理线程（任务）的堆栈的指针寄存器。
+
+    在FreeRTOS中，每个任务都有自己的堆栈，当任务被挂起时，当前任务的堆栈指针被保存到任务控制块（TCB）中，当任务被恢复时，堆栈指针会被加载到PSP中。
+
+    因此，在PendSV异常处理程序中，第一步就是将当前任务的堆栈指针保存到其TCB中，并且将PSP设置为下一个要运行的任务的堆栈指针。
+
+*   **MSP（主堆栈指针）：**它指向内存中的主堆栈。在系统启动时，处理器会将MSP初始化为内存的顶部地址，然后系统中的所有任务共享MSP作为它们的堆栈指针。当中断或异常发生时，处理器会自动切换到内存中的另一个堆栈（即Process Stack Pointer，PSP）。
+
+    MSP和PSP之间的区别是，MSP是全局的堆栈指针，用于系统和中断服务例程的堆栈；而PSP是每个任务独立的堆栈指针，用于任务上下文切换时保存当前任务的堆栈帧。
+
+
+
+在PendSV中断服务程序中有调用函数 vTaskSwitchContext()来获取下一个要运行的任务， 也就是查找已经就绪了的优先级最高的任务，缩减后(去掉条件编译)函数源码如下：
+
+```c
+void vTaskSwitchContext( void )
+{
+    if( uxSchedulerSuspended != ( UBaseType_t ) pdFALSE ) (1)
+    {
+    	xYieldPending = pdTRUE;
+    }
+    else
+    {
+        xYieldPending = pdFALSE;
+        traceTASK_SWITCHED_OUT();
+        taskCHECK_FOR_STACK_OVERFLOW();
+        taskSELECT_HIGHEST_PRIORITY_TASK(); (2)
+        traceTASK_SWITCHED_IN();
+    }
+}
+//(1)、如果调度器挂起那就不能进行任务切换。
+//(2)、调用函数 taskSELECT_HIGHEST_PRIORITY_TASK()获取下一个要运行的任务。
+//taskSELECT_HIGHEST_PRIORITY_TASK()本质上是一个宏，在 tasks.c 中有定义。
+//FreeRTOS 中查找下一个要运行的任务有两种方法：一个是通用的方法，另外一个就是使用
+//硬件的方法，这个在我们讲解 FreeRTOSCofnig.h 文件的时候就提到过了，至于选择哪种方法通
+//过宏 configUSE_PORT_OPTIMISED_TASK_SELECTION 来决定的。当这个宏为 1 的时候就使
+//用硬件的方法，否则的话就是使用通用的方法，我们来看一下这两个方法的区别。
+
+//通用方法：
+#define taskSELECT_HIGHEST_PRIORITY_TASK() 
+{ 
+    UBaseType_t uxTopPriority = uxTopReadyPriority; 
+    while( listLIST_IS_EMPTY( &( pxReadyTasksLists[ uxTopPriority ] ) ) ) (1)
+    { 
+        configASSERT( uxTopPriority ); 
+        --uxTopPriority; 
+    } 
+    listGET_OWNER_OF_NEXT_ENTRY( pxCurrentTCB,                                 &( pxReadyTasksLists[ uxTopPriority ] ) ); (2)
+    uxTopReadyPriority = uxTopPriority; 
+} 
+/*(1)、在前面的 8.2.4 小节中说了 pxReadyTasksLists[]为就绪任务列表数组，一个优先级一个
+列表，同优先级的就绪任务都挂到相对应的列表中。uxTopReadyPriority 代表处于就绪态的最高
+优先级值，每次创建任务的时候都会判断新任务的优先级是否大于 uxTopReadyPriority，如果大
+于的话就将这个新任务的优先级赋值给变量 uxTopReadyPriority。函数 prvAddTaskToReadyList()也会修改这个值，也就是说将某个任务添加到就绪列表中的时候都会用 uxTopReadyPriority 来记录就绪列表中的最高优先级。这里就从这个最高优先级开始判断，看看哪个列表不为空就说明哪个优先级有就绪的任务。函数 listLIST_IS_EMPTY()用于判断某个列表是否为空，
+uxTopPriority 用来记录这个有就绪任务的优先级。*/
+
+/*(2)、已经找到了有就绪任务的优先级了，接下来就是从对应的列表中找出下一个要运行的
+任务，查找方法就是使用函数 listGET_OWNER_OF_NEXT_ENTRY()来获取列表中的下一个列
+表项，然后将获取到的列表项所对应的任务控制块赋值给 pxCurrentTCB，这样我们就确定了下
+一个要运行的任务了。
+可以看出通用方法是完全通过 C 语言来实现的，肯定适用于不同的芯片和平台，而且对于
+任务数量没有限制，但是效率肯定相对于使用硬件方法的要低很多。*/
+
+
+//硬件方法：
+#define taskSELECT_HIGHEST_PRIORITY_TASK() 
+{ 
+    UBaseType_t uxTopPriority; 
+    portGET_HIGHEST_PRIORITY( uxTopPriority, uxTopReadyPriority );  (1)
+    configASSERT( listCURRENT_LIST_LENGTH  
+    				(&( pxReadyTasksLists[ uxTopPriority ] ) )> 0 ); 
+    listGET_OWNER_OF_NEXT_ENTRY( pxCurrentTCB,  
+    				&( pxReadyTasksLists[ uxTopPriority ] ) );       (2)
+} 
+
+/*(1) 、 通 过 函 数 portGET_HIGHEST_PRIORITY() 获 取 处 于 就 绪 态 的 最 高 优 先 级 
+portGET_HIGHEST_PRIORITY 本质上是个宏，定义如下：
+#define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities ) uxTopPriority = ( 31UL - ( uint32_t ) __clz( ( uxReadyPriorities ) ) )
+使用硬件方法的时候 uxTopReadyPriority 就不代表处于就绪态的最高优先级了，而是使用
+每个 bit 代表一个优先级，bit0 代表优先级 0，bit31 就代表优先级 31，当某个优先级有就绪任
+务的话就将其对应的 bit 置 1。从这里就可以看出，如果使用硬件方法的话最多只能有 32 个优
+先级。__clz(uxReadyPriorities)就是计算 uxReadyPriorities 的前导零个数，前导零个数就是指从
+最高位开始(bit31)到第一个为 1 的 bit，其间 0 的个数，如下例子：
+二进制数 1000 0000 0000 0000 的前导零个数就为 0。
+二进制数 0000 1001 1111 0001 的前导零个数就是 4。
+得到 uxTopReadyPriority 的前导零个数以后在用 31 减去这个前导零个数得到的就是处于就
+绪态的最高优先级了，比如优先级 30 为此时的处于就绪态的最高优先级，30 的前导零个数为
+1，那么 31-1=30，得到处于就绪态的最高优先级为 30。
+
+(2)、已经找到了处于就绪态的最高优先级了，接下来就是从对应的列表中找出下一个要运
+行的任务，查找方法就是使用函数 listGET_OWNER_OF_NEXT_ENTRY()来获取列表中的下一
+个列表项，然后将获取到的列表项所对应的任务控制块赋值给 pxCurrentTCB，这样我们就确定
+了下一个要运行的任务了。
+可以看出硬件方法借助一个指令就可以快速的获取处于就绪态的最高优先级，但是会限制
+任务的优先级数，比如 STM32 只能有 32 个优先级，不过 32 个优先级已经完全够用了。要知道
+FreeRTOS 是支持时间片的，每个优先级可以支持无限多个任务。
+```
+
+
+
+
+
+### 2.2Systick
+
+**延时列表：**在FreeRTOS中，任务切换有两种情况：一种是任务执行完毕或者主动挂起，另一种是当前任务等待某个事件的发生而被挂起。对于第二种情况，FreeRTOS使用了一个延时列表（delayed list）来管理这些等待事件的任务，因为它们需要等待一定的时间才能被唤醒。
+
+*   在Cortex-M系列中systick作为FreeRTOS的心跳时钟，在Systick中进行上下文切换，操作系统的入口是中断
+
+*   源码解析：
+
+    *   Systick初始化：`port.c`中的`vPortSetupTimerInterrupt()`
+
+        ```c
+        /*
+         * Setup the systick timer to generate the tick interrupts at the required frequency.
+         */
+        __attribute__(( weak )) void vPortSetupTimerInterrupt( void )
+        {
+            /* Calculate the constants required to configure the tick interrupt. */
+            //configUSE_TICKLESS_IDLE为1则使能低功耗功能，只有在低功耗模式下才会执行下面
+            #if( configUSE_TICKLESS_IDLE == 1 )
+            {
+                //计算每个滴答时钟节拍需要多少时钟周期，由系统时钟频率和滴答频率计算得出
+                ulTimerCountsForOneTick = ( configSYSTICK_CLOCK_HZ / configTICK_RATE_HZ );
+                //计算最大可能的低功耗周期数，由低功耗模式使用的硬件定时器的位数计算得出，来保证在低功耗模式下能够正确地计算时间
+                xMaximumPossibleSuppressedTicks = portMAX_24_BIT_NUMBER / ulTimerCountsForOneTick;
+                //计算停止硬件定时器可能丢失的滴答数，来保证在恢复正常运行之后，滴答数不会出现跳变
+                ulStoppedTimerCompensation = portMISSED_COUNTS_FACTOR / ( configCPU_CLOCK_HZ / configSYSTICK_CLOCK_HZ );
+            }
+            #endif /* configUSE_TICKLESS_IDLE */
+        
+            /* 
+            Stop and clear the SysTick.
+            清0，保证上电后的准确性 
+            */
+            portNVIC_SYSTICK_CTRL_REG = 0UL;          //控制寄存器置0
+            portNVIC_SYSTICK_CURRENT_VALUE_REG = 0UL; //当前计数器寄存器置0
+            /* 
+            Configure SysTick to interrupt at the requested rate.
+            portNVIC_SYSTICK_LOAD_REG  systick装载值
+            portNVIC_SYSTICK_CTRL_REG  systick控制寄存器  启用系统滴答定时器，使能中断和使用外部时钟源
+            */
+            portNVIC_SYSTICK_LOAD_REG = ( configSYSTICK_CLOCK_HZ / configTICK_RATE_HZ ) - 1UL;
+            portNVIC_SYSTICK_CTRL_REG = ( portNVIC_SYSTICK_CLK_BIT | portNVIC_SYSTICK_INT_BIT | portNVIC_SYSTICK_ENABLE_BIT );
+        }
+        /*-----------------------------------------------------------*/
+        ```
+
+    *   Systick中断服务函数：
+
+        ```c
+        /*-----------------------------------------------------------*/
+        //每一节拍进入一次Systick 中断，因为Systick 如果调度器返回true，触发pendSV异常：
+        void xPortSysTickHandler( void )
+        {
+            /* The SysTick runs at the lowest interrupt priority, so when this interrupt executes all interrupts must be unmasked.  There is therefore no need to save and then restore the interrupt mask value as its value is already known.
+            首先禁用所有中断，因为滴答定时器的中断优先级最低
+            进入临界区，在上面一篇文章讲过，通过配置BASEPRI寄存器，关闭的中断等级在CubeMX中设置
+             */
+            portDISABLE_INTERRUPTS();
+            {
+                /* 
+                Increment the RTOS tick. 
+                操作系统调度接口
+                如果调度器返回true，说明需要进行任务调度，触发pendSV异常
+                */
+                if( xTaskIncrementTick() != pdFALSE )
+                {
+                    /* A context switch is required.  Context switching is performed in the PendSV interrupt.  Pend the PendSV interrupt. 
+                    需要上下文切换，上下文切换在PendSV中断中执行，挂起PendSV中断
+                    往中断控制及状态寄存器ICSR(地址：0xE000_ED04)的bit28写1挂起一次PendSV中断，这个PendSV中断将在稍后的时候执行，完成任务切换
+                    触发pendSV
+                    */
+                    portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+                }
+            }
+            /*
+            开中断，执行pendSV
+            */
+            portENABLE_INTERRUPTS();
+        }
+        ```
+
+    *   Systick任务调度：
+
+        ```c
+        //Systick中断中调用xTaskIncrementTick任务调度如下,源码注释：
+        /*----------------------------------------------------------*/
+        
+        BaseType_t xTaskIncrementTick( void )
+        {
+        TCB_t * pxTCB;
+        TickType_t xItemValue;
+        BaseType_t xSwitchRequired = pdFALSE;// 返回值，表示是否进行上下文切换
+        
+            /* Called by the portable layer each time a tick interrupt occurs.
+            Increments the tick then checks to see if the new tick value will cause any tasks to be unblocked.
+            每次滴答中断发生时，由可移植层调用。
+            增加 tick 然后检查新的 tick 值是否会导致任何任务被解锁。*/
+            traceTASK_INCREMENT_TICK( xTickCount );
+            /*
+                uxSchedulerSuspended 表示内核调度器是否挂起
+                pdFALSE 表示内核没有挂起
+            */
+            if( uxSchedulerSuspended == ( UBaseType_t ) pdFALSE )
+            {
+                /* 
+                Minor optimisation.  The tick count cannot change in this
+                block. 
+                tick计数增加1
+                */
+                const TickType_t xConstTickCount = xTickCount + ( TickType_t ) 1;
+                /* Increment the RTOS tick, switching the delayed and overflowed
+                delayed lists if it wraps to 0. */
+                xTickCount = xConstTickCount;
+        
+                /*
+                判断tick是否溢出越界
+                */
+                if( xConstTickCount == ( TickType_t ) 0U ) /*lint !e774 'if' does not always evaluate to false as it is looking for an overflow. */
+                {
+                    taskSWITCH_DELAYED_LISTS();//如果溢出，要检查延时列表中的任务是否需要被唤醒，如果需要被唤醒，则将其从延时列表中移除，并将其加入就绪列表，以便进行任务调度
+                }
+                else
+                {
+                    mtCOVERAGE_TEST_MARKER();
+                }
+        
+                /* See if this tick has made a timeout expire.  Tasks are stored in
+                the queue in the order of their wake time - meaning once one task
+                has been found whose block time has not expired there is no need to
+                look any further down the list. 
+                当前节拍大于时间片的锁定时间
+                说明有任务需要进行调度了，时间片用完了
+                */
+                if( xConstTickCount >= xNextTaskUnblockTime )
+                {
+                    /*
+                        会一直遍历整个任务延时列表，
+                        找到时间片最短的任务，进行切换
+                    */
+                    for( ;; )
+                    {
+                        /*
+                        判断任务延时列表中，是否为空，
+                        也就是说，有没有任务在等待调度
+                        */
+                        if( listLIST_IS_EMPTY( pxDelayedTaskList ) != pdFALSE )
+                        {
+                            /* The delayed list is empty.  Set xNextTaskUnblockTime
+                            to the maximum possible value so it is extremely
+                            unlikely that the
+                            if( xTickCount >= xNextTaskUnblockTime ) test will pass
+                            next time through. 
+                            如果没有任务等待，把时间片赋值为最大值，不再调度
+                            */
+                            xNextTaskUnblockTime = portMAX_DELAY; /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+                            break;
+                        }
+                        else
+                        {
+                            /* The delayed list is not empty, get the value of the
+                            item at the head of the delayed list.  This is the time
+                            at which the task at the head of the delayed list must
+                            be removed from the Blocked state. 
+                            1、从任务延时列表中，获取第一个任务控制块
+                            2、延时列表，插入永远是把时间片最短的任务，放在第一个     
+                            3、获取任务控制块的延时时间
+                            */
+                            pxTCB = listGET_OWNER_OF_HEAD_ENTRY( pxDelayedTaskList ); /*lint !e9079 void * is used as this macro is used with timers and co-routines too.  Alignment is known to be fine as the type of the pointer stored and retrieved is the same. */
+                            xItemValue = listGET_LIST_ITEM_VALUE( &( pxTCB->xStateListItem ) );
+                            /*
+                            再次判断，这个任务的时间片是否到达
+                            */
+                            if( xConstTickCount < xItemValue )
+                            {
+                                /* It is not time to unblock this item yet, but the
+                                item value is the time at which the task at the head
+                                of the blocked list must be removed from the Blocked
+                                state - so record the item value in
+                                xNextTaskUnblockTime. 
+                                没有到达，把此任务的时间片更新为当前系统的时间片
+                                */
+                                xNextTaskUnblockTime = xItemValue;
+                                /*
+                                直接退出，不用调度
+                                */
+                                break; /*lint !e9011 Code structure here is deedmed easier to understand with multiple breaks. */
+                            }
+                            else
+                            {
+                                mtCOVERAGE_TEST_MARKER();
+                            }
+        
+                            /* 
+                            It is time to remove the item from the Blocked state.
+                            把任务从延时列表中移除
+                            */
+                            ( void ) uxListRemove( &( pxTCB->xStateListItem ) );
+        
+                            /* 
+                            Is the task waiting on an event also?  If so remove
+                            it from the event list.
+                            把任务从事件列表中移除
+                             */
+                            if( listLIST_ITEM_CONTAINER( &( pxTCB->xEventListItem ) ) != NULL )
+                            {
+                                ( void ) uxListRemove( &( pxTCB->xEventListItem ) );
+                            }
+                            else
+                            {
+                                mtCOVERAGE_TEST_MARKER();
+                            }
+        
+                            /* 
+                            Place the unblocked task into the appropriate ready
+                            list. 
+                            把任务添加到就绪列表中
+                            */
+                            prvAddTaskToReadyList( pxTCB );
+        
+                            /* A task being unblocked cannot cause an immediate
+                            context switch if preemption is turned off. 
+                            抢占式处理
+                            */
+                            #if (  configUSE_PREEMPTION == 1 )
+                            {
+                                /* Preemption is on, but a context switch should
+                                only be performed if the unblocked task has a
+                                priority that is equal to or higher than the
+                                currently executing task. 
+                                判断优先级是否大于当前任务
+                                大于则进行调度
+                                */
+                                if( pxTCB->uxPriority >= pxCurrentTCB->uxPriority )
+                                {
+                                    xSwitchRequired = pdTRUE;
+                                }
+                                else
+                                {
+                                    mtCOVERAGE_TEST_MARKER();
+                                }
+                            }
+                            #endif /* configUSE_PREEMPTION */
+                        }
+                    }
+                }
+        
+                /* Tasks of equal priority to the currently running task will share
+                processing time (time slice) if preemption is on, and the application
+                writer has not explicitly turned time slicing off. 
+                时间片调度：前提是configUSE_PREEMPTION和configUSE_TIME_SLICING都为1
+                1、获取就绪列表长度
+                2、就绪列表指的是，当前任务优先级的列表
+                3、如果有其他任务在就绪列表中，就开始调度
+                */
+                #if ( ( configUSE_PREEMPTION == 1 ) && ( configUSE_TIME_SLICING == 1 ) )
+                {   
+                    if( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ pxCurrentTCB->uxPriority ] ) ) > ( UBaseType_t ) 1 )
+                    {
+                        xSwitchRequired = pdTRUE;
+                    }
+                    else
+                    {
+                        mtCOVERAGE_TEST_MARKER();
+                    }
+                }
+                #endif /* ( ( configUSE_PREEMPTION == 1 ) && ( configUSE_TIME_SLICING == 1 ) ) */
+        
+                #if ( configUSE_TICK_HOOK == 1 )
+                {
+                    /* Guard against the tick hook being called when the pended tick
+                    count is being unwound (when the scheduler is being unlocked). */
+                    if( uxPendedTicks == ( UBaseType_t ) 0U )
+                    {
+                        vApplicationTickHook();
+                    }
+                    else
+                    {
+                        mtCOVERAGE_TEST_MARKER();
+                    }
+                }
+                #endif /* configUSE_TICK_HOOK */
+            }
+            else //内核调度器挂起了
+            {
+                ++uxPendedTicks;//挂起的tick+1
+        
+                /* The tick hook gets called at regular intervals, even if the
+                scheduler is locked. */
+                #if ( configUSE_TICK_HOOK == 1 )
+                {
+                    vApplicationTickHook();
+                }
+                #endif
+            }
+            /*
+            如果是抢占模式，要开启调度
+            */
+            #if ( configUSE_PREEMPTION == 1 )
+            {
+                if( xYieldPending != pdFALSE )
+                {
+                    xSwitchRequired = pdTRUE;
+                }
+                else
+                {
+                    mtCOVERAGE_TEST_MARKER();
+                }
+            }
+            #endif /* configUSE_PREEMPTION */
+        
+            return xSwitchRequired;//返回调度器状态
+        }
+        ```
+
+        
+
 # the beginning of it all
 
 ## 2023.2.8 （C++）
@@ -2971,7 +4190,7 @@ int main(){
 ```
 
 ### 4 C++的封装，继承，多态
-**封装实际上就是创建类：
+**封装实际上就是创建类：**
 * public， private， protected
 * 创建一个类的变量的时候会调用类的构造函数，删除变量的时候会调用析构函数
 * 类的构造函数又分为无参构造，有参构造，拷贝构造
@@ -4430,3 +5649,76 @@ uint8_t str_read[11];
 
     *   所以上面的数化为十进制为：-1.01101 * 2^(129-127) = -1.01101 * 2^2 = -101.101=-5.625
     *   -101.101 = -(1 * 4+1 * 1+0.5 * 1+0.125 * 1)=-5.625
+
+
+
+
+
+## 2023.4.6
+
+*   通信的两种方式：
+    *   **并行通信：**数据各个位同时传输，速度快但是占用引脚资源多
+    *   **串行通信：**数据按位顺序传输，占用引脚资源少但是速度相对较慢
+*   数据传送方向：
+    *   **单工：**数据传输只支持在一个方向上
+    *   **半双工：**允许数据在两个方向上传输，但是同一时刻数据只能往一个方向上传输
+    *   **全双工：**允许数据在两个方向上传输，数据可以同时发送和接收，全双工是两个单工通信的结合，要求两个设备都有独立的接受和发送能力
+*   串行通信的通信方式
+    *   **同步通信：**带时钟同步信号传输。如SPI，IIC，带有时钟线
+    *   **异步通信：**不带时钟信号。如UART(通用异步收发器)，单总线
+    *   ![](C:\Users\zp\Desktop\Note\image\串行通信.png)
+    *   同时有发送和接收引脚：UART，SPI，为全双工
+    *   只有一条数据线：1-wire，I2C，为半双工
+    *   有时钟线：SPI，I2C，为同步通信
+    *   没有时钟线：UART，1-wire，为异步通信
+*   USART：**通用同步异步收发器**
+*   对于STM32中的USART：全双工，异步通信，遵循UART协议
+
+### **C标准库：string.h**
+
+*   `int strncmp(const char *str1,const char *str2,size_t n)`：将str1和str2的前n个字符进行比较
+
+    *   如果str1小于str2，返回-1
+    *   如果str1大于str2，返回1
+    *   如果str1等于str2，返回0
+
+*   `int strcmp(const char *str1, const char *str2)`：将str1和str2进行比较
+
+    *   如果str1小于str2，返回-1
+    *   如果str1大于str2，返回1
+    *   如果str1等于str2，返回0
+
+*   `void *memchr(const void *str, int c, size_t n)`:在参数 **str** 所指向的字符串的前 **n** 个字节中搜索第一次出现字符 **c**（一个无符号字符）的位置，返回所找字符的指针，没用则返回NULL
+
+*   ```c
+    #include <stdio.h>
+    #include <string.h>
+     
+    int main ()
+    {
+       const char str[] = "http://www.runoob.com";
+       const char ch = '.';
+       char *ret;
+     
+       ret = (char*)memchr(str, ch, strlen(str));  //转换成指针
+     
+       printf("|%c| 之后的字符串是 - |%s|\n", ch, ret);
+     
+       return(0);
+    }
+    输出：
+    |.| 之后的字符串是 - |.runoob.com|
+    ```
+
+*   `void *memset(void *str, int c, size_t n)`:复制字符 **c**（一个无符号字符）到参数 **str** 所指向的字符串的前 **n** 个字符。
+
+    *   常使用这个函数，重初始化一个字符数组：`memset(lcd_str,0,sizeof(lcd_str));`
+    *   其中0是ASCII码，代表'\0'的意思，再使用strlen(lcd_str)来判断一个字符串是不是为空
+
+*   `char *strcat(char *dest, const char *src)`: 把 **src** 所指向的字符串追加到 **dest** 所指向的字符串的结尾。
+
+*   `char *strrchr(const char *str, int c)`：在参数 **str** 所指向的字符串中搜索最后一次出现字符 **c**（一个无符号字符）的位置。并返回所找的字符的指针
+
+
+
+*   RS232一共就9根线，一般只使用RXD，TXD，GND三条线就可以实现全双工通信，RS485和RS232的基本通讯机理是一致的，弥补了RS232通讯距离短，不能进行多台设备同时进行联网管理的缺点
