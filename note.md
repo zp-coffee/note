@@ -34,6 +34,10 @@
 
 *   [FreeRTOS记录（三、RTOS任务调度原理解析_Systick、PendSV、SVC） - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/551096072)
 
+*   [JDY-31蓝牙模块使用指南](https://blog.csdn.net/weixin_44065323/article/details/128986355)
+
+*   [RTOS内功修炼记](https://cloud.tencent.com/developer/article/1665988)
+
     
 
 
@@ -598,7 +602,103 @@
 ![](C:\Users\zp\Desktop\Note\image\存储器映射.jpg)
 
 *   ![](C:\Users\zp\Desktop\Note\image\映像.jpg)
+*   RAM(代表随机存取存储器)，ROM代表只读存储器
+*   RAM是易失性存储器，可临时存储正在处理的文件和临时变量，是与CPU直接交换数据的内部存储器，也叫做内存，可以随时读写，速度很快
+    *   **静态RAM(Static RAM/SRAM)：**SRAM速度非常快，不需要刷新电路就能保存数据，是目前读写最快的存储设备，但是集成度较低，非常贵，多用于CPU的一级，二级缓存(L1/L2 Cache)
+        *   缓存(cache memory):一种小而快的存储器，作为DRAM的缓冲
+
+    *   **动态RAM(Dynamic RAM/DRAM)：**DRAM保留数据的时间很短(需要内存刷新电路，每隔一段时间，刷新充电一次，否则数据就会丢失)，速度也比SRAM慢，但是比任何的ROM快，在价格上DRAM比SRAM便宜很多，**计算机内存**就是DRAM
+        *   **内存工作原理：**内存是用来存放当前正在使用的(即执行中)的数据和程序，当把数据写入到DRAM中后，经过一段时间，数据就会丢失，因此需要一个额外的电路来进行内存刷新操作，一个DRAM的存储单元存储的是0还是1取决于电容是否有电荷，有电荷代表1，无电荷代表0，时间一长，代表1的电荷就会放电，代表0的电荷就会吸收电荷，这就是数据丢失的原因，刷新操作定期对电容进行检查，如电量大于满电量的1/2，则认为其代表1，并把电量充满，如小于1/2则进行放电，通过这样来保存数据的连续性
+
+*   ROM是永久存储计算机指令的非易失性存储器，不能随意改变，但是在任何时候都可以读取，断电也能保存
+    *   **PROM：**可编程一次性(无法修改)的ROM
+    *   **EPROM：**是紫外线可擦除可编程的ROM
+    *   **EEPROM：**是电可擦除可编程的ROM，按字节进行删除和重写，写入时间很长，可以随机访问和修改任何一个字节，可以往每个bit中写入0或者1
+
+
+#### 1.3.1 Flash
+
+**FLASH：**FLASH内存，属于内存的一种，但是属于广义上的ROM，是一种不挥发性内存，结合了ROM和RAM的长处，不仅具备电子可擦除(EEPROM)的性能，还不会断电丢失数据同时可以快速读取数据(NVRAM的优势)，U盘和MP3里用的就是这种存储器，在嵌入式系统中，用作存储Bootloader以及操作系统，程序代码或者直接当作硬盘来使用
+
+*   与EEPROM相比：FLASH是按扇区来进行擦除，一次简化了电路，数据密度更高，降低了成本，而EEROM按字节来进行操作
+*   **NOR FLASH：**NOR FLASH与常见的SRAM的读取是一样的，可以用来减少SRAM的容量从而节约了成本，一般小容量的用NOR FLASH，因为其读取速度快，多用来存储操作系统灯重要信息。**NOR FLASH**的数据线和地址线分开，可以实现RAM一样的随机寻址功能，可以读取任何一个字节，但是擦除还是按块来进行擦除
+*   **NAND FLASH：**没有内存的随机读取技术，读取是按块来进行读取，通常一次读取512个字节，不能直接运行NAND FLASH上的代码，还需要一块小的NOR FLASH来运行启动代码，一般大容量的使用NAND FLASH，按块擦除，按页读取
+*   **FLASH工作原理：**Flash的内部存储是MOSFET，里面有个悬浮门(Floating Gate)，是真正存储数据的单元，数据以电荷的形式进行存储，存储电荷的多少取决于外部门所被施加的电压，其控制了是向存储单元中冲入电荷还是释放电荷，数据以存储的电荷的电压是否超过了一个阈值Vth来表示0或者1
 *   STM32芯片内部的地址总线为32根，理论上可以访问4G字节的存储器空间,但实际上并没有4G的内存来访问
+
+**对于ARM Cortex M3 中的Flash：**
+
+*   代码和数据是存放在 flash中的，下面是将 flash 内部进行细分之后的一张图，图中标明了代码段，数据段以及常量在 flash 中的位置
+
+*   ![](C:\Users\zp\Desktop\Note\image\falsh.png)
+
+*   文本段(Text)
+
+    *   Executable Code(可执行代码段)
+    *   Literal Value(常量)
+
+*   只读数据区域(Read Only Data)
+
+*   数据复制段(Copy of Data Section)：存放程序中初始化为非0的全局变量的初始值
+
+    ```c
+    #include "stdio.h"
+    const int read_only_value = 2000;   //const修饰，只读，存放在flash中的只读数据区域
+    int data = 500;                     //data存放在RAM中的RW区域，500存放在数据复制段
+    
+    void fun(void)
+    {
+        int x = 200;                    //x存放在RAM的堆栈中，200存放在flash的常量区
+        char *str = "string";           //str存放在RAM的堆栈中，string存放在常量区
+    }
+    ```
+
+**对于 ARM Cortex M3 中的RAM：**
+
+STM32单片机的片内RAM会被链接文件“分区”为如下几个段：
+
+![](C:\Users\zp\Desktop\Note\image\ram.png)
+
+*   栈(Stack)：存放局部变量和函数调用时的返回地址
+
+*   堆(heap)：由malloc申请，由free释放
+
+*   bss：存放未初始化或者是初始化为 0 的全局变量
+
+*   data：存放初始化为非0值的全局变量
+
+    ```c
+    #include "stdio.h"
+    #include "stdlib.h"
+    
+    int data_var = 500;     //已经初始化的全局变量，存放在RAM的data区
+    int bss_var;            //未初始化的变量，存放在bss
+    int bss_var1 = 0;       //初始化为0的变量，存放在bss
+    static int static_var;  //由static修饰的变量，存放在bss中
+    
+    void fun(void)
+    {
+        static int static_var1 = 0;  //由static修饰，存放在bss
+        int stack = 0;               //函数内定义的局部变量，存放在RAM的栈区
+        char *buffer;                //buffer指针变量用malloc函数申请的话就位于堆中
+        const int value = 1;         //虽然由const修饰为只读，但是存储在栈区
+        buffer = malloc(10);         //由malloc申请，存放在堆区
+    }
+    ```
+
+*   **如果在程序运行过程中，堆的空间也一直在消耗，同时栈的空间也在增加，那么这时堆和栈如果碰在一起，那么就会造成堆栈溢出，从而导致程序跑飞**
+
+*   STM32中的map文件分析：在用keil编译之后，我们会得到一个map文件，map文件的最底部有：
+
+    ![](C:\Users\zp\Desktop\Note\image\map文件.png)
+
+    | Code           | RO Data        | RW Data | ZI Data |
+    | -------------- | -------------- | ------- | ------- |
+    | Exectable Code | Read Only Data | data    | bss     |
+
+    
+
+#### 1.3.2 存储器映射，寄存器映射
 
 >   STM32的32表示MCU芯片内部CPU在处理数据时，每次可以处理的数据**位宽为32个bit**
 
@@ -2169,6 +2269,8 @@ void USART1_IRQHandler(void)
 
 *   [常见蓝牙模块介绍和AT指令](https://blog.csdn.net/qlexcel/article/details/103815926)
 
+*   JDY-31模块：[JDY-31蓝牙模块使用指南](https://blog.csdn.net/weixin_44065323/article/details/128986355)
+
 *   每种不同的模块有不同的AT指令，配置好蓝牙之后就可以将蓝牙当串口使用
 
 *   蓝牙调参模板：
@@ -3200,7 +3302,267 @@ RTC由两个主要部分组成：
 
     
 
+## 12.map文件详解
+
+```c
+Component: ARM Compiler 5.06 update 5 (build 528) Tool: armlink [4d35e2]
+
+==============================================================================
+
+Section Cross References  //节区的跨文件引用
+
+    main.o(i.main) refers to sys.o(i.SystemHardwareDriverInit) //main从sys中引用      
+    for SystemHardwareDriverInit    					//SystemHardwareDriverInit
+    main.o(i.main) refers to taskmanage.o(i.TaskCreateFun) 
+    for TaskCreateFun
+    main.o(i.main) refers to tasks.o(i.vTaskStartScheduler) 
+    for vTaskStartScheduler
+    system_stm32f10x.o(i.SystemCoreClockUpdate) refers to system_stm32f10x.o(.data) 	for .data
+    system_stm32f10x.o(i.SystemInit) refers to system_stm32f10x.o(i.SetSysClockTo72) 	 for SetSysClockTo72
+    led.o(i.LED_Init) refers to stm32f10x_rcc.o(i.RCC_APB2PeriphClockCmd) 
+    for RCC_APB2PeriphClockCmd
+    led.o(i.LED_Init) refers to stm32f10x_gpio.o(i.GPIO_Init) 
+    for GPIO_Init
+    led.o(i.LED_Init) refers to stm32f10x_gpio.o(i.GPIO_SetBits) 
+    for GPIO_SetBits
+    ........
+        
+==============================================================================
+
+Removing Unused input sections from the image. //删除无用节区
+    Removing system_stm32f10x.o(i.SystemCoreClockUpdate), (104 bytes).
+    Removing led.o(i.LED_Toggle), (84 bytes).  //有这个函数，但是没用到，为了节省空间删除掉
+    Removing lcd.o(i.LCD_BGR2RGB), (18 bytes).
+    Removing lcd.o(i.LCD_Clear), (132 bytes).
+    Removing lcd.o(i.LCD_Color_Fill), (116 bytes).
+    Removing lcd.o(i.LCD_DisplayOff), (68 bytes).
+    Removing lcd.o(i.LCD_DisplayOn), (72 bytes).
+    Removing lcd.o(i.LCD_Display_Dir), (308 bytes).
+    Removing lcd.o(i.LCD_DrawLine), (150 bytes).
+    ........
+        
+580 unused section(s) (total 48637 bytes) removed from the image.
+
+============================================================================== 
+        
+Image Symbol Table   //符号映像表
+
+    Local Symbols   //局部变量
+    //符号名                                  //地址     //类型         //大小
+    Symbol Name                              Value     Ov Type        Size  Object(Section)  //存在于哪个文件中
+
+    ../clib/../cmprslib/zerorunl2.c          0x00000000   Number         0  				__dczerorl2.o ABSOLUTE
+    ../clib/microlib/division.c              0x00000000   Number         0  
+        uldiv.o ABSOLUTE
+    ../clib/microlib/division.c              0x00000000   Number         0  
+        uidiv.o ABSOLUTE
+    ../clib/microlib/division.c              0x00000000   Number         0  
+        ldiv.o ABSOLUTE
+    ../clib/microlib/errno.c                 0x00000000   Number         0  
+        errno.o ABSOLUTE
+        
+   ......
+        
+    i.OLED_ShowChar                          0x08001830   Section        0  				oled.o(i.OLED_ShowChar)
+    i.OLED_ShowString                        0x08001898   Section        0  				oled.o(i.OLED_ShowString)
+    i.OLED_WriteCommand                      0x080018be   Section        0  				oled.o(i.OLED_WriteCommand)
+    i.OLED_WriteData                         0x080018e0   Section        0  				oled.o(i.OLED_WriteData)
+    i.PWM_Init                               0x08001904   Section        0  				pwm.o(i.PWM_Init)
+    i.RCC_APB1PeriphClockCmd                 0x080019c4   Section        0  				stm32f10x_rcc.o(i.RCC_APB1PeriphClockCmd)
+    i.RCC_APB2PeriphClockCmd                 0x080019dc   Section        0  				stm32f10x_rcc.o(i.RCC_APB2PeriphClockCmd)
+    i.RCC_GetClocksFreq                      0x080019f4   Section        0  				stm32f10x_rcc.o(i.RCC_GetClocksFreq)
+    i.Read_Encoder                           0x08001a88   Section        0  				encoder.o(i.Read_Encoder)
+    i.SERVO_Init                             0x08001aac   Section        0  				servo.o(i.SERVO_Init)
+    i.SetSysClockTo72                        0x08001b70   Section        0  				system_stm32f10x.o(i.SetSysClockTo72)
     
+   ......
+        
+    .bss                                     0x20000598   Section    20480  heap_4.o(.bss)
+    ucHeap                                   0x20000598   Data       20480  heap_4.o(.bss)
+    .bss                                     0x20005598   Section       30  taskmanage.o(.bss)
+    STACK                                    0x200055b8   Section     1024  startup_stm32f10x_hd.o(STACK)
+   
+    Global Symbols  //全局变量
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    BuildAttributes$$THM_ISAv4$P$D$K$B$S$PE$A:L22UL41UL21$X:L11$S22US41US21$IEEE1$IW$USESV6$~STKCKD$USESV7$~SHL$OTIME$ROPI$IEEEX$EBA8$MICROLIB$REQ8$PRES8$EABIv2 0x00000000   Number         0  anon$$obj.o ABSOLUTE
+    __ARM_use_no_argv                        0x00000000   Number         0  main.o ABSOLUTE
+    __use_no_errno                           0x00000000   Number         0  useno.o ABSOLUTE    
+   ......
+   
+    DMA2_Channel2_IRQHandler                 0x080001f7   Thumb Code     0  startup_stm32f10x_hd.o(.text)
+    DMA2_Channel3_IRQHandler                 0x080001f7   Thumb Code     0  startup_stm32f10x_hd.o(.text)
+    DMA2_Channel4_5_IRQHandler               0x080001f7   Thumb Code     0  startup_stm32f10x_hd.o(.text)
+    EXTI0_IRQHandler                         0x080001f7   Thumb Code     0  startup_stm32f10x_hd.o(.text)
+    EXTI15_10_IRQHandler                     0x080001f7   Thumb Code     0  startup_stm32f10x_hd.o(.text)
+    EXTI1_IRQHandler                         0x080001f7   Thumb Code     0  startup_stm32f10x_hd.o(.text)
+    EXTI2_IRQHandler                         0x080001f7   Thumb Code     0  startup_stm32f10x_hd.o(.text)
+    EXTI3_IRQHandler                         0x080001f7   Thumb Code     0  startup_stm32f10x_hd.o(.text)
+        
+    ......
+        
+    xQueueRegistry                           0x2000024c   Data          64  queue.o(.bss)
+    oled_str                                 0x20005598   Data          30  taskmanage.o(.bss)
+    __initial_sp                             0x200059b8   Data           0  startup_stm32f10x_hd.o(STACK)
+
+        
+==============================================================================
+
+Memory Map of the image   //存储器映像
+
+  Image Entry point : 0x08000131  //映射入口地址
+
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00009024, Max: 0x00040000, ABSOLUTE, COMPRESSED[0x00008ef8])  //加载域
+
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00008eb0, Max: 0x00040000, ABSOLUTE)  //运行域
+	//运行域地址   //加载域地址   //大小       //类型  //读写权限 
+    Exec Addr    Load Addr    Size         Type   Attr      Idx    
+      E Section Name              Object
+
+    0x08000000   0x08000000   0x00000130   Data   RO         1613    
+      RESET                       startup_stm32f10x_hd.o
+    0x08000130   0x08000130   0x00000000   Code   RO         5580  
+      * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
+    0x08000130   0x08000130   0x00000004   Code   RO         5927    			 	       .ARM.Collect$$$$00000001    mc_w.l(entry2.o)
+    0x08000134   0x08000134   0x00000004   Code   RO         5930   	
+      .ARM.Collect$$$$00000004    mc_w.l(entry5.o)
+      
+    ......
+      
+    0x080039b8   0x080039b8   0x00000038   Code   RO         1495    
+      i.delay_ms          delay.o
+      
+    ......
+      
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08008eb0, Size: 0x000059b8, Max: 0x0000c000, ABSOLUTE, COMPRESSED[0x00000048])  //运行域
+
+    Exec Addr    Load Addr    Size         Type   Attr      Idx    
+      E Section Name        Object
+
+    0x20000000   COMPRESSED   0x00000014   Data   RW          307    
+      .data               system_stm32f10x.o
+    0x20000014   COMPRESSED   0x00000010   Data   RW          593    
+      .data               bluetooth.o
+    0x20000024   COMPRESSED   0x00000035   Data   RW          853    
+      .data               inv_mpu.o
+      
+    ......
+      
+    0x200055b6   COMPRESSED   0x00000002   PAD
+    0x200055b8        -       0x00000400   Zero   RW         1611    
+      STACK               startup_stm32f10x_hd.o
+      
+//类型有：
+      Data：数据类型
+      Code：代码类型
+      Zero：未初始化变量类型
+      PAD：补充类型
+      ARM处理器是32位的，如果定义一个8位的变量就会剩余一部分，所以就有补充类型
+==============================================================================
+
+Image component sizes //存储大小
+
+      Code：代码大小，位于flash 
+      RO Data：除了内联数据之外的常量数据，位于flash
+      RW Data：指可读写，已初始化的变量数据，位于RAM
+      ZI Data：未初始化的变量数据，位于RAM
+      Debug
+//RW Data中已初始化的数据的值会存储在Flash中，也就是数据复制段，上电从Flash中复制到RAM中
+      
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
+      Object Name
+
+      1028        150          0         16        200       5495   
+      bluetooth.o
+        56          6          0          0          0        506   
+      buzzer.o
+         0          0          0          0          0         32   
+      core_cm3.o
+       200         20          0          4          0       2353   
+      delay.o
+       348         24          0          0          0       1915   
+      encoder.o
+      ......
+    ----------------------------------------------------------------------
+     24328       3212       5084        368      22596     483331   
+      Object Totals
+         0          0         32          0          0          0   
+      (incl. Generated)
+        32          0         10          5          2          0   
+      (incl. Padding)
+
+    ----------------------------------------------------------------------
+      
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
+      Library Member Name
+
+       624         52         80          0          0        168   
+      asin.o
+       544         70        152          0          0        124   
+      atan.o
+       384         38          0          0          0        144   
+      atan2.o
+        38          6          0          0          0        272   
+      dunder.o
+      ......
+       ----------------------------------------------------------------------
+      6876        284        240          4          0       4360   
+      Library Totals
+         4          0          0          0          0          0   
+      (incl. Padding)
+
+    ----------------------------------------------------------------------
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
+      Library Name
+
+      1876        166        240          0          0        956   
+      m_ws.l
+      2942        118          0          4          0       1524   
+      mc_w.l
+      2054          0          0          0          0       1880   
+      mf_w.l
+
+    ----------------------------------------------------------------------
+      6876        284        240          4          0       4360   
+      Library Totals
+
+    ----------------------------------------------------------------------
+
+==============================================================================
+Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
+
+     31204       3496       5324        372      22596     473103   Grand Totals
+     31204       3496       5324         72      22596     473103   ELF Image Totals (compressed)
+     31204       3496       5324         72          0          0   ROM Totals
+
+==============================================================================
+    //Code为代码，RO Data为常量，RW Data为复制区的数据，ZI Data为未初始化的变量数据
+    Total RO  Size (Code + RO Data)                36528 (  35.67kB)
+    Total RW  Size (RW Data + ZI Data)             22968 (  22.43kB)
+    Total ROM Size (Code + RO Data + RW Data)      36600 (  35.74kB)
+
+==============================================================================
+```
+
+*   代码和常量是存放在 flash中
+    *   文本段(Text)
+
+        *   Executable Code(可执行代码段)
+        *   Literal Value(常量)
+    *   只读数据区域(Read Only Data)
+
+    *   数据复制段(Copy of Data Section)：存放程序中初始化为非0的全局变量的初始值
+*   变量地址存放在RAM中
+    *   栈(Stack)：存放局部变量和函数调用时的返回地址
+    *   堆(heap)：由malloc申请，由free释放
+
+    *   bss：存放未初始化或者是初始化为 0 的全局变量
+
+    *   data：存放初始化为非0值的全局变量
+
+
 
 # FreeRTOS
 
@@ -4107,7 +4469,291 @@ FreeRTOS 是支持时间片的，每个优先级可以支持无限多个任务�
         }
         ```
 
+
+
+## 3.关于任务
+
+### 3.1寄存器
+
+对于CrortexM3/4系列内核中的寄存器都有16个寄存器，寄存器组通常都是CPU用于数据处理和运行控制的：![](C:\Users\zp\Desktop\Note\image\cortex 么.png)
+
+*   R0-R12：通用寄存器，用于数据操作；
+*   R13：栈顶指针，有两个互斥的指针MSP和PSP，在任一时刻只能使用其中一个；
+*   R14：连接寄存器，调用子程序时存放返回地址；
+*   R15：程序计数器，PC指针指向哪里，CPU就执行哪里的代码；
+*   在RTOS内核中，这16个寄存器组的值称为**上下文环境**，即当前任务运行时这16个寄存器中的值称为**上文环境**，下一个任务运行时这16个寄存器的值为**下文环境**，**上下文切换**就是指将这16个寄存器的值修改为下一个任务的值
+
+### 3.2 栈
+
+*   栈是**只能在一端插入或者删除元素**的数据结构，先入后出(FILO)
+
+    ![](C:\Users\zp\Desktop\Note\image\zhan.png)
+
+    在裸机程序中，栈顶指针由寄存器R13给出
+
+    *   栈是局部变量的存储，局部变量的定义会被汇编为PUSH指令，将局部变量的内容压入栈中，在函数执行完毕之后出栈，该局部变量被销毁
+    *   函数调用时的参数传递也会被压入栈中，在函数执行完之后出栈
+
+
+
+### 3.3任务控制块
+
+```c
+typedef struct tskTaskControlBlock
+{
+	volatile StackType_t	*pxTopOfStack;	//栈顶指针
+    
+	#if ( portUSING_MPU_WRAPPERS == 1 )
+		xMPU_SETTINGS	xMPUSettings;		//MPU模块设置
+	#endif
+
+	ListItem_t			xStateListItem;	    //列表项指示任务当前的状态
+	ListItem_t			xEventListItem;		//事件列表
+	UBaseType_t			uxPriority;			//任务优先级(0为优先级最低)
+	StackType_t			*pxStack;			//栈底指针，指向栈开始处
+	char				pcTaskName[ configMAX_TASK_NAME_LEN ]; //任务名
+
+	#if ( portSTACK_GROWTH > 0 )            //如果栈向上生长，则定义栈顶指针
+		StackType_t		*pxEndOfStack;		
+	#endif
+
+	#if ( portCRITICAL_NESTING_IN_TCB == 1 )  //保存临界区的栈深度. 
+    //在函数vTaskEnterCritical() 和 vTaskExitCritical()中会维护这个值
+		UBaseType_t		uxCriticalNesting;	
+	#endif
+
+	#if ( configUSE_TRACE_FACILITY == 1 )
+		UBaseType_t		uxTCBNumber; //TCB的编号，每增加一个task，TCB的编号就会增加	
+		UBaseType_t		uxTaskNumber;//task的编号，与uxTCBNumber相等，可用于调试追踪		
+	#endif
+
+	#if ( configUSE_MUTEXES == 1 )
+		UBaseType_t		uxBasePriority; //上一次分配给该任务的优先级，用于优先级继承	
+		UBaseType_t		uxMutexesHeld;  //持有的信号量
+	#endif
+
+	#if ( configUSE_APPLICATION_TASK_TAG == 1 )
+		TaskHookFunction_t pxTaskTag;
+	#endif
+
+	#if( configNUM_THREAD_LOCAL_STORAGE_POINTERS > 0 ) //存储一些私有变量
+void *pvThreadLocalStoragePointers[ configNUM_THREAD_LOCAL_STORAGE_POINTERS ];
+	#endif
+
+	#if( configGENERATE_RUN_TIME_STATS == 1 )
+		uint32_t		ulRunTimeCounter;	//task 运行的总时间
+	#endif
+
+	#if ( configUSE_NEWLIB_REENTRANT == 1 )
+		
+		struct	_reent xNewLib_reent;
+	#endif
+
+	#if( configUSE_TASK_NOTIFICATIONS == 1 )
+		volatile uint32_t ulNotifiedValue; //任务通知相关变量
+		volatile uint8_t ucNotifyState;
+	#endif
+
+	
+	#if( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 )
+		uint8_t	ucStaticallyAllocated; 	//标记stack和TCB分配方式，在删除任务时，由此来
+    #endif                              //释放内存
+    
+	#if( INCLUDE_xTaskAbortDelay == 1 )
+		uint8_t ucDelayAborted;  //delay终止标志
+	#endif
+
+} tskTCB;
+```
+
+*   在任务中创建的局部变量，函数调用，函数传参，都是使用的该任务的任务栈，也就是一开始创建任务时定义的栈大小，与STM32内部栈没有关系，所以在写任务函数时要考虑任务栈的大小够不够，但是如果定义的是static变量，则会存放在STM32内部SRAM的bss区域，其他代码属于可执行代码，存放在Flash中Text区域中的Exexutable Code段
+*   任务中一定要释放CPU，比如使用Delay函数
+
+
+
+
+
+
+
+
+## 4.队列
+
+*   **任务与任务，任务与中断之间的数据通信**
+
+*   **先进先出(FIFO)**
+
+*   **Queue_t：**
+
+    ```c
+    typedef struct QueueDefinition
+    {
+        int8_t *pcHead; 		//指向队列存储区开始地址。
+        int8_t *pcTail; 		//指向队列存储区最后一个字节。
+        int8_t *pcWriteTo; 		//指向存储区中下一个空闲区域。
+        union
+        {
+        	int8_t *pcReadFrom;  			 //当用作队列的时候指向最后一个出队的队列项首地址
+        	UBaseType_t uxRecursiveCallCount;//当用作递归互斥量的时候用来记录递归互斥量被
+        									 //调用的次数。
+        } u;
         
+        List_t xTasksWaitingToSend;     //等待发送任务列表，那些因为队列满导致入队失败而进
+        							    //入阻塞态的任务就会挂到此列表上。
+        List_t xTasksWaitingToReceive;  //等待接收任务列表，那些因为队列空导致出队失败而进
+        								//入阻塞态的任务就会挂到此列表上。
+        
+        volatile UBaseType_t uxMessagesWaiting; //队列中当前队列项数量，也就是消息数
+        UBaseType_t uxLength; 		//创建队列时指定的队列长度，也就是队列中最大允许的
+        							//队列项(消息)数量
+        UBaseType_t uxItemSize; 	//创建队列时指定的每个队列项(消息)最大长度，单位字节
+        
+        volatile int8_t cRxLock; 	//当队列上锁以后用来统计从队列中接收到的队列项数量
+        							//也就是出队的队列项数量，当队列没有上锁的话此字
+        							//段为 queueUNLOCKED
+        
+        volatile int8_t cTxLock; 	//当队列上锁以后用来统计发送到队列中的队列项数量，
+        							//也就是入队的队列项数量，当队列没有上锁的话此字
+        							//段为 queueUNLOCKED
+        
+        #if( ( configSUPPORT_STATIC_ALLOCATION == 1 ) &&\
+        ( configSUPPORT_DYNAMIC_ALLOCATION == 1 ) )
+        	uint8_t ucStaticallyAllocated;//如果使用静态存储的话此字段设置为 pdTURE。
+        #endif
+        
+        #if ( configUSE_QUEUE_SETS == 1 ) //队列集相关宏
+        	struct QueueDefinition *pxQueueSetContainer;
+        #endif
+        
+        #if ( configUSE_TRACE_FACILITY == 1 ) //跟踪调试相关宏
+        	UBaseType_t uxQueueNumber;
+        	uint8_t ucQueueType;
+        #endif
+        
+    } xQUEUE;
+    typedef xQUEUE Queue_t;
+    ```
+
+*   **队列创建：**
+
+    ```c
+    QueueHandle_t xQueueCreate(UBaseType_t uxQueueLength, UBaseType_t uxItemSize)
+    ```
+
+    *   `uxQueueLength`：要创建的队列的队列长度，这里是队列的项目数
+    *   `uxItemSize`：队列中每个项目(消息)的长度，单位为字节
+    *   返回值：
+        *   其他值：队列创建成功，返回队列句柄
+        *   NULL：队列创建失败
+
+*   **队列创建底层函数(静态方法)：**
+
+    ```c
+    QueueHandle_t xQueueCreateStatic(UBaseType_t uxQueueLength,
+                                     UBaseType_t uxItemSize,
+                                     uint8_t * pucQueueStorageBuffer,
+                                     StaticQueue_t * pxQueueBuffer)
+    ```
+
+    *   `uxQueueLength`：要创建的队列的队列长度，这里是队列的项目数
+    *   `uxItemSize `：队列中每个项目(消息)的长度，单位为字节
+    *   `pucQueueStorage`：指向队列项目的存储区，也就是消息的存储区，这个存储区需要用户自 行分配。此参数必须指向一个 uint8_t 类型的数组。这个存储区要大于等 于(uxQueueLength * uxItemsSize)字节
+    *   `pxQueueBuffer `：此参数指向一个 StaticQueue_t 类型的变量，用来保存队列结构体
+    *   返回值：
+        *   其他值：队列创建成功，返回队列句柄
+        *   NULL：队列创建失败
+
+*   **队列创建底层函数(动态方法)：**
+
+    ```c
+    QueueHandle_t xQueueCreateStatic(UBaseType_t uxQueueLength,
+                                     UBaseType_t uxItemSize,
+                                     const uint8_t ucQueueType)
+    ```
+
+    *   `uxQueueLength`：要创建的队列的队列长度，这里是队列的项目数
+    *   `uxItemSize `：队列中每个项目(消息)的长度，单位为字节
+    *   `ucQueueType`：队列类型，由于 FreeRTOS 中的信号量等也是通过队列来实现的，创建信号 量的函数最终也是使用此函数的，因此在创建的时候需要指定此队列的用途， 也就是队列类型，一共有六种类型：
+        *   queueQUEUE_TYPE_BASE 				                                         普通的消息队列
+        *   queueQUEUE_TYPE_SET 	                                                        队列集 
+        *   queueQUEUE_TYPE_MUTEX                                                       互斥信号量 
+        *   queueQUEUE_TYPE_COUNTING_SEMAPHORE                       计数型信号量 
+        *   queueQUEUE_TYPE_BINARY_SEMAPHORE                              二值信号量 
+        *   queueQUEUE_TYPE_RECURSIVE_MUTEX                                  递归互斥信号量
+        *   函 数 xQueueCreate() 创 建 队 列 的 时 候 此 参 数 默 认 选 择 的 就 是 queueQUEUE_TYPE_BASE
+    *   返回值：
+        *   其他值：队列创建成功，返回队列句柄
+        *   NULL：队列创建失败
+
+*   **队列创建函数详解：**
+
+    ```c
+    QueueHandle_t xQueueGenericCreate(  const UBaseType_t uxQueueLength, 
+    									const UBaseType_t uxItemSize, 
+    									const uint8_t ucQueueType )
+    {
+        Queue_t *pxNewQueue;
+        size_t   xQueueSizeInBytes;
+        uint8_t *pucQueueStorage;
+        configASSERT( uxQueueLength > ( UBaseType_t ) 0 );
+        if( uxItemSize == ( UBaseType_t ) 0 )
+        {
+        	//队列项大小为 0，那么就不需要存储区。
+        	xQueueSizeInBytes = ( size_t ) 0;
+        }
+        else
+        {
+        	//分配足够的存储区，确保随时随地都可以保存所有的项目(消息)，
+        	xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ); (1)
+        }
+        pxNewQueue = ( Queue_t *)pvPortMalloc( sizeof( Queue_t ) + xQueueSizeInBytes);
+        
+        //内存申请成功
+        if( pxNewQueue != NULL )
+        {
+        	pucQueueStorage = ( ( uint8_t * ) pxNewQueue ) + sizeof( Queue_t ); 
+            
+        	#if( configSUPPORT_STATIC_ALLOCATION == 1 )
+        	{
+        		//队列是使用动态方法创建的，所以队列字段 ucStaticallyAllocated 标
+        		//记为 pdFALSE。
+       			pxNewQueue->ucStaticallyAllocated = pdFALSE;
+       		 }
+        	#endif 
+        	prvInitialiseNewQueue( uxQueueLength, uxItemSize, pucQueueStorage, \ (4)
+       		ucQueueType, pxNewQueue );
+        }
+        return pxNewQueue;
+    }
+    ```
+
+*   **队列初始化函数：**`prvInitialiseNewQueue()`
+
+*   **队列复位函数：**`xQueueGenericReset()`
+
+*   **入队函数：**
+    *   `xQueueSend()`
+    *   `xQueueSendToBack()`
+    *   `xQueueSendToFront() `
+    *   `xQueueOverwrite()`：带覆写功能，队列满了之后自动覆盖旧的消息
+    *   `xQueueSendFromISR()`：中断中不允许有阻塞，printf中存在阻塞
+    *   `xQueueSendToBackFromISR()`
+    *   `xQueueSendToFrontFromISR()`
+    *   `xQueueOverwriteFromISR()`
+    
+*   **出队函数：**
+    *   `xQueueReceive()`：读取之后删除消息
+    *   `xQueuePeek()`：读取之后不删除消息
+    *   `xQueueReceiveFromISR()`
+    *   `xQueuePeekFromISR ()`
+
+*   **注意事项：**
+    *   在中断中使用`xQueueOverwriteFromISR`函数时，队列长度只能为1(只能用作信号量)
+
+
+
+
+
+
 
 # the beginning of it all
 
